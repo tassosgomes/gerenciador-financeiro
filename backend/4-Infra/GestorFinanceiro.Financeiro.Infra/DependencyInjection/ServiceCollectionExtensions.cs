@@ -12,11 +12,13 @@ namespace GestorFinanceiro.Financeiro.Infra.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
-        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
         ArgumentNullException.ThrowIfNull(configuration);
+
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
 
         services.AddDbContext<FinanceiroDbContext>(options =>
             options.UseNpgsql(connectionString));
@@ -31,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
-        services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+        services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
         return services;
     }

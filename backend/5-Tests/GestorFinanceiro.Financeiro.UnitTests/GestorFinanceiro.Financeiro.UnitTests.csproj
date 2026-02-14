@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\1-Services\GestorFinanceiro.Financeiro.API\GestorFinanceiro.Financeiro.API.csproj" />
     <ProjectReference Include="..\..\3-Domain\GestorFinanceiro.Financeiro.Domain\GestorFinanceiro.Financeiro.Domain.csproj" />
     <ProjectReference Include="..\..\2-Application\GestorFinanceiro.Financeiro.Application\GestorFinanceiro.Financeiro.Application.csproj" />
     <ProjectReference Include="..\..\4-Infra\GestorFinanceiro.Financeiro.Infra\GestorFinanceiro.Financeiro.Infra.csproj" />
