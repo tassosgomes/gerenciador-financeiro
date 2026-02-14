@@ -23,7 +23,7 @@ Application Layer com CQRS (Commands, Queries, Handlers, Validators, Dispatcher)
 - [X] 1.0 Estrutura de Solução e Projetos
 - [X] 2.0 Domain Layer — Enums e Base Entity
 - [X] 3.0 Domain Layer — Entidades e Exceções
-- [ ] 4.0 Domain Layer — Interfaces de Repositório
+- [x] 4.0 Domain Layer — Interfaces de Repositório
 - [ ] 5.0 Domain Layer — Domain Services
 - [ ] 6.0 Testes Unitários do Domain
 - [ ] 7.0 Infra Layer — DbContext e Configurations
