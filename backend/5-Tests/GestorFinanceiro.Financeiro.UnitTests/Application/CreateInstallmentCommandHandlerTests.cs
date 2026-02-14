@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
@@ -14,6 +15,7 @@ public class CreateInstallmentCommandHandlerTests
     private readonly Mock<IAccountRepository> _accountRepository = new();
     private readonly Mock<ITransactionRepository> _transactionRepository = new();
     private readonly Mock<IOperationLogRepository> _operationLogRepository = new();
+    private readonly Mock<IAuditService> _auditService = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<ILogger<CreateInstallmentCommandHandler>> _logger = new();
 
@@ -21,6 +23,7 @@ public class CreateInstallmentCommandHandlerTests
 
     public CreateInstallmentCommandHandlerTests()
     {
+        _auditService.Setup(mock => mock.LogAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         _unitOfWork.Setup(mock => mock.CommitAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -33,6 +36,7 @@ public class CreateInstallmentCommandHandlerTests
             _accountRepository.Object,
             _transactionRepository.Object,
             _operationLogRepository.Object,
+            _auditService.Object,
             _unitOfWork.Object,
             new InstallmentDomainService(new TransactionDomainService()),
             _logger.Object);

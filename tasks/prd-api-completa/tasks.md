@@ -30,7 +30,7 @@ Testes end-to-end via `WebApplicationFactory` + Testcontainers cobrindo todos os
 - [X] 4.0 Controllers de Auth e Users
 - [X] 5.0 Controllers de Contas e Categorias
 - [x] 6.0 Controller de Transações
-- [ ] 7.0 Histórico e Auditoria
+- [x] 7.0 Histórico e Auditoria
 - [ ] 8.0 Backup Manual (Export/Import)
 - [ ] 9.0 Testes de Integração HTTP
 

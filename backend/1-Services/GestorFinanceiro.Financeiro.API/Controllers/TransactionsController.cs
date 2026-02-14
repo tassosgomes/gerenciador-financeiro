@@ -158,6 +158,17 @@ public class TransactionsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id:guid}/history")]
+    [ProducesResponseType<TransactionHistoryResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TransactionHistoryResponse>> GetHistoryAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetTransactionHistoryQuery(id);
+        var response = await _dispatcher.DispatchQueryAsync<GetTransactionHistoryQuery, TransactionHistoryResponse>(query, cancellationToken);
+        return Ok(response);
+    }
+
     [HttpPost("{id:guid}/adjustments")]
     [ProducesResponseType<TransactionResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]

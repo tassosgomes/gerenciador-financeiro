@@ -15,17 +15,20 @@ public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryComman
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateCategoryCommandHandler> _logger;
 
     public UpdateCategoryCommandHandler(
         ICategoryRepository categoryRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         ILogger<UpdateCategoryCommandHandler> logger)
     {
         _categoryRepository = categoryRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -56,10 +59,14 @@ public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryComman
             if (category == null)
                 throw new CategoryNotFoundException(command.CategoryId);
 
+            var previousData = category.Adapt<CategoryResponse>();
+
             // Update name
             category.UpdateName(command.Name, command.UserId);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Category", category.Id, "Updated", command.UserId, previousData, cancellationToken);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

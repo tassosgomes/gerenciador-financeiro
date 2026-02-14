@@ -14,17 +14,20 @@ public class UpdateAccountCommandHandler : ICommandHandler<UpdateAccountCommand,
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<UpdateAccountCommandHandler> _logger;
 
     public UpdateAccountCommandHandler(
         IAccountRepository accountRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         ILogger<UpdateAccountCommandHandler> logger)
     {
         _accountRepository = accountRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -55,9 +58,13 @@ public class UpdateAccountCommandHandler : ICommandHandler<UpdateAccountCommand,
                 throw new AccountNotFoundException(command.AccountId);
             }
 
+            var previousData = account.Adapt<AccountResponse>();
+
             account.Update(command.Name, command.AllowNegativeBalance, command.UserId);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Account", account.Id, "Updated", command.UserId, previousData, cancellationToken);
 
             if (!string.IsNullOrEmpty(command.OperationId))
             {

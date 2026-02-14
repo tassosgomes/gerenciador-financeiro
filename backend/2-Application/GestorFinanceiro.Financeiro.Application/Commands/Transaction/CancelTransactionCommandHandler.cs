@@ -16,6 +16,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TransactionDomainService _transactionDomainService;
     private readonly ILogger<CancelTransactionCommandHandler> _logger;
@@ -24,6 +25,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         TransactionDomainService transactionDomainService,
         ILogger<CancelTransactionCommandHandler> logger)
@@ -31,6 +33,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _transactionDomainService = transactionDomainService;
         _logger = logger;
@@ -59,6 +62,8 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
             if (transaction == null)
                 throw new TransactionNotFoundException(command.TransactionId);
 
+            var previousData = transaction.Adapt<TransactionResponse>();
+
             // Load account with lock
             var account = await _accountRepository.GetByIdWithLockAsync(transaction.AccountId, cancellationToken);
             if (account == null)
@@ -68,6 +73,8 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
             _transactionDomainService.CancelTransaction(account, transaction, command.UserId, command.Reason);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Transaction", transaction.Id, "Cancelled", command.UserId, previousData, cancellationToken);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

@@ -15,17 +15,20 @@ public class CreateAccountCommandHandler : ICommandHandler<CreateAccountCommand,
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateAccountCommandHandler> _logger;
 
     public CreateAccountCommandHandler(
         IAccountRepository accountRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         ILogger<CreateAccountCommandHandler> logger)
     {
         _accountRepository = accountRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -66,6 +69,8 @@ public class CreateAccountCommandHandler : ICommandHandler<CreateAccountCommand,
 
             await _accountRepository.AddAsync(account, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Account", account.Id, "Created", command.UserId, null, cancellationToken);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

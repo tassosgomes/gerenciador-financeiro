@@ -11,17 +11,20 @@ namespace GestorFinanceiro.Financeiro.Application.Commands.User;
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, UserResponse>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuditService _auditService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateUserCommandHandler> _logger;
 
     public CreateUserCommandHandler(
         IUserRepository userRepository,
+        IAuditService auditService,
         IPasswordHasher passwordHasher,
         IUnitOfWork unitOfWork,
         ILogger<CreateUserCommandHandler> logger)
     {
         _userRepository = userRepository;
+        _auditService = auditService;
         _passwordHasher = passwordHasher;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -53,8 +56,22 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, UserR
             role,
             command.CreatedByUserId);
 
-        await _userRepository.AddAsync(user, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            await _userRepository.AddAsync(user, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditService.LogAsync("User", user.Id, "Created", command.CreatedByUserId, null, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync(cancellationToken);
+            throw;
+        }
 
         return ToUserResponse(user);
     }

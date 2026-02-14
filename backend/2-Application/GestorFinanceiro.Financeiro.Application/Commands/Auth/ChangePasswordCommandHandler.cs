@@ -10,6 +10,7 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
 {
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IAuditService _auditService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ChangePasswordCommandHandler> _logger;
@@ -17,12 +18,14 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
     public ChangePasswordCommandHandler(
         IUserRepository userRepository,
         IRefreshTokenRepository refreshTokenRepository,
+        IAuditService auditService,
         IPasswordHasher passwordHasher,
         IUnitOfWork unitOfWork,
         ILogger<ChangePasswordCommandHandler> logger)
     {
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
+        _auditService = auditService;
         _passwordHasher = passwordHasher;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -53,11 +56,19 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
 
         try
         {
+            var previousData = new
+            {
+                user.Id,
+                user.Email,
+                user.MustChangePassword,
+            };
+
             var newPasswordHash = _passwordHasher.Hash(command.NewPassword);
             user.ChangePassword(newPasswordHash, command.UserId.ToString());
 
             await _refreshTokenRepository.RevokeByUserIdAsync(command.UserId, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _auditService.LogAsync("User", user.Id, "Updated", command.UserId.ToString(), previousData, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
 
             return Unit.Value;

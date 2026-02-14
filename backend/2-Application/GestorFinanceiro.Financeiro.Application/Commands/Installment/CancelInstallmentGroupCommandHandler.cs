@@ -16,6 +16,7 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly InstallmentDomainService _installmentDomainService;
     private readonly ILogger<CancelInstallmentGroupCommandHandler> _logger;
@@ -24,6 +25,7 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         InstallmentDomainService installmentDomainService,
         ILogger<CancelInstallmentGroupCommandHandler> logger)
@@ -31,6 +33,7 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
         _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
         _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
         _operationLogRepository = operationLogRepository ?? throw new ArgumentNullException(nameof(operationLogRepository));
+        _auditService = auditService ?? throw new ArgumentNullException(nameof(auditService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _installmentDomainService = installmentDomainService ?? throw new ArgumentNullException(nameof(installmentDomainService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -58,6 +61,10 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
             if (groupTransactions.Count == 0)
                 throw new TransactionNotFoundException(command.GroupId);
 
+            var previousDataByTransactionId = groupTransactions.ToDictionary(
+                transaction => transaction.Id,
+                transaction => transaction.Adapt<TransactionResponse>());
+
             // Load account with lock
             var accountId = groupTransactions.First().AccountId;
             var account = await _accountRepository.GetByIdWithLockAsync(accountId, cancellationToken);
@@ -73,6 +80,12 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
 
             // Save changes
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            foreach (var transaction in groupTransactions.Where(item => item.Status == Domain.Enum.TransactionStatus.Cancelled))
+            {
+                previousDataByTransactionId.TryGetValue(transaction.Id, out var previousData);
+                await _auditService.LogAsync("Transaction", transaction.Id, "Cancelled", command.UserId, previousData, cancellationToken);
+            }
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

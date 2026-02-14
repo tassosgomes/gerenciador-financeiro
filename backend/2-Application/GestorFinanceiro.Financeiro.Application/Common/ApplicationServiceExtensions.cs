@@ -10,6 +10,7 @@ using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Mapping;
 using GestorFinanceiro.Financeiro.Application.Queries.Account;
+using GestorFinanceiro.Financeiro.Application.Queries.Audit;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
@@ -60,8 +61,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<GetAccountByIdQuery, AccountResponse>, GetAccountByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ListAccountsQuery, IReadOnlyList<AccountResponse>>, ListAccountsQueryHandler>();
         services.AddScoped<IQueryHandler<GetTransactionByIdQuery, TransactionResponse>, GetTransactionByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetTransactionHistoryQuery, TransactionHistoryResponse>, GetTransactionHistoryQueryHandler>();
         services.AddScoped<IQueryHandler<ListTransactionsByAccountQuery, IReadOnlyList<TransactionResponse>>, ListTransactionsByAccountQueryHandler>();
         services.AddScoped<IQueryHandler<ListTransactionsQuery, PagedResult<TransactionResponse>>, ListTransactionsQueryHandler>();
+        services.AddScoped<IQueryHandler<ListAuditLogsQuery, PagedResult<AuditLogDto>>, ListAuditLogsQueryHandler>();
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();

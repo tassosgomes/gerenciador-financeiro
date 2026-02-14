@@ -1,5 +1,7 @@
 using GestorFinanceiro.Financeiro.Application.Services;
+using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Domain.Interface;
+using GestorFinanceiro.Financeiro.Infra.Audit;
 using GestorFinanceiro.Financeiro.Infra.Auth;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using GestorFinanceiro.Financeiro.Infra.Repository;
@@ -29,8 +31,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRecurrenceTemplateRepository, RecurrenceTemplateRepository>();
         services.AddScoped<IOperationLogRepository, OperationLogRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));

@@ -15,17 +15,20 @@ public class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryComman
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateCategoryCommandHandler> _logger;
 
     public CreateCategoryCommandHandler(
         ICategoryRepository categoryRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         ILogger<CreateCategoryCommandHandler> logger)
     {
         _categoryRepository = categoryRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -61,6 +64,8 @@ public class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryComman
 
             await _categoryRepository.AddAsync(category, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Category", category.Id, "Created", command.UserId, null, cancellationToken);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

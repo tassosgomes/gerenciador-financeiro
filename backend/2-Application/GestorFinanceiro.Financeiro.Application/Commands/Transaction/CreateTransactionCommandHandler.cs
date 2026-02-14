@@ -18,6 +18,7 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TransactionDomainService _transactionDomainService;
     private readonly CreateTransactionValidator _validator;
@@ -28,6 +29,7 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         TransactionDomainService transactionDomainService,
         CreateTransactionValidator validator,
@@ -37,6 +39,7 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
         _categoryRepository = categoryRepository;
         _transactionRepository = transactionRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _transactionDomainService = transactionDomainService;
         _validator = validator;
@@ -88,6 +91,8 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
 
             await _transactionRepository.AddAsync(transaction, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Transaction", transaction.Id, "Created", command.UserId, null, cancellationToken);
 
             var response = transaction.Adapt<TransactionResponse>();
 

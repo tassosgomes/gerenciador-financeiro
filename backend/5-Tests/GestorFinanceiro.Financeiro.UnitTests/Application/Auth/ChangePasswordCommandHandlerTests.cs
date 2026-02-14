@@ -15,6 +15,7 @@ public class ChangePasswordCommandHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepository = new();
     private readonly Mock<IRefreshTokenRepository> _refreshTokenRepository = new();
+    private readonly Mock<IAuditService> _auditService = new();
     private readonly Mock<IPasswordHasher> _passwordHasher = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<ILogger<ChangePasswordCommandHandler>> _logger = new();
@@ -23,6 +24,7 @@ public class ChangePasswordCommandHandlerTests
 
     public ChangePasswordCommandHandlerTests()
     {
+        _auditService.Setup(mock => mock.LogAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         _unitOfWork.Setup(mock => mock.CommitAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -31,6 +33,7 @@ public class ChangePasswordCommandHandlerTests
         _sut = new ChangePasswordCommandHandler(
             _userRepository.Object,
             _refreshTokenRepository.Object,
+            _auditService.Object,
             _passwordHasher.Object,
             _unitOfWork.Object,
             _logger.Object);

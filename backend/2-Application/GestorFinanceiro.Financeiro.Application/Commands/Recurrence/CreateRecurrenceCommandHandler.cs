@@ -16,6 +16,7 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
     private readonly ICategoryRepository _categoryRepository;
     private readonly IRecurrenceTemplateRepository _recurrenceTemplateRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateRecurrenceCommandHandler> _logger;
 
@@ -24,6 +25,7 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
         ICategoryRepository categoryRepository,
         IRecurrenceTemplateRepository recurrenceTemplateRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         ILogger<CreateRecurrenceCommandHandler> logger)
     {
@@ -31,6 +33,7 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _recurrenceTemplateRepository = recurrenceTemplateRepository ?? throw new ArgumentNullException(nameof(recurrenceTemplateRepository));
         _operationLogRepository = operationLogRepository ?? throw new ArgumentNullException(nameof(operationLogRepository));
+        _auditService = auditService ?? throw new ArgumentNullException(nameof(auditService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -79,6 +82,8 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
 
             await _recurrenceTemplateRepository.AddAsync(recurrenceTemplate, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("RecurrenceTemplate", recurrenceTemplate.Id, "Created", command.UserId, null, cancellationToken);
 
             if (!string.IsNullOrEmpty(command.OperationId))
             {

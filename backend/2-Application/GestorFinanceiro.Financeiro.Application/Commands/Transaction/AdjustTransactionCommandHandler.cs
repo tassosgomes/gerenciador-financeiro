@@ -17,6 +17,7 @@ public class AdjustTransactionCommandHandler : ICommandHandler<AdjustTransaction
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TransactionDomainService _transactionDomainService;
     private readonly ILogger<AdjustTransactionCommandHandler> _logger;
@@ -25,6 +26,7 @@ public class AdjustTransactionCommandHandler : ICommandHandler<AdjustTransaction
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         TransactionDomainService transactionDomainService,
         ILogger<AdjustTransactionCommandHandler> logger)
@@ -32,6 +34,7 @@ public class AdjustTransactionCommandHandler : ICommandHandler<AdjustTransaction
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
         _operationLogRepository = operationLogRepository;
+        _auditService = auditService;
         _unitOfWork = unitOfWork;
         _transactionDomainService = transactionDomainService;
         _logger = logger;
@@ -60,6 +63,8 @@ public class AdjustTransactionCommandHandler : ICommandHandler<AdjustTransaction
             if (originalTransaction == null)
                 throw new TransactionNotFoundException(command.TransactionId);
 
+            var previousData = originalTransaction.Adapt<TransactionResponse>();
+
             if (originalTransaction.Status != TransactionStatus.Paid)
                 throw new TransactionNotPaidException(command.TransactionId);
 
@@ -81,6 +86,8 @@ public class AdjustTransactionCommandHandler : ICommandHandler<AdjustTransaction
 
             await _transactionRepository.AddAsync(adjustment, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _auditService.LogAsync("Transaction", adjustment.Id, "Updated", command.UserId, previousData, cancellationToken);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))

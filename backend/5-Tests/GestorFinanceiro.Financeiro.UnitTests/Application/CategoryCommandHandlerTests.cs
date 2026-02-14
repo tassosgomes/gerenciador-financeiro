@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using FluentValidation;
+using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
@@ -14,6 +15,7 @@ public class CategoryCommandHandlerTests
 {
     private readonly Mock<ICategoryRepository> _categoryRepository = new();
     private readonly Mock<IOperationLogRepository> _operationLogRepository = new();
+    private readonly Mock<IAuditService> _auditService = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<ILogger<CreateCategoryCommandHandler>> _logger = new();
 
@@ -21,6 +23,7 @@ public class CategoryCommandHandlerTests
 
     public CategoryCommandHandlerTests()
     {
+        _auditService.Setup(mock => mock.LogAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         _unitOfWork.Setup(mock => mock.CommitAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -32,6 +35,7 @@ public class CategoryCommandHandlerTests
         _sut = new CreateCategoryCommandHandler(
             _categoryRepository.Object,
             _operationLogRepository.Object,
+            _auditService.Object,
             _unitOfWork.Object,
             _logger.Object);
     }

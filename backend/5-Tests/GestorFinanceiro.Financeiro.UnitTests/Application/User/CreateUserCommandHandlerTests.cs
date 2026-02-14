@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Commands.User;
 using GestorFinanceiro.Financeiro.Application.Services;
 using GestorFinanceiro.Financeiro.Domain.Exception;
@@ -11,6 +12,7 @@ namespace GestorFinanceiro.Financeiro.UnitTests.Application.User;
 public class CreateUserCommandHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepository = new();
+    private readonly Mock<IAuditService> _auditService = new();
     private readonly Mock<IPasswordHasher> _passwordHasher = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<ILogger<CreateUserCommandHandler>> _logger = new();
@@ -19,6 +21,10 @@ public class CreateUserCommandHandlerTests
 
     public CreateUserCommandHandlerTests()
     {
+        _auditService.Setup(mock => mock.LogAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _unitOfWork.Setup(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _unitOfWork.Setup(mock => mock.CommitAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        _unitOfWork.Setup(mock => mock.RollbackAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         _userRepository
             .Setup(mock => mock.AddAsync(It.IsAny<GestorFinanceiro.Financeiro.Domain.Entity.User>(), It.IsAny<CancellationToken>()))
@@ -26,6 +32,7 @@ public class CreateUserCommandHandlerTests
 
         _sut = new CreateUserCommandHandler(
             _userRepository.Object,
+            _auditService.Object,
             _passwordHasher.Object,
             _unitOfWork.Object,
             _logger.Object);
@@ -47,7 +54,10 @@ public class CreateUserCommandHandlerTests
         result.IsActive.Should().BeTrue();
         result.MustChangePassword.Should().BeTrue();
         _userRepository.Verify(mock => mock.AddAsync(It.IsAny<GestorFinanceiro.Financeiro.Domain.Entity.User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _unitOfWork.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWork.Verify(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWork.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
+        _unitOfWork.Verify(mock => mock.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWork.Verify(mock => mock.RollbackAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

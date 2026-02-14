@@ -16,6 +16,7 @@ public class CreateInstallmentCommandHandler : ICommandHandler<CreateInstallment
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
+    private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly InstallmentDomainService _installmentDomainService;
     private readonly ILogger<CreateInstallmentCommandHandler> _logger;
@@ -24,6 +25,7 @@ public class CreateInstallmentCommandHandler : ICommandHandler<CreateInstallment
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
+        IAuditService auditService,
         IUnitOfWork unitOfWork,
         InstallmentDomainService installmentDomainService,
         ILogger<CreateInstallmentCommandHandler> logger)
@@ -31,6 +33,7 @@ public class CreateInstallmentCommandHandler : ICommandHandler<CreateInstallment
         _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
         _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
         _operationLogRepository = operationLogRepository ?? throw new ArgumentNullException(nameof(operationLogRepository));
+        _auditService = auditService ?? throw new ArgumentNullException(nameof(auditService));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _installmentDomainService = installmentDomainService ?? throw new ArgumentNullException(nameof(installmentDomainService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -85,6 +88,11 @@ public class CreateInstallmentCommandHandler : ICommandHandler<CreateInstallment
                 await _transactionRepository.AddAsync(installment, cancellationToken);
             }
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            foreach (var installment in installments)
+            {
+                await _auditService.LogAsync("Transaction", installment.Id, "Created", command.UserId, null, cancellationToken);
+            }
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))
