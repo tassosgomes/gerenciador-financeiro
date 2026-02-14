@@ -20,7 +20,7 @@ Application Layer com CQRS (Commands, Queries, Handlers, Validators, Dispatcher)
 
 ## Tarefas
 
-- [ ] 1.0 Estrutura de Solução e Projetos
+- [X] 1.0 Estrutura de Solução e Projetos
 - [ ] 2.0 Domain Layer — Enums e Base Entity
 - [ ] 3.0 Domain Layer — Entidades e Exceções
 - [ ] 4.0 Domain Layer — Interfaces de Repositório
