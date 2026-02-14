@@ -21,4 +21,11 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
             .AsNoTracking()
             .AnyAsync(category => category.Name == name && category.Type == type, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Categories
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -5,5 +5,6 @@ namespace GestorFinanceiro.Financeiro.Domain.Interface;
 
 public interface ICategoryRepository : IRepository<Category>
 {
+    Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken);
     Task<bool> ExistsByNameAndTypeAsync(string name, CategoryType type, CancellationToken cancellationToken);
 }

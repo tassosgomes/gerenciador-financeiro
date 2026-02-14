@@ -1,0 +1,60 @@
+using GestorFinanceiro.Financeiro.Application.Commands.Account;
+using GestorFinanceiro.Financeiro.Application.Commands.Category;
+using GestorFinanceiro.Financeiro.Application.Commands.Installment;
+using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
+using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
+using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
+using GestorFinanceiro.Financeiro.Application.Common;
+using GestorFinanceiro.Financeiro.Application.Dtos;
+using GestorFinanceiro.Financeiro.Application.Mapping;
+using GestorFinanceiro.Financeiro.Application.Queries.Account;
+using GestorFinanceiro.Financeiro.Application.Queries.Category;
+using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace GestorFinanceiro.Financeiro.Application.Common;
+
+public static class ApplicationServiceExtensions
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        // Register Dispatcher
+        services.AddScoped<IDispatcher, Dispatcher>();
+
+        // Configure mappings
+        MappingConfig.ConfigureMappings();
+
+        // Register all command handlers
+        services.AddScoped<ICommandHandler<CreateAccountCommand, AccountResponse>, CreateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<DeactivateAccountCommand, Unit>, DeactivateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<ActivateAccountCommand, Unit>, ActivateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateCategoryCommand, CategoryResponse>, CreateCategoryCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateCategoryCommand, CategoryResponse>, UpdateCategoryCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateTransactionCommand, TransactionResponse>, CreateTransactionCommandHandler>();
+        services.AddScoped<ICommandHandler<AdjustTransactionCommand, TransactionResponse>, AdjustTransactionCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelTransactionCommand, Unit>, CancelTransactionCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateInstallmentCommand, IReadOnlyList<TransactionResponse>>, CreateInstallmentCommandHandler>();
+        services.AddScoped<ICommandHandler<AdjustInstallmentGroupCommand, IReadOnlyList<TransactionResponse>>, AdjustInstallmentGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelInstallmentCommand, Unit>, CancelInstallmentCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelInstallmentGroupCommand, Unit>, CancelInstallmentGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateRecurrenceCommand, RecurrenceTemplateResponse>, CreateRecurrenceCommandHandler>();
+        services.AddScoped<ICommandHandler<DeactivateRecurrenceCommand, Unit>, DeactivateRecurrenceCommandHandler>();
+        services.AddScoped<ICommandHandler<GenerateRecurrenceCommand, Unit>, GenerateRecurrenceCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateTransferCommand, IReadOnlyList<TransactionResponse>>, CreateTransferCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelTransferCommand, Unit>, CancelTransferCommandHandler>();
+
+        services.AddScoped<CreateTransactionValidator>();
+
+        // Register all query handlers
+        services.AddScoped<IQueryHandler<GetAccountByIdQuery, AccountResponse>, GetAccountByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<ListAccountsQuery, IReadOnlyList<AccountResponse>>, ListAccountsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetTransactionByIdQuery, TransactionResponse>, GetTransactionByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<ListTransactionsByAccountQuery, IReadOnlyList<TransactionResponse>>, ListTransactionsByAccountQueryHandler>();
+        services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
+
+        // Register validators
+        // services.AddValidatorsFromAssemblyContaining<CreateAccountCommandValidator>();
+
+        return services;
+    }
+}

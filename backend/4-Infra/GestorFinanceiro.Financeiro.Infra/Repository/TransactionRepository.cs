@@ -15,7 +15,6 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
     public async Task<IEnumerable<Transaction>> GetByInstallmentGroupAsync(Guid groupId, CancellationToken cancellationToken)
     {
         return await _context.Transactions
-            .AsNoTracking()
             .Where(transaction => transaction.InstallmentGroupId == groupId)
             .OrderBy(transaction => transaction.InstallmentNumber)
             .ToListAsync(cancellationToken);
@@ -24,7 +23,6 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
     public async Task<IEnumerable<Transaction>> GetByTransferGroupAsync(Guid groupId, CancellationToken cancellationToken)
     {
         return await _context.Transactions
-            .AsNoTracking()
             .Where(transaction => transaction.TransferGroupId == groupId)
             .OrderBy(transaction => transaction.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -37,5 +35,14 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
         return await _context.Transactions
             .AsNoTracking()
             .FirstOrDefaultAsync(transaction => transaction.OperationId == operationId, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Transaction>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken)
+    {
+        return await _context.Transactions
+            .AsNoTracking()
+            .Where(transaction => transaction.AccountId == accountId)
+            .OrderByDescending(transaction => transaction.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 }

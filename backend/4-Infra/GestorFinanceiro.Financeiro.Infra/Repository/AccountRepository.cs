@@ -27,4 +27,11 @@ public class AccountRepository : Repository<Account>, IAccountRepository
             .AsNoTracking()
             .AnyAsync(account => account.Name == name, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Account>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Accounts
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
 }
