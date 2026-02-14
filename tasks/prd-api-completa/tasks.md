@@ -25,7 +25,7 @@ Testes end-to-end via `WebApplicationFactory` + Testcontainers cobrindo todos os
 ## Tarefas
 
 - [X] 1.0 Entidades e Infraestrutura de Usuário
-- [ ] 2.0 Serviços de Autenticação (JWT + Refresh Token)
+- [X] 2.0 Serviços de Autenticação (JWT + Refresh Token)
 - [ ] 3.0 Pipeline HTTP e Tratamento de Erros
 - [ ] 4.0 Controllers de Auth e Users
 - [ ] 5.0 Controllers de Contas e Categorias

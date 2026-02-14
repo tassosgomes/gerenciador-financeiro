@@ -4,6 +4,7 @@ public class RefreshToken : BaseEntity
 {
     public Guid UserId { get; private set; }
     public string Token { get; private set; } = string.Empty;
+    public string TokenHash { get; private set; } = string.Empty;
     public DateTime ExpiresAt { get; private set; }
     public bool IsRevoked { get; private set; }
     public DateTime? RevokedAt { get; private set; }
@@ -23,6 +24,7 @@ public class RefreshToken : BaseEntity
         {
             UserId = userId,
             Token = token,
+            TokenHash = ComputeHash(token),
             ExpiresAt = expiresAt,
         };
 
@@ -34,5 +36,14 @@ public class RefreshToken : BaseEntity
     {
         IsRevoked = true;
         RevokedAt = DateTime.UtcNow;
+    }
+
+    public static string ComputeHash(string token)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(token);
+
+        var tokenBytes = System.Text.Encoding.UTF8.GetBytes(token);
+        var hashBytes = System.Security.Cryptography.SHA256.HashData(tokenBytes);
+        return Convert.ToHexString(hashBytes);
     }
 }

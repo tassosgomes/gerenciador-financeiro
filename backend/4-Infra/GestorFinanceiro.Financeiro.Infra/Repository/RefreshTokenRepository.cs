@@ -14,12 +14,12 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken)
+    public async Task<RefreshToken?> GetByTokenHashAsync(string tokenHash, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(token);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
 
         return await _context.RefreshTokens
-            .SingleOrDefaultAsync(refreshToken => refreshToken.Token == token, cancellationToken);
+            .SingleOrDefaultAsync(refreshToken => refreshToken.TokenHash == tokenHash, cancellationToken);
     }
 
     public async Task AddAsync(RefreshToken refreshToken, CancellationToken cancellationToken)

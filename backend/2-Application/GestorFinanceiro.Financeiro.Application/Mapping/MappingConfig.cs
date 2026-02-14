@@ -12,5 +12,8 @@ public static class MappingConfig
         TypeAdapterConfig<Transaction, TransactionResponse>.NewConfig();
         TypeAdapterConfig<Category, CategoryResponse>.NewConfig();
         TypeAdapterConfig<RecurrenceTemplate, RecurrenceTemplateResponse>.NewConfig();
+        TypeAdapterConfig<User, UserResponse>
+            .NewConfig()
+            .Map(destination => destination.Role, source => source.Role.ToString());
     }
 }

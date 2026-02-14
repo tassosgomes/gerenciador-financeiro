@@ -17,6 +17,7 @@ public class RefreshTokenTests
         var after = DateTime.UtcNow;
         token.UserId.Should().Be(userId);
         token.Token.Should().Be("token-value");
+        token.TokenHash.Should().Be(RefreshToken.ComputeHash("token-value"));
         token.ExpiresAt.Should().Be(expiresAt);
         token.IsRevoked.Should().BeFalse();
         token.RevokedAt.Should().BeNull();
@@ -89,5 +90,14 @@ public class RefreshTokenTests
 
         token1.Id.Should().NotBe(token2.Id);
         token1.Id.Should().NotBe(Guid.Empty);
+    }
+
+    [Fact]
+    public void ComputeHash_SameToken_GeneratesSameHash()
+    {
+        var hash1 = RefreshToken.ComputeHash("token-value");
+        var hash2 = RefreshToken.ComputeHash("token-value");
+
+        hash1.Should().Be(hash2);
     }
 }

@@ -23,8 +23,10 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasColumnType("uuid")
             .IsRequired();
 
-        builder.Property(refreshToken => refreshToken.Token)
-            .HasColumnName("token")
+        builder.Ignore(refreshToken => refreshToken.Token);
+
+        builder.Property(refreshToken => refreshToken.TokenHash)
+            .HasColumnName("token_hash")
             .HasColumnType("varchar(500)")
             .IsRequired();
 
@@ -67,8 +69,8 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .HasForeignKey(refreshToken => refreshToken.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(refreshToken => refreshToken.Token)
-            .HasDatabaseName("ix_refresh_tokens_token")
+        builder.HasIndex(refreshToken => refreshToken.TokenHash)
+            .HasDatabaseName("ix_refresh_tokens_token_hash")
             .IsUnique();
 
         builder.HasIndex(refreshToken => refreshToken.UserId)

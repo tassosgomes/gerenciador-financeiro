@@ -1,15 +1,18 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Account;
+using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
+using GestorFinanceiro.Financeiro.Application.Commands.User;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Mapping;
 using GestorFinanceiro.Financeiro.Application.Queries.Account;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
+using GestorFinanceiro.Financeiro.Application.Queries.User;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GestorFinanceiro.Financeiro.Application.Common;
@@ -42,6 +45,12 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<GenerateRecurrenceCommand, Unit>, GenerateRecurrenceCommandHandler>();
         services.AddScoped<ICommandHandler<CreateTransferCommand, IReadOnlyList<TransactionResponse>>, CreateTransferCommandHandler>();
         services.AddScoped<ICommandHandler<CancelTransferCommand, Unit>, CancelTransferCommandHandler>();
+        services.AddScoped<ICommandHandler<LoginCommand, AuthResponse>, LoginCommandHandler>();
+        services.AddScoped<ICommandHandler<RefreshTokenCommand, AuthResponse>, RefreshTokenCommandHandler>();
+        services.AddScoped<ICommandHandler<LogoutCommand, Unit>, LogoutCommandHandler>();
+        services.AddScoped<ICommandHandler<ChangePasswordCommand, Unit>, ChangePasswordCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateUserCommand, UserResponse>, CreateUserCommandHandler>();
+        services.AddScoped<ICommandHandler<ToggleUserStatusCommand, Unit>, ToggleUserStatusCommandHandler>();
 
         services.AddScoped<CreateTransactionValidator>();
 
@@ -51,9 +60,14 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<GetTransactionByIdQuery, TransactionResponse>, GetTransactionByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ListTransactionsByAccountQuery, IReadOnlyList<TransactionResponse>>, ListTransactionsByAccountQueryHandler>();
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
+        services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
 
         // Register validators
-        // services.AddValidatorsFromAssemblyContaining<CreateAccountCommandValidator>();
+        services.AddScoped<LoginCommandValidator>();
+        services.AddScoped<RefreshTokenCommandValidator>();
+        services.AddScoped<ChangePasswordCommandValidator>();
+        services.AddScoped<CreateUserCommandValidator>();
 
         return services;
     }
