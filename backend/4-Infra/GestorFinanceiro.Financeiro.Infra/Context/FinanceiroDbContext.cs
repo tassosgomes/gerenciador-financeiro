@@ -15,6 +15,8 @@ public class FinanceiroDbContext : DbContext
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<RecurrenceTemplate> RecurrenceTemplates => Set<RecurrenceTemplate>();
     public DbSet<OperationLog> OperationLogs => Set<OperationLog>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
