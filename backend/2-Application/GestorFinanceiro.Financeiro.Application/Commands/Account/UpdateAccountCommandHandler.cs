@@ -1,5 +1,4 @@
 using FluentValidation;
-using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
@@ -11,18 +10,18 @@ using System.Text.Json;
 
 namespace GestorFinanceiro.Financeiro.Application.Commands.Account;
 
-public class CreateAccountCommandHandler : ICommandHandler<CreateAccountCommand, AccountResponse>
+public class UpdateAccountCommandHandler : ICommandHandler<UpdateAccountCommand, AccountResponse>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IOperationLogRepository _operationLogRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CreateAccountCommandHandler> _logger;
+    private readonly ILogger<UpdateAccountCommandHandler> _logger;
 
-    public CreateAccountCommandHandler(
+    public UpdateAccountCommandHandler(
         IAccountRepository accountRepository,
         IOperationLogRepository operationLogRepository,
         IUnitOfWork unitOfWork,
-        ILogger<CreateAccountCommandHandler> logger)
+        ILogger<UpdateAccountCommandHandler> logger)
     {
         _accountRepository = accountRepository;
         _operationLogRepository = operationLogRepository;
@@ -30,60 +29,51 @@ public class CreateAccountCommandHandler : ICommandHandler<CreateAccountCommand,
         _logger = logger;
     }
 
-    public async Task<AccountResponse> HandleAsync(CreateAccountCommand command, CancellationToken cancellationToken)
+    public async Task<AccountResponse> HandleAsync(UpdateAccountCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating account with name: {Name}", command.Name);
+        _logger.LogInformation("Updating account with ID: {AccountId}", command.AccountId);
 
-        var validator = new CreateAccountCommandValidator();
+        var validator = new UpdateAccountCommandValidator();
         await validator.ValidateAndThrowAsync(command, cancellationToken);
 
-        // Check idempotência
         if (!string.IsNullOrEmpty(command.OperationId))
         {
-            var existingLog = await _operationLogRepository.ExistsByOperationIdAsync(
-                command.OperationId, cancellationToken);
+            var existingLog = await _operationLogRepository.ExistsByOperationIdAsync(command.OperationId, cancellationToken);
             if (existingLog)
+            {
                 throw new DuplicateOperationException(command.OperationId);
+            }
         }
 
-        // Check if name exists
-        var nameExists = await _accountRepository.ExistsByNameAsync(command.Name, cancellationToken);
-        if (nameExists)
-            throw new AccountNameAlreadyExistsException(command.Name);
-
-        // Begin transaction
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            // Create account
-            var account = GestorFinanceiro.Financeiro.Domain.Entity.Account.Create(
-                command.Name,
-                command.Type,
-                command.InitialBalance,
-                command.AllowNegativeBalance,
-                command.UserId);
+            var account = await _accountRepository.GetByIdWithLockAsync(command.AccountId, cancellationToken);
+            if (account == null)
+            {
+                throw new AccountNotFoundException(command.AccountId);
+            }
 
-            await _accountRepository.AddAsync(account, cancellationToken);
+            account.Update(command.Name, command.AllowNegativeBalance, command.UserId);
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))
             {
                 await _operationLogRepository.AddAsync(new OperationLog
                 {
                     OperationId = command.OperationId,
-                    OperationType = "CreateAccount",
+                    OperationType = "UpdateAccount",
                     ResultEntityId = account.Id,
                     ResultPayload = JsonSerializer.Serialize(account.Adapt<AccountResponse>())
                 }, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
 
-            // Commit
             await _unitOfWork.CommitAsync(cancellationToken);
 
-            _logger.LogInformation("Account created successfully with ID: {Id}", account.Id);
+            _logger.LogInformation("Account updated successfully with ID: {Id}", account.Id);
 
             return account.Adapt<AccountResponse>();
         }

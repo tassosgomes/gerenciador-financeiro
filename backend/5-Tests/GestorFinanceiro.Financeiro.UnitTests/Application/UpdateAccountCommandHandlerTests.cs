@@ -3,32 +3,30 @@ using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
+using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace GestorFinanceiro.Financeiro.UnitTests.Application;
 
-public class AccountCommandHandlerTests
+public class UpdateAccountCommandHandlerTests
 {
     private readonly Mock<IAccountRepository> _accountRepository = new();
     private readonly Mock<IOperationLogRepository> _operationLogRepository = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
-    private readonly Mock<ILogger<CreateAccountCommandHandler>> _logger = new();
+    private readonly Mock<ILogger<UpdateAccountCommandHandler>> _logger = new();
 
-    private readonly CreateAccountCommandHandler _sut;
+    private readonly UpdateAccountCommandHandler _sut;
 
-    public AccountCommandHandlerTests()
+    public UpdateAccountCommandHandlerTests()
     {
         _unitOfWork.Setup(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
         _unitOfWork.Setup(mock => mock.CommitAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(mock => mock.RollbackAsync(It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-        _accountRepository
-            .Setup(mock => mock.AddAsync(It.IsAny<Account>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Account account, CancellationToken _) => account);
 
-        _sut = new CreateAccountCommandHandler(
+        _sut = new UpdateAccountCommandHandler(
             _accountRepository.Object,
             _operationLogRepository.Object,
             _unitOfWork.Object,
@@ -36,24 +34,40 @@ public class AccountCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_ComandoValido_CriaContaComSucesso()
+    public async Task HandleAsync_ComandoValido_AtualizaContaComSucesso()
     {
-        var command = new CreateAccountCommand("Conta Principal", AccountType.Corrente, 100m, false, "user-1");
+        var account = Account.Create("Conta Antiga", AccountType.Corrente, 150m, false, "user-1");
+        var command = new UpdateAccountCommand(account.Id, "Conta Nova", true, "user-2");
 
-        _accountRepository.Setup(mock => mock.ExistsByNameAsync("Conta Principal", It.IsAny<CancellationToken>())).ReturnsAsync(false);
+        _accountRepository
+            .Setup(mock => mock.GetByIdWithLockAsync(account.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(account);
 
         var response = await _sut.HandleAsync(command, CancellationToken.None);
 
-        response.Name.Should().Be("Conta Principal");
-        response.Balance.Should().Be(100m);
-        _accountRepository.Verify(mock => mock.AddAsync(It.IsAny<Account>(), It.IsAny<CancellationToken>()), Times.Once);
+        response.Name.Should().Be("Conta Nova");
         _unitOfWork.Verify(mock => mock.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task HandleAsync_ContaInexistente_LancaAccountNotFoundException()
+    {
+        var command = new UpdateAccountCommand(Guid.NewGuid(), "Conta Nova", true, "user-2");
+
+        _accountRepository
+            .Setup(mock => mock.GetByIdWithLockAsync(command.AccountId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Account?)null);
+
+        var action = () => _sut.HandleAsync(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<AccountNotFoundException>();
+        _unitOfWork.Verify(mock => mock.RollbackAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task HandleAsync_ComandoInvalido_LancaValidationException()
     {
-        var command = new CreateAccountCommand(string.Empty, AccountType.Corrente, -1m, false, string.Empty);
+        var command = new UpdateAccountCommand(Guid.Empty, string.Empty, true, string.Empty);
 
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 

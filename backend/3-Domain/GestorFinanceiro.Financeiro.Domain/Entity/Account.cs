@@ -42,6 +42,13 @@ public class Account : BaseEntity
         SetAuditOnUpdate(userId);
     }
 
+    public void Update(string name, bool allowNegativeBalance, string userId)
+    {
+        Name = name;
+        AllowNegativeBalance = allowNegativeBalance;
+        SetAuditOnUpdate(userId);
+    }
+
     public void ApplyDebit(decimal amount, string userId)
     {
         if (!AllowNegativeBalance && Balance - amount < 0)

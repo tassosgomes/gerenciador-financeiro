@@ -29,6 +29,7 @@ public static class ApplicationServiceExtensions
 
         // Register all command handlers
         services.AddScoped<ICommandHandler<CreateAccountCommand, AccountResponse>, CreateAccountCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateAccountCommand, AccountResponse>, UpdateAccountCommandHandler>();
         services.AddScoped<ICommandHandler<DeactivateAccountCommand, Unit>, DeactivateAccountCommandHandler>();
         services.AddScoped<ICommandHandler<ActivateAccountCommand, Unit>, ActivateAccountCommandHandler>();
         services.AddScoped<ICommandHandler<CreateCategoryCommand, CategoryResponse>, CreateCategoryCommandHandler>();

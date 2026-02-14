@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 using GestorFinanceiro.Financeiro.API.Filters;
 using GestorFinanceiro.Financeiro.API.Middleware;
 using GestorFinanceiro.Financeiro.Application.Common;
@@ -62,6 +63,10 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers(options =>
     {
         options.Filters.Add<ValidationActionFilter>();
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     })
     .ConfigureApiBehaviorOptions(options =>
     {

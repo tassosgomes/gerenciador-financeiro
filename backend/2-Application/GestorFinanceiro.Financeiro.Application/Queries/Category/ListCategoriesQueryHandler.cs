@@ -22,9 +22,16 @@ public class ListCategoriesQueryHandler : IQueryHandler<ListCategoriesQuery, IRe
 
     public async Task<IReadOnlyList<CategoryResponse>> HandleAsync(ListCategoriesQuery query, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Listing all categories");
+        _logger.LogInformation("Listing categories with type filter: {Type}", query.Type);
 
         var categories = await _categoryRepository.GetAllAsync(cancellationToken);
+
+        if (query.Type.HasValue)
+        {
+            categories = categories
+                .Where(category => category.Type == query.Type.Value)
+                .ToList();
+        }
 
         return categories.Adapt<IReadOnlyList<CategoryResponse>>();
     }

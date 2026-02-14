@@ -1,3 +1,4 @@
+using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
@@ -32,6 +33,9 @@ public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryComman
     public async Task<CategoryResponse> HandleAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Updating category with ID: {CategoryId}", command.CategoryId);
+
+        var validator = new UpdateCategoryCommandValidator();
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
 
         // Check idempotência
         if (!string.IsNullOrEmpty(command.OperationId))

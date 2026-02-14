@@ -12,11 +12,11 @@ public class AccountRepository : Repository<Account>, IAccountRepository
     {
     }
 
-    public async Task<Account> GetByIdWithLockAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Account?> GetByIdWithLockAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Accounts
             .FromSqlInterpolated($"SELECT * FROM accounts WHERE id = {id} FOR UPDATE")
-            .SingleAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken)

@@ -3,4 +3,6 @@ using GestorFinanceiro.Financeiro.Application.Dtos;
 
 namespace GestorFinanceiro.Financeiro.Application.Queries.Account;
 
-public record ListAccountsQuery() : IQuery<IReadOnlyList<AccountResponse>>;
+public record ListAccountsQuery(
+    bool? IsActive = null
+) : IQuery<IReadOnlyList<AccountResponse>>;

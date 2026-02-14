@@ -22,9 +22,16 @@ public class ListAccountsQueryHandler : IQueryHandler<ListAccountsQuery, IReadOn
 
     public async Task<IReadOnlyList<AccountResponse>> HandleAsync(ListAccountsQuery query, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Listing all accounts");
+        _logger.LogInformation("Listing accounts with isActive filter: {IsActive}", query.IsActive);
 
         var accounts = await _accountRepository.GetAllAsync(cancellationToken);
+
+        if (query.IsActive.HasValue)
+        {
+            accounts = accounts
+                .Where(account => account.IsActive == query.IsActive.Value)
+                .ToList();
+        }
 
         return accounts.Adapt<IReadOnlyList<AccountResponse>>();
     }
