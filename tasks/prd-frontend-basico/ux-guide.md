@@ -42,3 +42,5 @@ Datas: date-fns.
  Criar componentes de Skeleton Loaders para as tabelas e dashboard.
  Implementar Toasts (ex: react-hot-toast) para feedback de sucesso/erro em todas as operações CRUD.
 Deseja que eu gere a tela de Gestão de Categorias que falta para completar o guia de implementação?
+
+<critical>Exemplos de tela estão na pasta ´tasks/prd-frontend-basico/screen-examples´ e devem ser consultadas como referencias das telas</critical>
