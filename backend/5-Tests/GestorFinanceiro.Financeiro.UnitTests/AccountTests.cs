@@ -8,7 +8,7 @@ namespace GestorFinanceiro.Financeiro.UnitTests;
 public class AccountTests
 {
     [Fact]
-    public void Create_DadosValidos_CriaContaComAuditoria()
+    public void Create_DadosValidos_CriaContaComSaldoInicial()
     {
         var before = DateTime.UtcNow;
 
@@ -26,7 +26,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void Activate_ContaInativa_TornaContaAtiva()
+    public void Activate_ContaInativa_AtivaENaoLancaExcecao()
     {
         var account = Account.Create("Conta", AccountType.Corrente, 0m, false, "user-1");
         account.Deactivate("user-1");
@@ -39,7 +39,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void Deactivate_ContaAtiva_TornaContaInativa()
+    public void Deactivate_ContaAtiva_DesativaComSucesso()
     {
         var account = Account.Create("Conta", AccountType.Corrente, 0m, false, "user-1");
 
@@ -61,7 +61,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void ApplyCredit_ValorValido_AumentaSaldo()
+    public void ApplyCredit_ValorPositivo_AumentaSaldo()
     {
         var account = Account.Create("Conta", AccountType.Corrente, 100m, false, "user-1");
 
@@ -71,7 +71,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void RevertDebit_DebitoAplicadoAnteriormente_ReverteSaldoCorretamente()
+    public void RevertDebit_ValorDebito_AumentaSaldo()
     {
         var account = Account.Create("Conta", AccountType.Corrente, 100m, false, "user-1");
         account.ApplyDebit(30m, "user-2");
@@ -84,7 +84,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void RevertCredit_CreditoAplicadoAnteriormente_ReverteSaldoCorretamente()
+    public void RevertCredit_ValorCredito_DiminuiSaldo()
     {
         var account = Account.Create("Conta", AccountType.Corrente, 100m, false, "user-1");
         account.ApplyCredit(45m, "user-2");
@@ -107,7 +107,7 @@ public class AccountTests
     }
 
     [Fact]
-    public void ApplyDebit_SaldoInsuficienteComPermissao_AceitaSaldoNegativo()
+    public void ApplyDebit_SaldoInsuficienteComPermissao_PermiteDebito()
     {
         var account = Account.Create("Conta", AccountType.Cartao, 100m, true, "user-1");
 

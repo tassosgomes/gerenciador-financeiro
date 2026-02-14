@@ -7,7 +7,7 @@ namespace GestorFinanceiro.Financeiro.UnitTests;
 public class RecurrenceTemplateTests
 {
     [Fact]
-    public void Create_DadosValidos_CriaTemplateRecorrencia()
+    public void Create_DadosValidos_CriaTemplateAtivo()
     {
         var template = RecurrenceTemplate.Create(
             Guid.NewGuid(),
@@ -29,7 +29,7 @@ public class RecurrenceTemplateTests
     }
 
     [Fact]
-    public void ShouldGenerateForMonth_SemGeracaoAnterior_RetornaTrue()
+    public void ShouldGenerateForMonth_SemLastGenerated_RetornaTrue()
     {
         var template = RecurrenceTemplate.Create(
             Guid.NewGuid(),
@@ -47,7 +47,7 @@ public class RecurrenceTemplateTests
     }
 
     [Fact]
-    public void ShouldGenerateForMonth_MesJaGerado_RetornaFalse()
+    public void ShouldGenerateForMonth_MesIgualUltimoGerado_RetornaFalse()
     {
         var template = RecurrenceTemplate.Create(
             Guid.NewGuid(),
@@ -66,7 +66,7 @@ public class RecurrenceTemplateTests
     }
 
     [Fact]
-    public void ShouldGenerateForMonth_MesPosteriorAoUltimoGerado_RetornaTrue()
+    public void ShouldGenerateForMonth_MesMaiorQueUltimoGerado_RetornaTrue()
     {
         var template = RecurrenceTemplate.Create(
             Guid.NewGuid(),
@@ -85,7 +85,26 @@ public class RecurrenceTemplateTests
     }
 
     [Fact]
-    public void Deactivate_TemplateAtivo_DesativaTemplate()
+    public void ShouldGenerateForMonth_TemplateInativo_RetornaFalse()
+    {
+        var template = RecurrenceTemplate.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            150m,
+            "Internet",
+            10,
+            TransactionStatus.Pending,
+            "user-1");
+        template.Deactivate("user-2");
+
+        var shouldGenerate = template.ShouldGenerateForMonth(new DateTime(2026, 3, 1));
+
+        shouldGenerate.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Deactivate_TemplateAtivo_DesativaComSucesso()
     {
         var template = RecurrenceTemplate.Create(
             Guid.NewGuid(),
@@ -100,6 +119,27 @@ public class RecurrenceTemplateTests
         template.Deactivate("user-2");
 
         template.IsActive.Should().BeFalse();
+        template.UpdatedBy.Should().Be("user-2");
+        template.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void MarkGenerated_Data_AtualizaLastGeneratedDate()
+    {
+        var template = RecurrenceTemplate.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            150m,
+            "Internet",
+            10,
+            TransactionStatus.Pending,
+            "user-1");
+        var generatedDate = new DateTime(2026, 4, 10);
+
+        template.MarkGenerated(generatedDate, "user-2");
+
+        template.LastGeneratedDate.Should().Be(generatedDate);
         template.UpdatedBy.Should().Be("user-2");
         template.UpdatedAt.Should().NotBeNull();
     }

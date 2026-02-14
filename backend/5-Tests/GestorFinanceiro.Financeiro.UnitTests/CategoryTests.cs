@@ -7,7 +7,7 @@ namespace GestorFinanceiro.Financeiro.UnitTests;
 public class CategoryTests
 {
     [Fact]
-    public void Create_DadosValidos_CriaCategoriaComAuditoria()
+    public void Create_DadosValidos_CriaCategoriaComTipo()
     {
         var category = Category.Create("Alimentacao", CategoryType.Despesa, "user-1");
 
@@ -18,7 +18,7 @@ public class CategoryTests
     }
 
     [Fact]
-    public void UpdateName_NovoNomeValido_AtualizaNomeEAuditoria()
+    public void UpdateName_NovoNome_AtualizaNomeComAuditoria()
     {
         var category = Category.Create("Lazer", CategoryType.Despesa, "user-1");
 

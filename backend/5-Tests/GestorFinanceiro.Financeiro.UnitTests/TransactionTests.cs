@@ -8,7 +8,7 @@ namespace GestorFinanceiro.Financeiro.UnitTests;
 public class TransactionTests
 {
     [Fact]
-    public void Create_DadosValidos_CriaTransacao()
+    public void Create_ValorPositivo_CriaTransacaoComStatusCorreto()
     {
         var accountId = Guid.NewGuid();
         var categoryId = Guid.NewGuid();
@@ -41,7 +41,7 @@ public class TransactionTests
     }
 
     [Fact]
-    public void Create_ValorInvalido_LancaInvalidTransactionAmountException()
+    public void Create_ValorZero_LancaInvalidTransactionAmountException()
     {
         var action = () => Transaction.Create(
             Guid.NewGuid(),
@@ -58,7 +58,24 @@ public class TransactionTests
     }
 
     [Fact]
-    public void Cancel_TransacaoValida_AtualizaStatusEDadosCancelamento()
+    public void Create_ValorNegativo_LancaInvalidTransactionAmountException()
+    {
+        var action = () => Transaction.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            TransactionType.Credit,
+            -10m,
+            "Receita",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        action.Should().Throw<InvalidTransactionAmountException>();
+    }
+
+    [Fact]
+    public void Cancel_TransacaoPending_AlteraStatusParaCancelled()
     {
         var transaction = Transaction.Create(
             Guid.NewGuid(),
@@ -100,7 +117,7 @@ public class TransactionTests
     }
 
     [Fact]
-    public void CreateAdjustment_DadosValidos_CriaTransacaoAjuste()
+    public void CreateAdjustment_DiferencaPositiva_CriaAjusteVinculado()
     {
         var originalId = Guid.NewGuid();
 
@@ -122,7 +139,7 @@ public class TransactionTests
     }
 
     [Fact]
-    public void MarkAsAdjusted_TransacaoOriginal_MarcaComoAjustada()
+    public void MarkAsAdjusted_TransacaoNormal_DefineHasAdjustmentTrue()
     {
         var transaction = Transaction.Create(
             Guid.NewGuid(),
@@ -159,7 +176,24 @@ public class TransactionTests
     }
 
     [Fact]
-    public void IsOverdue_StatusNaoPending_RetornaFalse()
+    public void IsOverdue_PendingComDueDateFutura_RetornaFalse()
+    {
+        var transaction = Transaction.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            10m,
+            "Despesa",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddDays(3),
+            TransactionStatus.Pending,
+            "user-1");
+
+        transaction.IsOverdue.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsOverdue_PaidComDueDatePassada_RetornaFalse()
     {
         var transaction = Transaction.Create(
             Guid.NewGuid(),
@@ -176,7 +210,24 @@ public class TransactionTests
     }
 
     [Fact]
-    public void SetInstallmentInfo_DadosValidos_DefineInformacoesDeParcela()
+    public void IsOverdue_PendingSemDueDate_RetornaFalse()
+    {
+        var transaction = Transaction.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            10m,
+            "Despesa",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Pending,
+            "user-1");
+
+        transaction.IsOverdue.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SetInstallmentInfo_DadosValidos_DefineGrupoENumero()
     {
         var transaction = Transaction.Create(
             Guid.NewGuid(),
@@ -198,7 +249,7 @@ public class TransactionTests
     }
 
     [Fact]
-    public void SetRecurrenceInfo_TemplateValido_DefineInformacoesRecorrencia()
+    public void SetRecurrenceInfo_TemplateId_DefineFlagETemplate()
     {
         var transaction = Transaction.Create(
             Guid.NewGuid(),
