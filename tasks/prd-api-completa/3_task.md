@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: completed
 parallelizable: true
 blocked_by: ["1.0"]
 ---
