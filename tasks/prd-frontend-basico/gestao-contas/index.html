@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestão de Contas - GestorFinanceiro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b62b8",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c2a38",
+                        "success": "#10b981",
+                        "danger": "#ef4444",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #137fec;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #137fec;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen font-display antialiased selection:bg-primary/30 selection:text-primary-dark">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 flex-shrink-0 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-icons-round text-white text-xl">account_balance_wallet</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Gestor<span class="text-primary">Financeiro</span></h1>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-icons-round">account_balance</span>
+<span class="font-semibold">Contas</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-outlined group-hover:text-primary transition-colors">receipt_long</span>
+<span class="font-medium">Transações</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-outlined group-hover:text-primary transition-colors">pie_chart</span>
+<span class="font-medium">Orçamento</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-outlined group-hover:text-primary transition-colors">assessment</span>
+<span class="font-medium">Relatórios</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-medium">Configurações</span>
+</a>
+<div class="mt-4 flex items-center gap-3 px-4">
+<img alt="Profile Picture" class="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-700" data-alt="Portrait of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCijO_e0AvZNHtNt_ETvB8UvtnhPxkQ9bzWG3BR-WEJGcDaMxILYq1yYLF2gKJ0QcEVKF8pOn9X9Cq1H98pdkFLa0l3-qbDMzFhapEvN375tk-dMrKFrrgU1sN7ScXWuLdM9lE_-7Cpi9kDnP3tyG6lhX9MVPMqwReYKthkACbYu_MlYBUc4giaekRDR-gqjG8AU4nfCodK2WySB2j588V22fkHPZhARgU6erJYozTy-6c_NmsQa2-cl8sNkxauzlspAllVQ_qiqp8"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-white truncate">Carlos Silva</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Plano Premium</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- Header -->
+<header class="bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800 px-8 py-5 flex items-center justify-between flex-shrink-0 z-10">
+<div>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Minhas Contas</h2>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Gerencie seus saldos e cartões de crédito</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-all shadow-md shadow-primary/20 hover:shadow-primary/30 active:scale-95">
+<span class="material-icons-round text-xl">add</span>
+                        Adicionar Conta
+                    </button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8">
+<!-- Stats / Filter Bar -->
+<div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors">Todas</button>
+<button class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm font-medium transition-colors">Bancárias</button>
+<button class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-sm font-medium transition-colors">Cartões</button>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-icons-outlined text-lg">sort</span>
+<span>Ordenar por:</span>
+<select class="bg-transparent border-none text-slate-900 dark:text-white font-medium focus:ring-0 cursor-pointer p-0">
+<option>Maior Saldo</option>
+<option>Nome</option>
+<option>Ativas</option>
+</select>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-24">
+<!-- Card 1: Bank Account (Active) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 flex flex-col group relative overflow-hidden">
+<div class="h-1 w-full bg-primary absolute top-0 left-0"></div>
+<div class="p-6 flex-1">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-icons-round">account_balance</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Banco Itaú</h3>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Corrente</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-icons-outlined text-xl">edit</span>
+</button>
+</div>
+<div class="mb-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Saldo Atual</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">R$ 5.230,45</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<!-- Toggle Switch -->
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 dark:border-slate-600 checked:border-primary" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer checked:bg-primary" for="toggle1"></label>
+</div>
+<span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Ativa</span>
+</div>
+<a class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/link" href="#">
+                                    Ver Extrato
+                                    <span class="material-icons-round text-base transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Card 2: Credit Card (Active) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 flex flex-col group relative overflow-hidden">
+<div class="h-1 w-full bg-purple-500 absolute top-0 left-0"></div>
+<div class="p-6 flex-1">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600">
+<span class="material-icons-round">credit_card</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Nubank</h3>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Crédito</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-icons-outlined text-xl">edit</span>
+</button>
+</div>
+<div class="mb-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Fatura Atual</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight text-danger">- R$ 1.450,00</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 dark:border-slate-600 checked:border-primary" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer checked:bg-primary" for="toggle2"></label>
+</div>
+<span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Ativa</span>
+</div>
+<a class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/link" href="#">
+                                    Ver Fatura
+                                    <span class="material-icons-round text-base transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Card 3: Investment (Active) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 flex flex-col group relative overflow-hidden">
+<div class="h-1 w-full bg-emerald-500 absolute top-0 left-0"></div>
+<div class="p-6 flex-1">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+<span class="material-icons-round">trending_up</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">XP Investimentos</h3>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Investimento</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-icons-outlined text-xl">edit</span>
+</button>
+</div>
+<div class="mb-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Investido</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">R$ 45.300,00</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 dark:border-slate-600 checked:border-primary" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer checked:bg-primary" for="toggle3"></label>
+</div>
+<span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Ativa</span>
+</div>
+<a class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/link" href="#">
+                                    Ver Detalhes
+                                    <span class="material-icons-round text-base transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Card 4: Savings (Inactive) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 flex flex-col group relative overflow-hidden opacity-75 hover:opacity-100">
+<div class="p-6 flex-1">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3 grayscale">
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+<span class="material-icons-round">savings</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Caixa Econômica</h3>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Poupança</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-icons-outlined text-xl">edit</span>
+</button>
+</div>
+<div class="mb-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Saldo Atual</p>
+<p class="text-2xl font-bold text-slate-500 dark:text-slate-400 tracking-tight">R$ 0,00</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 dark:border-slate-600" id="toggle4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer" for="toggle4"></label>
+</div>
+<span class="text-xs font-medium text-slate-400">Inativa</span>
+</div>
+<a class="text-sm font-medium text-slate-400 hover:text-primary flex items-center gap-1 group/link" href="#">
+                                    Histórico
+                                    <span class="material-icons-round text-base transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Card 5: Digital Wallet (Active) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 flex flex-col group relative overflow-hidden">
+<div class="h-1 w-full bg-orange-500 absolute top-0 left-0"></div>
+<div class="p-6 flex-1">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600">
+<span class="material-icons-round">qr_code</span>
+</div>
+<div>
+<h3 class="font-semibold text-slate-900 dark:text-white">Inter</h3>
+<p class="text-xs text-slate-500 uppercase tracking-wider font-medium">Digital</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-icons-outlined text-xl">edit</span>
+</button>
+</div>
+<div class="mb-4">
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Saldo Atual</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">R$ 1.250,90</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 dark:border-slate-600 checked:border-primary" id="toggle5" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 dark:bg-slate-700 cursor-pointer checked:bg-primary" for="toggle5"></label>
+</div>
+<span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Ativa</span>
+</div>
+<a class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1 group/link" href="#">
+                                    Ver Extrato
+                                    <span class="material-icons-round text-base transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Add New Card CTA (Empty State Filler) -->
+<button class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-primary hover:bg-primary/5 transition-all group min-h-[220px]">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+<span class="material-icons-round text-slate-400 group-hover:text-primary text-2xl">add</span>
+</div>
+<h3 class="font-medium text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">Nova Conta</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 max-w-[150px]">Adicione um banco ou cartão</p>
+</button>
+</div>
+<!-- Footer Summary Widget (Sticky) -->
+<div class="fixed bottom-0 right-0 left-0 md:left-64 bg-white/90 dark:bg-surface-dark/95 backdrop-blur-sm border-t border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between shadow-[0_-5px_20px_-10px_rgba(0,0,0,0.1)] z-20">
+<div class="flex items-center gap-4">
+<div class="hidden sm:block p-3 rounded-lg bg-emerald-500/10 text-emerald-600">
+<span class="material-icons-round">account_balance</span>
+</div>
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Patrimônio Líquido Consolidado</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">R$ 50.331,35</p>
+</div>
+</div>
+<div class="flex gap-4 text-right">
+<div class="hidden md:block border-r border-slate-200 dark:border-slate-700 pr-6">
+<p class="text-xs text-slate-500 dark:text-slate-400">Total em Bancos</p>
+<p class="text-lg font-semibold text-emerald-600">R$ 51.781,35</p>
+</div>
+<div class="hidden md:block">
+<p class="text-xs text-slate-500 dark:text-slate-400">Total Faturas (Crédito)</p>
+<p class="text-lg font-semibold text-danger">- R$ 1.450,00</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

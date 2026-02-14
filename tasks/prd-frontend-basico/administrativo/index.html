@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Painel Administrativo - GestorFinanceiro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "primary-dark": "#106cc9",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1e2936",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display antialiased min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-surface-light dark:bg-surface-dark border-r border-slate-200 dark:border-slate-700 hidden lg:flex flex-col fixed h-full z-10">
+<div class="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-700">
+<div class="flex items-center gap-2 text-primary font-bold text-xl">
+<span class="material-icons-round text-2xl">account_balance_wallet</span>
+<span>GestorFinanceiro</span>
+</div>
+</div>
+<nav class="flex-1 px-3 py-6 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-round text-slate-400 group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-round text-slate-400 group-hover:text-primary transition-colors">receipt_long</span>
+<span class="font-medium">Transações</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-round text-slate-400 group-hover:text-primary transition-colors">pie_chart</span>
+<span class="font-medium">Orçamento</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-round text-slate-400 group-hover:text-primary transition-colors">savings</span>
+<span class="font-medium">Metas</span>
+</a>
+<div class="pt-4 pb-2 px-3">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Configurações</p>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary dark:text-primary font-medium transition-colors" href="#">
+<span class="material-icons-round">admin_panel_settings</span>
+<span>Admin</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-icons-round text-slate-400 group-hover:text-primary transition-colors">settings</span>
+<span class="font-medium">Ajustes Gerais</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-700">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800">
+<img class="h-9 w-9 rounded-full object-cover ring-2 ring-white dark:ring-slate-700" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU4A1cIaQdBv2thITgtuPPKCMUX-tQ8U5mNkHwtxu2gC3L8xAYAYNcg-hlJSvj-88rsPzmyWPB5nqLOyEKzuYL_vqFj-bJpcM4pHDnQDPEq67VRPPYU9X8S99OXeTiIMOP-C_ugcUOiQ05YD5H-RJIlmUR9fWXxQqjZ-F0SOD38d4xXs6uUz9z-zAiODNTNjNnOaMhgRTGcTddC5JNEod4kxNhEm_qfnJnMM78TGdEtUf5zR3ndLb0-bRhjxpL-mJjaJOizkBVuW6_"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-white truncate">Carlos Admin</p>
+<p class="text-xs text-slate-500 truncate">carlos@fam.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 lg:ml-64 min-w-0 overflow-auto">
+<!-- Mobile Header -->
+<div class="lg:hidden flex items-center justify-between p-4 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20">
+<div class="flex items-center gap-2 text-primary font-bold text-xl">
+<span class="material-icons-round">account_balance_wallet</span>
+<span>GestorFinanceiro</span>
+</div>
+<button class="text-slate-500 hover:text-slate-700">
+<span class="material-icons-round">menu</span>
+</button>
+</div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Page Header -->
+<div class="mb-8">
+<nav aria-label="Breadcrumb" class="flex mb-2">
+<ol class="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
+<li>
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+</li>
+<li class="flex items-center">
+<span class="material-icons-round text-base mx-1">chevron_right</span>
+<span class="text-slate-900 dark:text-white font-medium">Painel Administrativo</span>
+</li>
+</ol>
+</nav>
+<h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Administração Familiar</h1>
+<p class="mt-2 text-slate-600 dark:text-slate-400">Gerencie os membros da família e proteja seus dados financeiros.</p>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- User Management Section (Takes 2/3 width on large screens) -->
+<div class="xl:col-span-2 space-y-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+<div class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-icons-round text-primary">group</span>
+                                    Gestão de Usuários
+                                </h2>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Controle quem tem acesso às finanças.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+<span class="material-icons-round text-lg">add</span>
+                                Adicionar Membro
+                            </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold text-xs border-b border-slate-200 dark:border-slate-700">
+<tr>
+<th class="px-6 py-3" scope="col">Membro</th>
+<th class="px-6 py-3 hidden sm:table-cell" scope="col">Função</th>
+<th class="px-6 py-3" scope="col">Status</th>
+<th class="px-6 py-3 text-right" scope="col">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<img alt="" class="h-10 w-10 rounded-full object-cover" data-alt="User avatar male" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnUGFA5l1kCz_5sQ0MnVSBRJKGBTfEG9hMuQ4QNX0D8x1RRGtyOqmxRgfEqcwaN-5HvPAeUYljOnPjJ6YY37b0tbRP9wkLnyhfGaw3WyNIMvc14iulFeLKgFvzgYXwwGDbZJfQKRhq-XEeb7X7vv0xaNZdFRhva_JID5RLxIobVpe2BVSQNcpAaMyBMmhcpVSYMhh5xEisGjEkbkMYTNFFAzQbfiwT3F1HnlzmLmoHLRmWQ397kXgX8YsksBQCbmxMxsCxAsnCVTg3"/>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-900 dark:text-white">Carlos Silva</div>
+<div class="text-xs text-slate-500">carlos@fam.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                                                Administrador
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 ring-1 ring-inset ring-emerald-600/20">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                                                Ativo
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded-lg hover:bg-primary/5" title="Editar">
+<span class="material-icons-round text-xl">edit</span>
+</button>
+<!-- Disabled deactivate for self/admin -->
+<button class="p-1.5 text-slate-300 cursor-not-allowed" disabled="" title="Não é possível desativar">
+<span class="material-icons-round text-xl">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<img alt="" class="h-10 w-10 rounded-full object-cover" data-alt="User avatar female" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO-1ytjicAaFoBljmCzuuI4w9j3OVRjP0ED8YFk8quGnbsAcx3lYKU8uRROekrtPiJPOJ35zFK_8bWD7m01tBry2B9SN5hCCC2ai0ldz2za5DVpySC54dekeZojiqEntswQQMXeMiJmY_TZXt8-tZd0TN1WIVjvDFw15yWe-wXCbze4RtpthEr9_Br8mrLYb45Yix2kBhPFd617hfG45JYM34V-X1al1goi5HNP-rwF5fN_Tu5UPM6KHyfAuw3fE4EHeJ3fdwHnLjH"/>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-900 dark:text-white">Mariana Silva</div>
+<div class="text-xs text-slate-500">mariana@fam.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                Membro
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 ring-1 ring-inset ring-emerald-600/20">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                                                Ativo
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded-lg hover:bg-primary/5" title="Editar">
+<span class="material-icons-round text-xl">edit</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Desativar">
+<span class="material-icons-round text-xl">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10 relative">
+<img alt="" class="h-10 w-10 rounded-full object-cover grayscale opacity-70" data-alt="User avatar male grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwZpZwS-wm1mz3kBxeigEVFm5sH-jt_xAAIyqgW2oh6VKOegeTcUdT4Ll1Rd6pHgN5vIuKxjs4NaUkRz9AlWC1hLPhnC6kUb3CcVhp_Th1zUT2LBySqeIV1XoA_NBHlB1glG377ycWz1wSuk9Xd7EiWZMpUJtEEw102A8iiGShI6zwmq7vcPLg3_Zt3nZqYTnCSvG9ZpOQThjLd9m3Gthe2jnd4KUHNKR47FtJDBnaxppgUWQ5uf_pWKkECth1gGXtqOE7dNoYYXwm"/>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-slate-500 dark:text-slate-400">Pedro Jr (Inativo)</div>
+<div class="text-xs text-slate-400">pedro.jr@fam.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                                Membro
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 ring-1 ring-inset ring-slate-500/10">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                                Inativo
+                                            </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded-lg hover:bg-primary/5" title="Reativar">
+<span class="material-icons-round text-xl">history</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Excluir Permanentemente">
+<span class="material-icons-round text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+<span class="text-xs text-slate-500 dark:text-slate-400">Mostrando <span class="font-medium">1</span> a <span class="font-medium">3</span> de <span class="font-medium">3</span> membros</span>
+<div class="flex gap-2">
+<button class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-50" disabled="">
+<span class="material-icons-round text-lg">chevron_left</span>
+</button>
+<button class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-50" disabled="">
+<span class="material-icons-round text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Backup Section (Takes 1/3 width on large screens) -->
+<div class="xl:col-span-1 space-y-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col h-full">
+<div class="mb-6">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-icons-round text-primary">backup</span>
+                                Backup do Sistema
+                            </h2>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Exporte dados para segurança ou restaure versões anteriores.</p>
+</div>
+<div class="space-y-4 flex-1">
+<!-- Export Card -->
+<div class="group relative bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer">
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-icons-round">cloud_download</span>
+</div>
+<div class="flex-1">
+<h3 class="font-semibold text-slate-900 dark:text-white">Exportar Backup</h3>
+<p class="text-xs text-slate-500 mt-1">Baixa um arquivo JSON com todas as transações, membros e configurações.</p>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] font-mono text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">backup_2023_10_27.json</span>
+<span class="text-xs font-medium text-primary group-hover:underline">Baixar Agora</span>
+</div>
+</div>
+<!-- Import Card with Warning -->
+<div class="group relative bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 border border-amber-200 dark:border-amber-800/30 hover:shadow-md transition-all">
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
+<span class="material-icons-round">cloud_upload</span>
+</div>
+<div class="flex-1">
+<h3 class="font-semibold text-slate-900 dark:text-white">Importar Backup</h3>
+<p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Carregar um arquivo externo para restaurar o sistema.</p>
+</div>
+</div>
+<div class="mt-4 p-3 bg-white/60 dark:bg-black/20 rounded border border-amber-200/50 dark:border-amber-800/30">
+<div class="flex gap-2">
+<span class="material-icons-round text-amber-500 text-sm mt-0.5">warning</span>
+<p class="text-xs text-amber-800 dark:text-amber-200 font-medium">
+                                            Atenção: Isso substituirá todos os dados existentes. Esta ação não pode ser desfeita.
+                                        </p>
+</div>
+</div>
+<button class="mt-4 w-full py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:border-amber-400 hover:text-amber-600 dark:hover:text-amber-400 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+<span class="material-icons-round text-lg">upload_file</span>
+                                    Selecionar Arquivo
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Stats Row (Optional Filler for visual balance) -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+<div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+<span class="material-icons-round">storage</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-semibold">Uso de Armazenamento</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">45% <span class="text-xs font-normal text-slate-400">/ 5GB</span></p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+<div class="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
+<span class="material-icons-round">history</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-semibold">Último Backup</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">Hoje <span class="text-xs font-normal text-slate-400">09:41 AM</span></p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+<div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
+<span class="material-icons-round">security</span>
+</div>
+<div>
+<p class="text-xs text-slate-500 uppercase font-semibold">Status do Sistema</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white">Seguro</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
