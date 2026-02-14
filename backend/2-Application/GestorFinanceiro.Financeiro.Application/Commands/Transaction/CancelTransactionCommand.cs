@@ -8,4 +8,4 @@ public record CancelTransactionCommand(
     string UserId,
     string? Reason = null,
     string? OperationId = null
-) : ICommand<Unit>;
+) : ICommand<TransactionResponse>;

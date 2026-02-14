@@ -1,15 +1,17 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Application.Common;
+using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Domain.Service;
+using Mapster;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace GestorFinanceiro.Financeiro.Application.Commands.Installment;
 
-public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstallmentGroupCommand, Unit>
+public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstallmentGroupCommand, IReadOnlyList<TransactionResponse>>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
@@ -34,7 +36,7 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Unit> HandleAsync(
+    public async Task<IReadOnlyList<TransactionResponse>> HandleAsync(
         CancelInstallmentGroupCommand command, CancellationToken cancellationToken)
     {
         // Check idempotência
@@ -52,8 +54,8 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
         try
         {
             // Load group transactions
-            var groupTransactions = await _transactionRepository.GetByInstallmentGroupAsync(command.GroupId, cancellationToken);
-            if (!groupTransactions.Any())
+            var groupTransactions = (await _transactionRepository.GetByInstallmentGroupAsync(command.GroupId, cancellationToken)).ToList();
+            if (groupTransactions.Count == 0)
                 throw new TransactionNotFoundException(command.GroupId);
 
             // Load account with lock
@@ -90,7 +92,11 @@ public class CancelInstallmentGroupCommandHandler : ICommandHandler<CancelInstal
 
             _logger.LogInformation("Installment group {Id} canceled successfully", command.GroupId);
 
-            return Unit.Value;
+            var cancelledTransactions = groupTransactions
+                .Where(transaction => transaction.Status == Domain.Enum.TransactionStatus.Cancelled)
+                .Adapt<IReadOnlyList<TransactionResponse>>();
+
+            return cancelledTransactions;
         }
         catch
         {

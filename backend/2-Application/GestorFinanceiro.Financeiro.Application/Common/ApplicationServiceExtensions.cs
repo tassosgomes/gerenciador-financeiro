@@ -13,6 +13,7 @@ using GestorFinanceiro.Financeiro.Application.Queries.Account;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GestorFinanceiro.Financeiro.Application.Common;
@@ -36,11 +37,11 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<UpdateCategoryCommand, CategoryResponse>, UpdateCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<CreateTransactionCommand, TransactionResponse>, CreateTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustTransactionCommand, TransactionResponse>, AdjustTransactionCommandHandler>();
-        services.AddScoped<ICommandHandler<CancelTransactionCommand, Unit>, CancelTransactionCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelTransactionCommand, TransactionResponse>, CancelTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<CreateInstallmentCommand, IReadOnlyList<TransactionResponse>>, CreateInstallmentCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustInstallmentGroupCommand, IReadOnlyList<TransactionResponse>>, AdjustInstallmentGroupCommandHandler>();
         services.AddScoped<ICommandHandler<CancelInstallmentCommand, Unit>, CancelInstallmentCommandHandler>();
-        services.AddScoped<ICommandHandler<CancelInstallmentGroupCommand, Unit>, CancelInstallmentGroupCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelInstallmentGroupCommand, IReadOnlyList<TransactionResponse>>, CancelInstallmentGroupCommandHandler>();
         services.AddScoped<ICommandHandler<CreateRecurrenceCommand, RecurrenceTemplateResponse>, CreateRecurrenceCommandHandler>();
         services.AddScoped<ICommandHandler<DeactivateRecurrenceCommand, Unit>, DeactivateRecurrenceCommandHandler>();
         services.AddScoped<ICommandHandler<GenerateRecurrenceCommand, Unit>, GenerateRecurrenceCommandHandler>();
@@ -60,6 +61,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<ListAccountsQuery, IReadOnlyList<AccountResponse>>, ListAccountsQueryHandler>();
         services.AddScoped<IQueryHandler<GetTransactionByIdQuery, TransactionResponse>, GetTransactionByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ListTransactionsByAccountQuery, IReadOnlyList<TransactionResponse>>, ListTransactionsByAccountQueryHandler>();
+        services.AddScoped<IQueryHandler<ListTransactionsQuery, PagedResult<TransactionResponse>>, ListTransactionsQueryHandler>();
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
@@ -69,6 +71,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<RefreshTokenCommandValidator>();
         services.AddScoped<ChangePasswordCommandValidator>();
         services.AddScoped<CreateUserCommandValidator>();
+        services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
 
         return services;
     }

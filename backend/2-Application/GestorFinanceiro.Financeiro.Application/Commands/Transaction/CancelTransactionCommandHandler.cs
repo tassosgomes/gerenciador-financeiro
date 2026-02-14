@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 
-public class CancelTransactionCommandHandler : ICommandHandler<CancelTransactionCommand, Unit>
+public class CancelTransactionCommandHandler : ICommandHandler<CancelTransactionCommand, TransactionResponse>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
@@ -36,7 +36,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
         _logger = logger;
     }
 
-    public async Task<Unit> HandleAsync(CancelTransactionCommand command, CancellationToken cancellationToken)
+    public async Task<TransactionResponse> HandleAsync(CancelTransactionCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Cancelling transaction with ID: {TransactionId}", command.TransactionId);
 
@@ -87,7 +87,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
 
             _logger.LogInformation("Transaction cancelled successfully with ID: {Id}", transaction.Id);
 
-            return Unit.Value;
+            return transaction.Adapt<TransactionResponse>();
         }
         catch
         {

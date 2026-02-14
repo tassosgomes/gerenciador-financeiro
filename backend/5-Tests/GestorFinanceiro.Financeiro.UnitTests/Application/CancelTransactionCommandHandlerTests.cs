@@ -57,7 +57,7 @@ public class CancelTransactionCommandHandlerTests
 
         var result = await _sut.HandleAsync(command, CancellationToken.None);
 
-        result.Should().BeSameAs(GestorFinanceiro.Financeiro.Application.Common.Unit.Value);
+        result.Status.Should().Be(TransactionStatus.Cancelled);
         transaction.Status.Should().Be(TransactionStatus.Cancelled);
         account.Balance.Should().Be(100m);
         _unitOfWork.Verify(mock => mock.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);

@@ -12,6 +12,11 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
     {
     }
 
+    public IQueryable<Transaction> Query()
+    {
+        return _context.Transactions;
+    }
+
     public async Task<IEnumerable<Transaction>> GetByInstallmentGroupAsync(Guid groupId, CancellationToken cancellationToken)
     {
         return await _context.Transactions
