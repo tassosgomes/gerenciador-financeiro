@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Histórico de Transações - GestorFinanceiro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for table if needed */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 antialiased h-screen flex overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-shrink-0 flex flex-col h-full hidden lg:flex">
+<div class="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-2 text-primary font-bold text-xl">
+<span class="material-icons">account_balance_wallet</span>
+<span>GestorFinanceiro</span>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons text-xl">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-primary bg-primary/10 rounded-lg transition-colors" href="#">
+<span class="material-icons text-xl">receipt_long</span>
+                Transações
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons text-xl">account_balance</span>
+                Contas
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons text-xl">credit_card</span>
+                Cartões
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons text-xl">analytics</span>
+                Relatórios
+            </a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons text-xl">settings</span>
+                Configurações
+            </a>
+<div class="flex items-center gap-3 mt-4 px-3">
+<img alt="Profile avatar of a user" class="h-9 w-9 rounded-full bg-slate-200 object-cover border border-slate-200" data-alt="User avatar profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5gmpPYYoIIpeBHJrD5i-zXruXHh9z08DzbMK2CsSbeLDe2bPr2HyZ58TkqstO3_EmJnNUTD7D39UmkRGNwWUmA9fTm09Ut66pHsETSzPNsqUV1Xw1FwNg9BVO8l-NSuy0BFhIGv3z2Ka0jHn2Q-qY7zJRzbywkwLyzN_-Q3jDx18Vn7fIyKTqBZV-JbmFj-qT2eF5d6TdpFWMLfDIShAd4i8nXs4MjuN9KzhKQthmS49WEanJZuYMWLCSD-r7qm-dT6NndgcCLyaA"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium text-slate-900 dark:text-white truncate">Ricardo Silva</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Plano Familiar</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Top Bar (Mobile Menu Trigger included) -->
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-6 lg:px-8">
+<div class="flex items-center lg:hidden">
+<button class="text-slate-500 hover:text-primary">
+<span class="material-icons">menu</span>
+</button>
+<span class="ml-3 font-bold text-lg text-slate-800 dark:text-white">Transações</span>
+</div>
+<div class="hidden lg:flex flex-col">
+<h1 class="text-xl font-bold text-slate-900 dark:text-white">Histórico de Transações</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Gerencie todas as suas entradas e saídas financeiras.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-primary transition-colors relative">
+<span class="material-icons">notifications_none</span>
+<span class="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
+</button>
+<button class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-sm shadow-primary/30 transition-all">
+<span class="material-icons text-lg">add</span>
+                    Nova Transação
+                </button>
+</div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-6 lg:p-8 custom-scrollbar">
+<!-- Filters Section -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-6 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+<!-- Search/Input Group -->
+<div class="lg:col-span-1 relative">
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Buscar</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow" placeholder="Descrição..." type="text"/>
+</div>
+</div>
+<!-- Account Select -->
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Conta</label>
+<select class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-700 dark:text-slate-200">
+<option value="">Todas as Contas</option>
+<option value="nubank">NuBank</option>
+<option value="itau">Itaú</option>
+<option value="carteira">Carteira</option>
+</select>
+</div>
+<!-- Category Select -->
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Categoria</label>
+<select class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-700 dark:text-slate-200">
+<option value="">Todas as Categorias</option>
+<option value="alimentacao">Alimentação</option>
+<option value="moradia">Moradia</option>
+<option value="lazer">Lazer</option>
+<option value="saude">Saúde</option>
+</select>
+</div>
+<!-- Status Select -->
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Status</label>
+<select class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-700 dark:text-slate-200">
+<option value="">Todos</option>
+<option value="pago">Pago</option>
+<option value="pendente">Pendente</option>
+<option value="cancelado">Cancelado</option>
+</select>
+</div>
+<!-- Date Range -->
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Período</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">calendar_today</span>
+<input class="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-700 dark:text-slate-200" type="text" value="01/10/2023 - 31/10/2023"/>
+</div>
+</div>
+</div>
+<!-- Active Filters Tags (Optional visual flair) -->
+<div class="flex items-center gap-2 mt-4 flex-wrap">
+<span class="text-xs text-slate-500 mr-1">Filtros ativos:</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                        Outubro 2023
+                        <button class="hover:text-blue-700"><span class="material-icons text-[14px]">close</span></button>
+</span>
+<button class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 ml-auto underline">Limpar filtros</button>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider w-32">Data</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Descrição</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Categoria</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Conta</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Valor</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Status</th>
+<th class="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider w-10"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1: Debit, Paid -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">24 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">Supermercado Extra</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400">
+<span class="material-icons text-base">shopping_cart</span>
+</div>
+                                        Alimentação
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">NuBank</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-red-600 dark:text-red-400 tabular-nums">- R$ 450,00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        Pago
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Credit, Paid -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">20 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">Projeto Freelance Web</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+<span class="material-icons text-base">attach_money</span>
+</div>
+                                        Receita
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">Itaú</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-green-600 dark:text-green-400 tabular-nums">+ R$ 2.500,00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        Pago
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Debit, Pending -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">25 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">Energia Elétrica</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+<span class="material-icons text-base">home</span>
+</div>
+                                        Moradia
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">Itaú</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-red-600 dark:text-red-400 tabular-nums">- R$ 220,50</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                        Pendente
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Canceled -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group opacity-60">
+<td class="py-4 px-6 text-sm text-slate-500 whitespace-nowrap decoration-slate-400 line-through">15 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-500 line-through">Assinatura Revista</td>
+<td class="py-4 px-6 text-sm text-slate-500 line-through">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-slate-100 text-slate-500 dark:bg-slate-800">
+<span class="material-icons text-base">menu_book</span>
+</div>
+                                        Educação
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-500 line-through">NuBank</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-slate-500 line-through tabular-nums">- R$ 29,90</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                        Cancelado
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5: Debit, Paid -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">12 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">Posto Shell</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+<span class="material-icons text-base">directions_car</span>
+</div>
+                                        Transporte
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">Carteira</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-red-600 dark:text-red-400 tabular-nums">- R$ 180,00</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        Pago
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 6: Debit, Paid -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">05 Out 2023</td>
+<td class="py-4 px-6 text-sm font-medium text-slate-900 dark:text-white">Netflix Mensal</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-md bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400">
+<span class="material-icons text-base">movie</span>
+</div>
+                                        Lazer
+                                    </div>
+</td>
+<td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">NuBank</td>
+<td class="py-4 px-6 text-sm font-medium text-right text-red-600 dark:text-red-400 tabular-nums">- R$ 55,90</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        Pago
+                                    </span>
+</td>
+<td class="py-4 px-6 text-center">
+<button class="text-slate-400 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-icons text-xl">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+<div class="flex-1 flex justify-between sm:hidden">
+<a class="relative inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" href="#"> Anterior </a>
+<a class="ml-3 relative inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50" href="#"> Próximo </a>
+</div>
+<div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+<div>
+<p class="text-sm text-slate-700 dark:text-slate-400">
+                                Mostrando <span class="font-medium">1</span> a <span class="font-medium">6</span> de <span class="font-medium">97</span> resultados
+                            </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+<a class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700" href="#">
+<span class="sr-only">Anterior</span>
+<span class="material-icons text-lg">chevron_left</span>
+</a>
+<a aria-current="page" class="z-10 bg-primary/10 border-primary text-primary relative inline-flex items-center px-4 py-2 border text-sm font-medium" href="#"> 1 </a>
+<a class="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 relative inline-flex items-center px-4 py-2 border text-sm font-medium" href="#"> 2 </a>
+<a class="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 relative inline-flex items-center px-4 py-2 border text-sm font-medium" href="#"> 3 </a>
+<span class="relative inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-700"> ... </span>
+<a class="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 relative inline-flex items-center px-4 py-2 border text-sm font-medium" href="#"> 10 </a>
+<a class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700" href="#">
+<span class="sr-only">Próximo</span>
+<span class="material-icons text-lg">chevron_right</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<footer class="mt-8 mb-4 text-center text-xs text-slate-400">
+                © 2023 GestorFinanceiro. Todos os direitos reservados.
+            </footer>
+</div>
+</main>
+</body></html>
