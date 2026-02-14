@@ -1,4 +1,5 @@
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
+        var createdAtUtc = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         builder.ToTable("categories");
 
         builder.HasKey(category => category.Id);
@@ -53,5 +56,115 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(category => category.UpdatedAt)
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
+
+        builder.HasData(
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                Name = "Alimentação",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                Name = "Transporte",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                Name = "Moradia",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                Name = "Lazer",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000005"),
+                Name = "Saúde",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000006"),
+                Name = "Educação",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000007"),
+                Name = "Vestuário",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000008"),
+                Name = "Outros",
+                Type = CategoryType.Despesa,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                Name = "Salário",
+                Type = CategoryType.Receita,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000010"),
+                Name = "Freelance",
+                Type = CategoryType.Receita,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000011"),
+                Name = "Investimento",
+                Type = CategoryType.Receita,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            },
+            new
+            {
+                Id = new Guid("00000000-0000-0000-0000-000000000012"),
+                Name = "Outros",
+                Type = CategoryType.Receita,
+                IsActive = true,
+                CreatedBy = "system",
+                CreatedAt = createdAtUtc,
+            });
     }
 }
