@@ -29,7 +29,7 @@ Application Layer com CQRS (Commands, Queries, Handlers, Validators, Dispatcher)
 - [X] 7.0 Infra Layer — DbContext e Configurations
 - [x] 8.0 Infra Layer — Repositories e UnitOfWork
 - [X] 9.0 Application Layer — CQRS
-- [ ] 10.0 Testes de Integração
+- [X] 10.0 Testes de Integração
 - [ ] 11.0 Seed de Categorias Padrão
 
 ## Análise de Paralelização
