@@ -37,6 +37,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime, IAsyncDisposable
         }
 
         var cancellationToken = CancellationToken.None;
+        // Known pre-existing setup dependency: migrations require pgcrypto extension in PostgreSQL.
         await DbContext.Database.MigrateAsync(cancellationToken);
         await CleanDatabaseAsync(cancellationToken);
     }

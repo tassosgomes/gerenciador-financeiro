@@ -62,11 +62,11 @@ public class AccountsControllerTests
 
         _dispatcherMock
             .Setup(dispatcher => dispatcher.DispatchQueryAsync<ListAccountsQuery, IReadOnlyList<AccountResponse>>(
-                It.Is<ListAccountsQuery>(query => query.IsActive == true),
+                It.Is<ListAccountsQuery>(query => query.IsActive == true && query.Type == AccountType.Corrente),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
-        var result = await _controller.ListAsync(true, CancellationToken.None);
+        var result = await _controller.ListAsync(true, AccountType.Corrente, CancellationToken.None);
 
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = (OkObjectResult)result.Result!;
@@ -162,7 +162,9 @@ public class AccountsControllerTests
         return new AccountResponse(
             Guid.NewGuid(),
             "Conta Principal",
+            AccountType.Corrente,
             100m,
+            false,
             true,
             DateTime.UtcNow,
             DateTime.UtcNow);

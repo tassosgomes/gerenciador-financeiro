@@ -51,7 +51,28 @@ if (Encoding.UTF8.GetByteCount(jwtSettings.SecretKey) < 32)
 }
 
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
-var allowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? [];
+var corsAllowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+var legacyCorsAllowedOrigins = builder.Configuration.GetSection("CorsSettings:AllowedOrigins").Get<string[]>() ?? [];
+
+var configuredAllowedOrigins = corsAllowedOrigins
+    .Where(static origin => !string.IsNullOrWhiteSpace(origin))
+    .ToArray();
+
+if (configuredAllowedOrigins.Length == 0)
+{
+    configuredAllowedOrigins = legacyCorsAllowedOrigins
+        .Where(static origin => !string.IsNullOrWhiteSpace(origin))
+        .ToArray();
+}
+
+if (configuredAllowedOrigins.Length == 0 && !builder.Environment.IsDevelopment())
+{
+    throw new InvalidOperationException("Cors:AllowedOrigins must be configured in non-Development environments.");
+}
+
+var allowedOrigins = configuredAllowedOrigins.Length > 0
+    ? configuredAllowedOrigins
+    : ["http://localhost:5173"];
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplicationServices();
@@ -100,26 +121,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
-if (allowedOrigins.Length == 0 && !builder.Environment.IsDevelopment())
-{
-    throw new InvalidOperationException("CorsSettings:AllowedOrigins must be configured in non-Development environments.");
-}
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        if (allowedOrigins.Length > 0)
-        {
-            policy.WithOrigins(allowedOrigins);
-        }
-        else
-        {
-            policy.AllowAnyOrigin();
-        }
-
-        policy.AllowAnyHeader();
-        policy.AllowAnyMethod();
+        policy.WithOrigins(allowedOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+            .WithHeaders("Authorization", "Content-Type")
+            .AllowCredentials();
     });
 });
 

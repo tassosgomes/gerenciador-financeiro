@@ -4,6 +4,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Queries.Account;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,9 +43,12 @@ public class AccountsController : ControllerBase
     [HttpGet]
     [ProducesResponseType<IReadOnlyList<AccountResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<IReadOnlyList<AccountResponse>>> ListAsync([FromQuery] bool? isActive, CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<AccountResponse>>> ListAsync(
+        [FromQuery] bool? isActive,
+        [FromQuery] AccountType? type,
+        CancellationToken cancellationToken)
     {
-        var query = new ListAccountsQuery(isActive);
+        var query = new ListAccountsQuery(isActive, type);
         var response = await _dispatcher.DispatchQueryAsync<ListAccountsQuery, IReadOnlyList<AccountResponse>>(query, cancellationToken);
         return Ok(response);
     }

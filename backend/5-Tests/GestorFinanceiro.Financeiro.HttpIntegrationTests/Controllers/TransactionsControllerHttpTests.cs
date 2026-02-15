@@ -106,7 +106,7 @@ public class TransactionsControllerHttpTests : IntegrationTestBase
             dueDate = DateTime.UtcNow.Date
         });
 
-        var response = await client.GetAsync($"/api/v1/transactions?accountId={accountId}&_page=1&_size=5");
+        var response = await client.GetAsync($"/api/v1/transactions?accountId={accountId}&page=1&size=5");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var json = await ReadJsonObjectAsync(response);

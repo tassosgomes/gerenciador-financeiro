@@ -14,6 +14,19 @@ public class AccountsControllerHttpTests : IntegrationTestBase
     }
 
     [DockerAvailableFact]
+    public async Task CORS_RequestWithAllowedOrigin_ReturnsAllowOriginHeader()
+    {
+        var client = await AuthenticateAsAdminAsync();
+        client.DefaultRequestHeaders.Add("Origin", "http://localhost:5173");
+
+        var response = await client.GetAsync("/api/v1/accounts");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Headers.TryGetValues("Access-Control-Allow-Origin", out var allowedOrigins).Should().BeTrue();
+        allowedOrigins.Should().ContainSingle().Which.Should().Be("http://localhost:5173");
+    }
+
+    [DockerAvailableFact]
     public async Task CreateAccount_ReturnsCreatedWithLocation()
     {
         var client = await AuthenticateAsAdminAsync();
@@ -32,6 +45,8 @@ public class AccountsControllerHttpTests : IntegrationTestBase
         var account = await createResponse.Content.ReadFromJsonAsync<AccountResponse>(JsonSerializerOptions);
         account.Should().NotBeNull();
         account!.Name.Should().Be("Conta Teste HTTP");
+        account.Type.Should().Be(GestorFinanceiro.Financeiro.Domain.Enum.AccountType.Corrente);
+        account.AllowNegativeBalance.Should().BeFalse();
     }
 
     [DockerAvailableFact]
@@ -109,6 +124,14 @@ public class AccountsControllerHttpTests : IntegrationTestBase
         var activeOnly = await activeOnlyResponse.Content.ReadFromJsonAsync<List<AccountResponse>>(JsonSerializerOptions);
         activeOnly.Should().NotBeNull();
         activeOnly!.Should().OnlyContain(account => account.IsActive);
+
+        var byTypeResponse = await client.GetAsync("/api/v1/accounts?type=Carteira");
+        byTypeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var byType = await byTypeResponse.Content.ReadFromJsonAsync<List<AccountResponse>>(JsonSerializerOptions);
+        byType.Should().NotBeNull();
+        byType!.Should().Contain(account => account.Id == created.Id);
+        byType.Should().OnlyContain(account => account.Type == GestorFinanceiro.Financeiro.Domain.Enum.AccountType.Carteira);
     }
 
     [DockerAvailableFact]

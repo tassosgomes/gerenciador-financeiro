@@ -67,7 +67,7 @@ public class TransactionsControllerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
-        var result = await _controller.ListAsync(null, null, null, null, null, null, null, null, 1, 20, CancellationToken.None);
+        var result = await _controller.ListAsync(null, null, null, null, null, null, null, null, 1, 20, null, null, CancellationToken.None);
 
         result.Result.Should().BeOfType<OkObjectResult>();
         var okResult = (OkObjectResult)result.Result!;

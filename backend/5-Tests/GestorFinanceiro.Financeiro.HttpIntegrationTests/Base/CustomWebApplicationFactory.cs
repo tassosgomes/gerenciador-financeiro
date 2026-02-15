@@ -28,7 +28,8 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 ["AdminSeed:Name"] = "Admin Test",
                 ["AdminSeed:Email"] = TestDataSeeder.AdminEmail,
                 ["AdminSeed:Password"] = TestDataSeeder.AdminPassword,
-                ["CorsSettings:AllowedOrigins:0"] = "http://localhost"
+                ["CorsSettings:AllowedOrigins:0"] = "http://localhost:5173",
+                ["Cors:AllowedOrigins:0"] = "http://localhost:5173"
             };
 
             configurationBuilder.AddInMemoryCollection(settings);

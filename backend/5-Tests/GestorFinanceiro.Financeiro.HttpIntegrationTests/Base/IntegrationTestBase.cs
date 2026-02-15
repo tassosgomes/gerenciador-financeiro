@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Nodes;
 using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Application.Dtos;
@@ -15,7 +16,10 @@ namespace GestorFinanceiro.Financeiro.HttpIntegrationTests.Base;
 
 public abstract class IntegrationTestBase : IClassFixture<CustomWebApplicationFactory>, IAsyncLifetime
 {
-    protected static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web);
+    protected static readonly JsonSerializerOptions JsonSerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     protected IntegrationTestBase(CustomWebApplicationFactory factory)
     {

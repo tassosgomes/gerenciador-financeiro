@@ -127,10 +127,15 @@ public class TransactionsController : ControllerBase
         [FromQuery] DateTime? competenceDateTo,
         [FromQuery] DateTime? dueDateFrom,
         [FromQuery] DateTime? dueDateTo,
-        [FromQuery(Name = "_page")] int page = 1,
-        [FromQuery(Name = "_size")] int size = 20,
+        [FromQuery] int? page,
+        [FromQuery] int? size,
+        [FromQuery(Name = "_page")] int? legacyPage,
+        [FromQuery(Name = "_size")] int? legacySize,
         CancellationToken cancellationToken = default)
     {
+        var resolvedPage = page ?? legacyPage ?? 1;
+        var resolvedSize = size ?? legacySize ?? 20;
+
         var query = new ListTransactionsQuery(
             accountId,
             categoryId,
@@ -140,8 +145,8 @@ public class TransactionsController : ControllerBase
             competenceDateTo,
             dueDateFrom,
             dueDateTo,
-            page,
-            size);
+            resolvedPage,
+            resolvedSize);
 
         var response = await _dispatcher.DispatchQueryAsync<ListTransactionsQuery, PagedResult<TransactionResponse>>(query, cancellationToken);
         return Ok(response);
