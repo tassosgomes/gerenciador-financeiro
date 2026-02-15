@@ -5,8 +5,10 @@ import type {
   DashboardChartsResponse,
 } from '@/features/dashboard/types/dashboard';
 
+const BASE_URL = 'http://localhost:5000';
+
 export const dashboardHandlers = [
-  http.get('/api/v1/dashboard/summary', () => {
+  http.get(`${BASE_URL}/api/v1/dashboard/summary`, () => {
     const response: DashboardSummaryResponse = {
       totalBalance: 15420.50,
       monthlyIncome: 8200.00,
@@ -16,7 +18,7 @@ export const dashboardHandlers = [
     return HttpResponse.json(response);
   }),
 
-  http.get('/api/v1/dashboard/charts', () => {
+  http.get(`${BASE_URL}/api/v1/dashboard/charts`, () => {
     const response: DashboardChartsResponse = {
       revenueVsExpense: [
         { month: '2025-09', income: 7500, expenses: 4200 },

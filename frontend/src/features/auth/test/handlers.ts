@@ -2,6 +2,8 @@ import { http, HttpResponse } from 'msw';
 
 import type { AuthResponse, LoginRequest } from '@/features/auth/types/auth';
 
+const BASE_URL = 'http://localhost:5000';
+
 const defaultUser = {
   id: '4abcbabe-e8da-41cf-bbb4-8f2c0058d8f2',
   name: 'Carlos Silva',
@@ -13,7 +15,7 @@ const defaultUser = {
 };
 
 export const authHandlers = [
-  http.post('*/api/v1/auth/login', async ({ request }) => {
+  http.post(`${BASE_URL}/api/v1/auth/login`, async ({ request }) => {
     const payload = (await request.json()) as LoginRequest;
 
     if (payload.email === 'carlos@gestorfinanceiro.com' && payload.password === '123456') {
@@ -38,7 +40,7 @@ export const authHandlers = [
     );
   }),
 
-  http.post('*/api/v1/auth/refresh', async ({ request }) => {
+  http.post(`${BASE_URL}/api/v1/auth/refresh`, async ({ request }) => {
     const payload = (await request.json()) as { refreshToken?: string };
 
     if (payload.refreshToken === 'refresh-token-1' || payload.refreshToken === 'refresh-token-2') {
@@ -63,5 +65,5 @@ export const authHandlers = [
     );
   }),
 
-  http.post('*/api/v1/auth/logout', () => new HttpResponse(null, { status: 204 })),
+  http.post(`${BASE_URL}/api/v1/auth/logout`, () => new HttpResponse(null, { status: 204 })),
 ];
