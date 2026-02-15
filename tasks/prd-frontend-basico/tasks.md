@@ -26,7 +26,7 @@ Qualidade final: skeleton loaders, toasts, empty states, acessibilidade WCAG AA 
 - [X] 4.0 Ajustes no Backend para Suporte ao Frontend
 - [X] 5.0 Dashboard (Backend + Frontend)
 - [X] 6.0 CRUD de Contas
-- [ ] 7.0 CRUD de Categorias
+- [X] 7.0 CRUD de Categorias
 - [ ] 8.0 CRUD de Transações
 - [ ] 9.0 Painel Administrativo (Usuários e Backup)
 - [ ] 10.0 Polimento, Acessibilidade e Testes
