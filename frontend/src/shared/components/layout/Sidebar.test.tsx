@@ -32,7 +32,7 @@ describe('Sidebar', () => {
     );
 
     expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /transacoes/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /transações/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /contas/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /categorias/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /admin/i })).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     );
 
-    const activeLink = screen.getByRole('link', { name: /transacoes/i });
+    const activeLink = screen.getByRole('link', { name: /transações/i });
 
     expect(activeLink).toHaveClass('bg-primary/10');
     expect(activeLink).toHaveClass('text-primary');

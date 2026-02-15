@@ -16,7 +16,7 @@ describe('AppShell', () => {
     );
 
     expect(screen.getByRole('navigation', { name: /navegacao principal/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /visao geral/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /visão geral/i })).toBeInTheDocument();
     expect(screen.getByRole('main')).toHaveTextContent('Dashboard Content');
   });
 });
