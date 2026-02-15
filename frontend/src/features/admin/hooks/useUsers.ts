@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 
 import type { CreateUserRequest, UserResponse } from '@/features/admin/types/admin';
 import { createUser, getUsers, toggleUserStatus } from '@/features/admin/api/usersApi';
+import { getErrorMessage } from '@/shared/utils/errorMessages';
 
 export function useUsers() {
   return useQuery<UserResponse[]>({
@@ -21,8 +22,8 @@ export function useCreateUser() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('Usuário criado com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar usuário. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -38,8 +39,8 @@ export function useToggleUserStatus() {
       const action = variables.isActive ? 'ativado' : 'inativado';
       toast.success(`Usuário ${action} com sucesso!`);
     },
-    onError: () => {
-      toast.error('Erro ao alterar status do usuário. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

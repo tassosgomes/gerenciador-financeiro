@@ -1,5 +1,8 @@
+import { Wallet } from 'lucide-react';
+
 import type { AccountResponse } from '@/features/accounts/types/account';
 import { AccountCard } from '@/features/accounts/components/AccountCard';
+import { EmptyState } from '@/shared/components/ui';
 
 interface AccountGridProps {
   accounts: AccountResponse[];
@@ -10,13 +13,11 @@ interface AccountGridProps {
 export function AccountGrid({ accounts, onEdit, onToggleStatus }: AccountGridProps): JSX.Element {
   if (accounts.length === 0) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <span className="material-icons text-6xl text-slate-300 mb-4">account_balance_wallet</span>
-          <p className="text-slate-600 text-lg font-medium">Nenhuma conta encontrada</p>
-          <p className="text-slate-500 text-sm">Adicione sua primeira conta para começar</p>
-        </div>
-      </div>
+      <EmptyState
+        icon={Wallet}
+        title="Nenhuma conta encontrada"
+        description="Adicione sua primeira conta para começar a gerenciar suas finanças"
+      />
     );
   }
 

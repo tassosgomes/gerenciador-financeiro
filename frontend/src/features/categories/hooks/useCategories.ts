@@ -12,6 +12,7 @@ import {
   getCategories,
   updateCategory,
 } from '@/features/categories/api/categoriesApi';
+import { getErrorMessage } from '@/shared/utils/errorMessages';
 
 export function useCategories(type?: CategoryType) {
   return useQuery<CategoryResponse[]>({
@@ -30,8 +31,8 @@ export function useCreateCategory() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Categoria criada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar categoria. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -46,8 +47,8 @@ export function useUpdateCategory() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Categoria atualizada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao atualizar categoria. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { exportBackup, importBackup } from '@/features/admin/api/backupApi';
+import { getErrorMessage } from '@/shared/utils/errorMessages';
 
 export function useExportBackup() {
   return useMutation({
@@ -9,8 +10,8 @@ export function useExportBackup() {
     onSuccess: () => {
       toast.success('Backup exportado com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao exportar backup. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -25,8 +26,8 @@ export function useImportBackup() {
         window.location.reload();
       }, 1500);
     },
-    onError: () => {
-      toast.error('Erro ao importar backup. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

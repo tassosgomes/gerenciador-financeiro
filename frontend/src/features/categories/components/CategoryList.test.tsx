@@ -33,7 +33,7 @@ describe('CategoryList', () => {
     render(<CategoryList categories={[]} onEdit={mockOnEdit} />);
 
     expect(screen.getByText('Nenhuma categoria encontrada')).toBeInTheDocument();
-    expect(screen.getByText('Crie sua primeira categoria para começar')).toBeInTheDocument();
+    expect(screen.getByText('Crie sua primeira categoria para organizar suas transações')).toBeInTheDocument();
   });
 
   it('renders categories with correct information', () => {

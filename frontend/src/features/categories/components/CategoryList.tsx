@@ -1,8 +1,8 @@
-import { Edit } from 'lucide-react';
+import { Edit, FolderOpen } from 'lucide-react';
 
 import type { CategoryResponse } from '@/features/categories/types/category';
 import { CategoryType } from '@/features/categories/types/category';
-import { Badge, Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui';
+import { Badge, Button, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui';
 
 interface CategoryListProps {
   categories: CategoryResponse[];
@@ -12,10 +12,11 @@ interface CategoryListProps {
 export function CategoryList({ categories, onEdit }: CategoryListProps): JSX.Element {
   if (categories.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-500">
-        <p className="text-lg font-medium">Nenhuma categoria encontrada</p>
-        <p className="text-sm mt-2">Crie sua primeira categoria para começar</p>
-      </div>
+      <EmptyState
+        icon={FolderOpen}
+        title="Nenhuma categoria encontrada"
+        description="Crie sua primeira categoria para organizar suas transações"
+      />
     );
   }
 
@@ -48,7 +49,7 @@ export function CategoryList({ categories, onEdit }: CategoryListProps): JSX.Ele
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(category)}
-                aria-label={`Editar ${category.name}`}
+                aria-label={`Editar categoria ${category.name}`}
               >
                 <Edit className="h-4 w-4" />
               </Button>

@@ -1,13 +1,6 @@
 export { Badge, badgeVariants } from './badge';
 export { Button, buttonVariants } from './button';
-export {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './card';
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card';
 export { ConfirmationModal } from './ConfirmationModal';
 export {
   Dialog,
@@ -21,6 +14,8 @@ export {
   DialogTitle,
   DialogTrigger,
 } from './dialog';
+export { EmptyState } from './EmptyState';
+export { ErrorBoundary } from './ErrorBoundary';
 export { Input } from './input';
 export {
   Select,

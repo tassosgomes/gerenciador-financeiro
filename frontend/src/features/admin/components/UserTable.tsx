@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Users } from 'lucide-react';
 
 import type { UserResponse } from '@/features/admin/types/admin';
-import { Badge, Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui';
+import { Badge, Button, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui';
 import { ConfirmationModal } from '@/shared/components/ui/ConfirmationModal';
 import { useToggleUserStatus } from '@/features/admin/hooks/useUsers';
 import { formatDate } from '@/shared/utils/formatters';
@@ -45,10 +46,11 @@ export function UserTable({ users }: UserTableProps): JSX.Element {
 
   if (users.length === 0) {
     return (
-      <div className="py-12 text-center text-slate-500">
-        <p className="text-lg font-medium">Nenhum usuário encontrado</p>
-        <p className="mt-2 text-sm">Crie o primeiro usuário para começar</p>
-      </div>
+      <EmptyState
+        icon={Users}
+        title="Nenhum usuário encontrado"
+        description="Crie o primeiro usuário para começar a gerenciar acessos"
+      />
     );
   }
 

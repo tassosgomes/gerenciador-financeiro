@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 
 import { AdminRoute, AppShell, ProtectedRoute } from '@/shared/components/layout';
-import { Skeleton } from '@/shared/components/ui';
+import { ErrorBoundary, Skeleton } from '@/shared/components/ui';
 
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
@@ -17,7 +17,7 @@ const CategoriesPage = lazy(() => import('@/features/categories/pages/Categories
 const AdminPage = lazy(() => import('@/features/admin/pages/AdminPage'));
 
 const routeFallback = (
-  <div className="space-y-4">
+  <div className="space-y-4" role="status" aria-label="Carregando página">
     <Skeleton className="h-8 w-1/3" />
     <Skeleton className="h-24 w-full" />
     <Skeleton className="h-24 w-full" />
@@ -25,7 +25,11 @@ const routeFallback = (
 );
 
 function withSuspense(page: JSX.Element): JSX.Element {
-  return <Suspense fallback={routeFallback}>{page}</Suspense>;
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={routeFallback}>{page}</Suspense>
+    </ErrorBoundary>
+  );
 }
 
 export const routes: RouteObject[] = [

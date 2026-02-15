@@ -13,6 +13,7 @@ import {
   toggleAccountStatus,
   updateAccount,
 } from '@/features/accounts/api/accountsApi';
+import { getErrorMessage } from '@/shared/utils/errorMessages';
 
 export function useAccounts() {
   return useQuery<AccountResponse[]>({
@@ -39,8 +40,8 @@ export function useCreateAccount() {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Conta criada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar conta. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -54,8 +55,8 @@ export function useUpdateAccount() {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Conta atualizada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao atualizar conta. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -71,8 +72,8 @@ export function useToggleAccountStatus() {
       const action = variables.isActive ? 'ativada' : 'inativada';
       toast.success(`Conta ${action} com sucesso!`);
     },
-    onError: () => {
-      toast.error('Erro ao alterar status da conta. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

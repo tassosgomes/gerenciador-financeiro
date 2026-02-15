@@ -98,7 +98,7 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
         });
       }
       onOpenChange(false);
-    } catch (error) {
+    } catch {
       // Error already handled by mutation hook
     }
   }

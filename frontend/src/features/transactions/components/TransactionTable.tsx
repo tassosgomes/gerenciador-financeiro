@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { RepeatIcon, ArrowLeftRight } from 'lucide-react';
+import { RepeatIcon, ArrowLeftRight, Receipt } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/shared/components/ui/table';
 import { Badge } from '@/shared/components/ui/badge';
+import { EmptyState } from '@/shared/components/ui';
 import { formatCurrency, formatDate } from '@/shared/utils/formatters';
 import { TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
 import type { TransactionResponse } from '@/features/transactions/types/transaction';
@@ -70,19 +71,19 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
 
     if (transaction.installmentNumber && transaction.totalInstallments) {
       indicators.push(
-        <span key="installment" className="text-xs text-muted-foreground">
+        <span key="installment" className="text-xs text-muted-foreground" aria-label={`Parcela ${transaction.installmentNumber} de ${transaction.totalInstallments}`}>
           {transaction.installmentNumber}/{transaction.totalInstallments}
         </span>
       );
     }
 
     if (transaction.isRecurrent) {
-      indicators.push(<RepeatIcon key="recurrent" className="h-3 w-3 text-muted-foreground" />);
+      indicators.push(<RepeatIcon key="recurrent" className="h-3 w-3 text-muted-foreground" aria-label="Transação recorrente" />);
     }
 
     if (transaction.transferGroupId) {
       indicators.push(
-        <ArrowLeftRight key="transfer" className="h-3 w-3 text-muted-foreground" />
+        <ArrowLeftRight key="transfer" className="h-3 w-3 text-muted-foreground" aria-label="Transferência" />
       );
     }
 
@@ -100,9 +101,11 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
 
   if (transactions.length === 0) {
     return (
-      <div className="flex h-40 items-center justify-center text-muted-foreground">
-        Nenhuma transação encontrada.
-      </div>
+      <EmptyState
+        icon={Receipt}
+        title="Nenhuma transação encontrada"
+        description="As transações que correspondem aos filtros aparecerão aqui"
+      />
     );
   }
 

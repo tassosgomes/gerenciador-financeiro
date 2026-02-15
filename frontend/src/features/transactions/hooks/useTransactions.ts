@@ -24,6 +24,7 @@ import {
   cancelTransaction,
   getTransactionHistory,
 } from '@/features/transactions/api/transactionsApi';
+import { getErrorMessage } from '@/shared/utils/errorMessages';
 
 export function useTransactions(filters?: TransactionFilters) {
   return useQuery<PagedResponse<TransactionResponse>>({
@@ -58,8 +59,8 @@ export function useCreateTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Transação criada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar transação. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -73,8 +74,8 @@ export function useCreateInstallment() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Parcelamento criado com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar parcelamento. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -88,8 +89,8 @@ export function useCreateRecurrence() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Recorrência criada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar recorrência. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -104,8 +105,8 @@ export function useCreateTransfer() {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Transferência criada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao criar transferência. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -120,8 +121,8 @@ export function useAdjustTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Transação ajustada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao ajustar transação. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -136,8 +137,8 @@ export function useCancelTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Transação cancelada com sucesso!');
     },
-    onError: () => {
-      toast.error('Erro ao cancelar transação. Tente novamente.');
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
