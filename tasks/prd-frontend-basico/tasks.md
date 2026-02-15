@@ -22,7 +22,7 @@ Qualidade final: skeleton loaders, toasts, empty states, acessibilidade WCAG AA 
 
 - [X] 1.0 Scaffold do Projeto React e Infraestrutura
 - [X] 2.0 Componentes Compartilhados e Layout
-- [ ] 3.0 Feature de Autenticação
+- [X] 3.0 Feature de Autenticação
 - [ ] 4.0 Ajustes no Backend para Suporte ao Frontend
 - [ ] 5.0 Dashboard (Backend + Frontend)
 - [ ] 6.0 CRUD de Contas

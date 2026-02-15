@@ -1,11 +1,26 @@
+import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { NAV_ITEMS, cn } from '@/shared/utils';
 
-const primaryNavItems = NAV_ITEMS.filter((item) => item.path !== '/admin');
-const adminNavItems = NAV_ITEMS.filter((item) => item.path === '/admin');
-
 export function Sidebar(): JSX.Element {
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role.toLowerCase() === 'admin';
+
+  const primaryNavItems = useMemo(
+    () => NAV_ITEMS.filter((item) => item.path !== '/admin'),
+    [],
+  );
+
+  const adminNavItems = useMemo(
+    () => NAV_ITEMS.filter((item) => item.path === '/admin'),
+    [],
+  );
+
+  const userName = user?.name ?? 'Usuario';
+  const userRoleLabel = isAdmin ? 'Administrador' : 'Membro da familia';
+
   return (
     <aside className="hidden h-full w-64 flex-shrink-0 flex-col border-r border-slate-200 bg-surface-light shadow-sm md:flex">
       <div className="flex h-16 items-center border-b border-slate-200 px-6">
@@ -40,31 +55,33 @@ export function Sidebar(): JSX.Element {
           </NavLink>
         ))}
 
-        <div className="mt-4 border-t border-slate-200 pt-4">
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Configuracoes
-          </p>
+        {isAdmin ? (
+          <div className="mt-4 border-t border-slate-200 pt-4">
+            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Configuracoes
+            </p>
 
-          {adminNavItems.map((item) => (
-            <NavLink
-              key={item.path}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
-                )
-              }
-              to={item.path}
-            >
-              <span aria-hidden="true" className="material-icons">
-                {item.icon}
-              </span>
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
+            {adminNavItems.map((item) => (
+              <NavLink
+                key={item.path}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                  )
+                }
+                to={item.path}
+              >
+                <span aria-hidden="true" className="material-icons">
+                  {item.icon}
+                </span>
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        ) : null}
       </nav>
 
       <div className="border-t border-slate-200 p-4">
@@ -74,14 +91,12 @@ export function Sidebar(): JSX.Element {
         </div>
 
         <div className="flex items-center gap-3 px-1">
-          <img
-            alt="Carlos Silva"
-            className="h-9 w-9 rounded-full ring-2 ring-slate-100"
-            src="https://i.pravatar.cc/72?img=11"
-          />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-2 ring-slate-100">
+            {userName.charAt(0).toUpperCase()}
+          </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-slate-800">Carlos Silva</p>
-            <p className="truncate text-xs text-slate-500">Plano Familiar</p>
+            <p className="truncate text-sm font-medium text-slate-800">{userName}</p>
+            <p className="truncate text-xs text-slate-500">{userRoleLabel}</p>
           </div>
         </div>
       </div>
