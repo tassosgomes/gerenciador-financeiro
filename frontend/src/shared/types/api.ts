@@ -1,13 +1,11 @@
-export interface Pagination {
-  page: number;
-  size: number;
-  total: number;
-  totalPages: number;
-}
-
 export interface PagedResponse<T> {
   data: T[];
-  pagination: Pagination;
+  pagination: {
+    page: number;
+    size: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface ProblemDetails {

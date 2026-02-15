@@ -1,1 +1,1 @@
-export type { Pagination, PagedResponse, ProblemDetails } from './api';
+export type { PagedResponse, ProblemDetails } from './api';
