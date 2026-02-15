@@ -70,6 +70,65 @@ public class Transaction : BaseEntity
         return transaction;
     }
 
+    public static Transaction Restore(
+        Guid id,
+        Guid accountId,
+        Guid categoryId,
+        TransactionType type,
+        decimal amount,
+        string description,
+        DateTime competenceDate,
+        DateTime? dueDate,
+        TransactionStatus status,
+        bool isAdjustment,
+        Guid? originalTransactionId,
+        bool hasAdjustment,
+        Guid? installmentGroupId,
+        int? installmentNumber,
+        int? totalInstallments,
+        bool isRecurrent,
+        Guid? recurrenceTemplateId,
+        Guid? transferGroupId,
+        string? cancellationReason,
+        string? cancelledBy,
+        DateTime? cancelledAt,
+        string? operationId,
+        string createdBy,
+        DateTime createdAt,
+        string? updatedBy,
+        DateTime? updatedAt)
+    {
+        return new Transaction
+        {
+            Id = id,
+            AccountId = accountId,
+            CategoryId = categoryId,
+            Type = type,
+            Amount = amount,
+            Description = description,
+            CompetenceDate = competenceDate,
+            DueDate = dueDate,
+            Status = status,
+            IsAdjustment = isAdjustment,
+            OriginalTransactionId = originalTransactionId,
+            HasAdjustment = hasAdjustment,
+            InstallmentGroupId = installmentGroupId,
+            InstallmentNumber = installmentNumber,
+            TotalInstallments = totalInstallments,
+            IsRecurrent = isRecurrent,
+            RecurrenceTemplateId = recurrenceTemplateId,
+            TransferGroupId = transferGroupId,
+            CancellationReason = cancellationReason,
+            CancelledBy = cancelledBy,
+            CancelledAt = cancelledAt,
+            OperationId = operationId,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+            UpdatedBy = updatedBy,
+            UpdatedAt = updatedAt
+        };
+    }
+
     public static Transaction CreateAdjustment(
         Guid accountId,
         Guid categoryId,

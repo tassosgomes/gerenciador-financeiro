@@ -39,6 +39,41 @@ public class RecurrenceTemplate : BaseEntity
         return template;
     }
 
+    public static RecurrenceTemplate Restore(
+        Guid id,
+        Guid accountId,
+        Guid categoryId,
+        TransactionType type,
+        decimal amount,
+        string description,
+        int dayOfMonth,
+        bool isActive,
+        DateTime? lastGeneratedDate,
+        TransactionStatus defaultStatus,
+        string createdBy,
+        DateTime createdAt,
+        string? updatedBy,
+        DateTime? updatedAt)
+    {
+        return new RecurrenceTemplate
+        {
+            Id = id,
+            AccountId = accountId,
+            CategoryId = categoryId,
+            Type = type,
+            Amount = amount,
+            Description = description,
+            DayOfMonth = dayOfMonth,
+            IsActive = isActive,
+            LastGeneratedDate = lastGeneratedDate,
+            DefaultStatus = defaultStatus,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+            UpdatedBy = updatedBy,
+            UpdatedAt = updatedAt
+        };
+    }
+
     public void Deactivate(string userId)
     {
         IsActive = false;

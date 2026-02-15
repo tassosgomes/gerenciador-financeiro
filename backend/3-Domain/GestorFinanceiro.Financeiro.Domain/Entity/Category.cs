@@ -20,6 +20,29 @@ public class Category : BaseEntity
         return category;
     }
 
+    public static Category Restore(
+        Guid id,
+        string name,
+        CategoryType type,
+        bool isActive,
+        string createdBy,
+        DateTime createdAt,
+        string? updatedBy,
+        DateTime? updatedAt)
+    {
+        return new Category
+        {
+            Id = id,
+            Name = name,
+            Type = type,
+            IsActive = isActive,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+            UpdatedBy = updatedBy,
+            UpdatedAt = updatedAt
+        };
+    }
+
     public void UpdateName(string newName, string userId)
     {
         Name = newName;

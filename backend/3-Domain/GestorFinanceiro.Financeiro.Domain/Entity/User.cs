@@ -36,6 +36,42 @@ public class User : BaseEntity
         return user;
     }
 
+    public static User Restore(
+        Guid id,
+        string name,
+        string email,
+        UserRole role,
+        bool isActive,
+        bool mustChangePassword,
+        string passwordHash,
+        string createdBy,
+        DateTime createdAt,
+        string? updatedBy,
+        DateTime? updatedAt)
+    {
+        return new User
+        {
+            Id = id,
+            Name = name,
+            Email = email,
+            Role = role,
+            IsActive = isActive,
+            MustChangePassword = mustChangePassword,
+            PasswordHash = passwordHash,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+            UpdatedBy = updatedBy,
+            UpdatedAt = updatedAt
+        };
+    }
+
+    public void ApplyImportedPasswordHash(string passwordHash)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(passwordHash);
+        PasswordHash = passwordHash;
+        MustChangePassword = true;
+    }
+
     public void Deactivate(string userId)
     {
         IsActive = false;

@@ -1,5 +1,6 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Application.Commands.Auth;
+using GestorFinanceiro.Financeiro.Application.Commands.Backup;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
@@ -8,9 +9,11 @@ using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
 using GestorFinanceiro.Financeiro.Application.Commands.User;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
+using GestorFinanceiro.Financeiro.Application.Dtos.Backup;
 using GestorFinanceiro.Financeiro.Application.Mapping;
 using GestorFinanceiro.Financeiro.Application.Queries.Account;
 using GestorFinanceiro.Financeiro.Application.Queries.Audit;
+using GestorFinanceiro.Financeiro.Application.Queries.Backup;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
@@ -25,6 +28,7 @@ public static class ApplicationServiceExtensions
     {
         // Register Dispatcher
         services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddScoped<IBackupIntegrityValidator, BackupIntegrityValidator>();
 
         // Configure mappings
         MappingConfig.ConfigureMappings();
@@ -54,6 +58,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<ChangePasswordCommand, Unit>, ChangePasswordCommandHandler>();
         services.AddScoped<ICommandHandler<CreateUserCommand, UserResponse>, CreateUserCommandHandler>();
         services.AddScoped<ICommandHandler<ToggleUserStatusCommand, Unit>, ToggleUserStatusCommandHandler>();
+        services.AddScoped<ICommandHandler<ImportBackupCommand, BackupImportSummaryDto>, ImportBackupCommandHandler>();
 
         services.AddScoped<CreateTransactionValidator>();
 
@@ -68,12 +73,14 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<ExportBackupQuery, BackupExportDto>, ExportBackupQueryHandler>();
 
         // Register validators
         services.AddScoped<LoginCommandValidator>();
         services.AddScoped<RefreshTokenCommandValidator>();
         services.AddScoped<ChangePasswordCommandValidator>();
         services.AddScoped<CreateUserCommandValidator>();
+        services.AddScoped<IValidator<ImportBackupCommand>, ImportBackupValidator>();
         services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
 
         return services;

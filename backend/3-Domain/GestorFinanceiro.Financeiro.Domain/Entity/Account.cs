@@ -30,6 +30,33 @@ public class Account : BaseEntity
         return account;
     }
 
+    public static Account Restore(
+        Guid id,
+        string name,
+        AccountType type,
+        decimal balance,
+        bool allowNegativeBalance,
+        bool isActive,
+        string createdBy,
+        DateTime createdAt,
+        string? updatedBy,
+        DateTime? updatedAt)
+    {
+        return new Account
+        {
+            Id = id,
+            Name = name,
+            Type = type,
+            Balance = balance,
+            AllowNegativeBalance = allowNegativeBalance,
+            IsActive = isActive,
+            CreatedBy = createdBy,
+            CreatedAt = createdAt,
+            UpdatedBy = updatedBy,
+            UpdatedAt = updatedAt
+        };
+    }
+
     public void Activate(string userId)
     {
         IsActive = true;

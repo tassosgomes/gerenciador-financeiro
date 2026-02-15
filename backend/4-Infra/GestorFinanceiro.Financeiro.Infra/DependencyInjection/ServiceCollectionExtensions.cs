@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IBackupRepository, BackupRepository>();
         services.AddScoped<IRecurrenceTemplateRepository, RecurrenceTemplateRepository>();
         services.AddScoped<IOperationLogRepository, OperationLogRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
