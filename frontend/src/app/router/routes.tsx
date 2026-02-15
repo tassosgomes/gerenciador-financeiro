@@ -5,7 +5,7 @@ import {
   type RouteObject,
 } from 'react-router-dom';
 
-import { AppShell, ProtectedRoute } from '@/shared/components/layout';
+import { AdminRoute, AppShell, ProtectedRoute } from '@/shared/components/layout';
 import { Skeleton } from '@/shared/components/ui';
 
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
@@ -47,7 +47,13 @@ export const routes: RouteObject[] = [
       { path: 'transactions/:id', element: withSuspense(<TransactionDetailPage />) },
       { path: 'accounts', element: withSuspense(<AccountsPage />) },
       { path: 'categories', element: withSuspense(<CategoriesPage />) },
-      { path: 'admin', element: withSuspense(<AdminPage />) },
+      {
+        path: 'admin',
+        element: <AdminRoute />,
+        children: [
+          { index: true, element: withSuspense(<AdminPage />) },
+        ],
+      },
     ],
   },
   {
