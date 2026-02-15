@@ -34,11 +34,11 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
         if (problemDetails is ValidationProblemDetails validationProblemDetails)
         {
-            await httpContext.Response.WriteAsJsonAsync(validationProblemDetails, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(validationProblemDetails, options: null, contentType: "application/problem+json", cancellationToken: cancellationToken);
         }
         else
         {
-            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(problemDetails, options: null, contentType: "application/problem+json", cancellationToken: cancellationToken);
         }
 
         return true;

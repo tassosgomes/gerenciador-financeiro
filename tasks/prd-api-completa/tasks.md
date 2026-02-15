@@ -32,7 +32,7 @@ Testes end-to-end via `WebApplicationFactory` + Testcontainers cobrindo todos os
 - [x] 6.0 Controller de Transações
 - [x] 7.0 Histórico e Auditoria
 - [x] 8.0 Backup Manual (Export/Import)
-- [ ] 9.0 Testes de Integração HTTP
+- [x] 9.0 Testes de Integração HTTP
 
 ## Análise de Paralelização
 

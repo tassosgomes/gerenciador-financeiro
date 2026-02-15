@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Services;
@@ -143,29 +144,29 @@ public class LoginCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_EmailVazio_LancaInvalidOperationException()
+    public async Task HandleAsync_EmailVazio_LancaValidationException()
     {
         var command = new LoginCommand("", "password123");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]
-    public async Task HandleAsync_SenhaVazia_LancaInvalidOperationException()
+    public async Task HandleAsync_SenhaVazia_LancaValidationException()
     {
         var command = new LoginCommand("test@test.com", "");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]
-    public async Task HandleAsync_EmailInvalido_LancaInvalidOperationException()
+    public async Task HandleAsync_EmailInvalido_LancaValidationException()
     {
         var command = new LoginCommand("email-invalido", "password123");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 }

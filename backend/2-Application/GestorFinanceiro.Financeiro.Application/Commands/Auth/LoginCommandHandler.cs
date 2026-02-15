@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Services;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -38,7 +39,7 @@ public class LoginCommandHandler : ICommandHandler<LoginCommand, AuthResponse>
         var validationResult = new LoginCommandValidator().Validate(command);
         if (!validationResult.IsValid)
         {
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", validationResult.Errors.Select(error => error.ErrorMessage))}");
+            throw new ValidationException(validationResult.Errors);
         }
 
         _logger.LogInformation("Processing login for email {Email}", command.Email);

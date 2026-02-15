@@ -63,6 +63,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers(options =>
     {
         options.Filters.Add<ValidationActionFilter>();
+        options.SuppressAsyncSuffixInActionNames = false;
     })
     .AddJsonOptions(options =>
     {
@@ -159,8 +160,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy())
-    .AddDbContextCheck<FinanceiroDbContext>()
-    .AddNpgSql(connectionString, name: "postgresql");
+    .AddDbContextCheck<FinanceiroDbContext>();
 
 var app = builder.Build();
 
@@ -235,5 +235,9 @@ static async Task SeedAdminUserAsync(WebApplication app)
     await userRepository.AddAsync(adminUser, CancellationToken.None);
     await unitOfWork.SaveChangesAsync(CancellationToken.None);
 
-    logger.LogInformation("Default admin user seeded with email {AdminEmail}", adminEmail);
+logger.LogInformation("Default admin user seeded with email {AdminEmail}", adminEmail);
+}
+
+public partial class Program
+{
 }

@@ -2,6 +2,7 @@ using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Services;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace GestorFinanceiro.Financeiro.Application.Commands.Auth;
@@ -36,7 +37,7 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
         var validationResult = new ChangePasswordCommandValidator().Validate(command);
         if (!validationResult.IsValid)
         {
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", validationResult.Errors.Select(error => error.ErrorMessage))}");
+            throw new ValidationException(validationResult.Errors);
         }
 
         _logger.LogInformation("Changing password for user {UserId}", command.UserId);

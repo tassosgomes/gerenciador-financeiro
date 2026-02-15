@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Services;
 using GestorFinanceiro.Financeiro.Domain.Enum;
@@ -156,12 +157,12 @@ public class RefreshTokenCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_TokenVazio_LancaInvalidOperationException()
+    public async Task HandleAsync_TokenVazio_LancaValidationException()
     {
         var command = new RefreshTokenCommand("");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]

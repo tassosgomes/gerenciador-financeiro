@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Services;
@@ -90,29 +91,29 @@ public class ChangePasswordCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_SenhaAtualVazia_LancaInvalidOperationException()
+    public async Task HandleAsync_SenhaAtualVazia_LancaValidationException()
     {
         var command = new ChangePasswordCommand(Guid.NewGuid(), "", "NewPassword1!");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]
-    public async Task HandleAsync_NovaSenhaVazia_LancaInvalidOperationException()
+    public async Task HandleAsync_NovaSenhaVazia_LancaValidationException()
     {
         var command = new ChangePasswordCommand(Guid.NewGuid(), "current-password", "");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 
     [Fact]
-    public async Task HandleAsync_NovaSenhaCurta_LancaInvalidOperationException()
+    public async Task HandleAsync_NovaSenhaCurta_LancaValidationException()
     {
         var command = new ChangePasswordCommand(Guid.NewGuid(), "current-password", "short");
         var action = () => _sut.HandleAsync(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        await action.Should().ThrowAsync<ValidationException>();
     }
 }
