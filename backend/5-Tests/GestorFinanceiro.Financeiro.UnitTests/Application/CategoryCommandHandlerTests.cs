@@ -17,9 +17,11 @@ public class CategoryCommandHandlerTests
     private readonly Mock<IOperationLogRepository> _operationLogRepository = new();
     private readonly Mock<IAuditService> _auditService = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
-    private readonly Mock<ILogger<CreateCategoryCommandHandler>> _logger = new();
+    private readonly Mock<ILogger<CreateCategoryCommandHandler>> _loggerCreate = new();
+    private readonly Mock<ILogger<UpdateCategoryCommandHandler>> _loggerUpdate = new();
 
-    private readonly CreateCategoryCommandHandler _sut;
+    private readonly CreateCategoryCommandHandler _sutCreate;
+    private readonly UpdateCategoryCommandHandler _sutUpdate;
 
     public CategoryCommandHandlerTests()
     {
@@ -32,12 +34,19 @@ public class CategoryCommandHandlerTests
             .Setup(mock => mock.AddAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Category category, CancellationToken _) => category);
 
-        _sut = new CreateCategoryCommandHandler(
+        _sutCreate = new CreateCategoryCommandHandler(
             _categoryRepository.Object,
             _operationLogRepository.Object,
             _auditService.Object,
             _unitOfWork.Object,
-            _logger.Object);
+            _loggerCreate.Object);
+
+        _sutUpdate = new UpdateCategoryCommandHandler(
+            _categoryRepository.Object,
+            _operationLogRepository.Object,
+            _auditService.Object,
+            _unitOfWork.Object,
+            _loggerUpdate.Object);
     }
 
     [Fact]
@@ -49,7 +58,7 @@ public class CategoryCommandHandlerTests
             .Setup(mock => mock.ExistsByNameAndTypeAsync(command.Name, command.Type, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var response = await _sut.HandleAsync(command, CancellationToken.None);
+        var response = await _sutCreate.HandleAsync(command, CancellationToken.None);
 
         response.Name.Should().Be("Alimentacao");
         response.Type.Should().Be(CategoryType.Despesa);
@@ -66,7 +75,7 @@ public class CategoryCommandHandlerTests
             .Setup(mock => mock.ExistsByNameAndTypeAsync(command.Name, command.Type, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var action = () => _sut.HandleAsync(command, CancellationToken.None);
+        var action = () => _sutCreate.HandleAsync(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<CategoryNameAlreadyExistsException>();
         _unitOfWork.Verify(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -77,10 +86,97 @@ public class CategoryCommandHandlerTests
     {
         var command = new CreateCategoryCommand(string.Empty, CategoryType.Despesa, "user-1");
 
-        var action = () => _sut.HandleAsync(command, CancellationToken.None);
+        var action = () => _sutCreate.HandleAsync(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<ValidationException>();
         _categoryRepository.Verify(mock => mock.ExistsByNameAndTypeAsync(It.IsAny<string>(), It.IsAny<CategoryType>(), It.IsAny<CancellationToken>()), Times.Never);
+        _unitOfWork.Verify(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateCategoryHandler_ComandoValido_AtualizaCategoriaComSucesso()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var existingCategory = Category.Create("Lazer", CategoryType.Despesa, "user-1");
+        var command = new UpdateCategoryCommand(categoryId, "Entretenimento", "user-2");
+
+        _categoryRepository
+            .Setup(mock => mock.GetByIdAsync(categoryId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingCategory);
+
+        // Act
+        var response = await _sutUpdate.HandleAsync(command, CancellationToken.None);
+
+        // Assert
+        response.Name.Should().Be("Entretenimento");
+        _unitOfWork.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWork.Verify(mock => mock.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateCategoryHandler_CategoriaDoSistema_LancaSystemCategoryCannotBeChangedException()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var systemCategory = Category.Restore(
+            categoryId,
+            "Alimentação",
+            CategoryType.Despesa,
+            isActive: true,
+            isSystem: true,
+            "system",
+            DateTime.UtcNow,
+            null,
+            null);
+
+        var command = new UpdateCategoryCommand(categoryId, "Novo Nome", "user-1");
+
+        _categoryRepository
+            .Setup(mock => mock.GetByIdAsync(categoryId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(systemCategory);
+
+        // Act
+        var action = () => _sutUpdate.HandleAsync(command, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<SystemCategoryCannotBeChangedException>();
+        _unitOfWork.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _unitOfWork.Verify(mock => mock.CommitAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateCategoryHandler_CategoriaInexistente_LancaCategoryNotFoundException()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var command = new UpdateCategoryCommand(categoryId, "Novo Nome", "user-1");
+
+        _categoryRepository
+            .Setup(mock => mock.GetByIdAsync(categoryId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Category?)null);
+
+        // Act
+        var action = () => _sutUpdate.HandleAsync(command, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<CategoryNotFoundException>();
+        _unitOfWork.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateCategoryHandler_ComandoInvalido_LancaValidationException()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var command = new UpdateCategoryCommand(categoryId, string.Empty, "user-1");
+
+        // Act
+        var action = () => _sutUpdate.HandleAsync(command, CancellationToken.None);
+
+        // Assert
+        await action.Should().ThrowAsync<ValidationException>();
+        _categoryRepository.Verify(mock => mock.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWork.Verify(mock => mock.BeginTransactionAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -79,7 +79,7 @@ public class BackupIntegrityValidatorTests
         return new BackupDataDto(
             [new UserBackupDto(userId, "Admin", "admin@test.com", UserRole.Admin, true, true, "system", DateTime.UtcNow, null, null)],
             [new AccountBackupDto(accountId, "Conta", AccountType.Corrente, 100m, true, true, "system", DateTime.UtcNow, null, null)],
-            [new CategoryBackupDto(categoryId, "Receita", CategoryType.Receita, true, "system", DateTime.UtcNow, null, null)],
+            [new CategoryBackupDto(categoryId, "Receita", CategoryType.Receita, true, false, "system", DateTime.UtcNow, null, null)],
             [
                 new TransactionBackupDto(
                     transactionId,

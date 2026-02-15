@@ -1,4 +1,5 @@
 using GestorFinanceiro.Financeiro.Domain.Enum;
+using GestorFinanceiro.Financeiro.Domain.Exception;
 
 namespace GestorFinanceiro.Financeiro.Domain.Entity;
 
@@ -7,6 +8,7 @@ public class Category : BaseEntity
     public string Name { get; private set; } = string.Empty;
     public CategoryType Type { get; private set; }
     public bool IsActive { get; private set; } = true;
+    public bool IsSystem { get; private set; } = false;
 
     public static Category Create(string name, CategoryType type, string userId)
     {
@@ -25,6 +27,7 @@ public class Category : BaseEntity
         string name,
         CategoryType type,
         bool isActive,
+        bool isSystem,
         string createdBy,
         DateTime createdAt,
         string? updatedBy,
@@ -36,6 +39,7 @@ public class Category : BaseEntity
             Name = name,
             Type = type,
             IsActive = isActive,
+            IsSystem = isSystem,
             CreatedBy = createdBy,
             CreatedAt = createdAt,
             UpdatedBy = updatedBy,
@@ -45,6 +49,11 @@ public class Category : BaseEntity
 
     public void UpdateName(string newName, string userId)
     {
+        if (IsSystem)
+        {
+            throw new SystemCategoryCannotBeChangedException(Id);
+        }
+
         Name = newName;
         SetAuditOnUpdate(userId);
     }

@@ -110,49 +110,51 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Data</TableHead>
-          <TableHead>Descrição</TableHead>
-          <TableHead>Categoria</TableHead>
-          <TableHead>Conta</TableHead>
-          <TableHead className="text-right">Valor</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {transactions.map((transaction) => {
-          const isCancelled = transaction.status === TransactionStatus.Cancelled;
+    <div className="w-full overflow-x-auto">
+      <Table className="min-w-[640px]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="min-w-[100px]">Data</TableHead>
+            <TableHead className="min-w-[180px]">Descrição</TableHead>
+            <TableHead className="min-w-[120px]">Categoria</TableHead>
+            <TableHead className="min-w-[120px]">Conta</TableHead>
+            <TableHead className="min-w-[120px] text-right">Valor</TableHead>
+            <TableHead className="min-w-[100px]">Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.map((transaction) => {
+            const isCancelled = transaction.status === TransactionStatus.Cancelled;
 
-          return (
-            <TableRow
-              key={transaction.id}
-              className="cursor-pointer"
-              onClick={() => navigate(`/transactions/${transaction.id}`)}
-            >
-              <TableCell className={isCancelled ? 'line-through' : ''}>
-                {formatDate(transaction.competenceDate)}
-              </TableCell>
-              <TableCell>{getDescriptionWithIndicators(transaction)}</TableCell>
-              <TableCell className={isCancelled ? 'line-through' : ''}>
-                {getCategoryName(transaction.categoryId)}
-              </TableCell>
-              <TableCell className={isCancelled ? 'line-through' : ''}>
-                {getAccountName(transaction.accountId)}
-              </TableCell>
-              <TableCell
-                className={`text-right font-medium ${
-                  isCancelled ? 'line-through' : getAmountClassName(transaction.type)
-                }`}
+            return (
+              <TableRow
+                key={transaction.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/transactions/${transaction.id}`)}
               >
-                {formatAmount(transaction.amount, transaction.type)}
-              </TableCell>
-              <TableCell>{getStatusBadge(transaction.status, isCancelled)}</TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                <TableCell className={isCancelled ? 'line-through' : ''}>
+                  {formatDate(transaction.competenceDate)}
+                </TableCell>
+                <TableCell>{getDescriptionWithIndicators(transaction)}</TableCell>
+                <TableCell className={isCancelled ? 'line-through' : ''}>
+                  {getCategoryName(transaction.categoryId)}
+                </TableCell>
+                <TableCell className={isCancelled ? 'line-through' : ''}>
+                  {getAccountName(transaction.accountId)}
+                </TableCell>
+                <TableCell
+                  className={`text-right font-medium ${
+                    isCancelled ? 'line-through' : getAmountClassName(transaction.type)
+                  }`}
+                >
+                  {formatAmount(transaction.amount, transaction.type)}
+                </TableCell>
+                <TableCell>{getStatusBadge(transaction.status, isCancelled)}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

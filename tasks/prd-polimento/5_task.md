@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: ["2.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -27,10 +27,10 @@ Atualizar o frontend para consumir o campo `isSystem` na resposta de categorias 
 
 ## Subtarefas
 
-- [ ] 5.1 Atualizar client/API typings para incluir `isSystem`
-- [ ] 5.2 Ajustar componentes de lista/edição para bloquear ações quando `isSystem=true`
-- [ ] 5.3 Ajustar tratamento de erro: se backend retornar Problem Details ao editar sistema, exibir mensagem adequada
-- [ ] 5.4 Testes: unit/component (Vitest + Testing Library) cobrindo o bloqueio
+- [x] 5.1 Atualizar client/API typings para incluir `isSystem`
+- [x] 5.2 Ajustar componentes de lista/edição para bloquear ações quando `isSystem=true`
+- [x] 5.3 Ajustar tratamento de erro: se backend retornar Problem Details ao editar sistema, exibir mensagem adequada
+- [x] 5.4 Testes: unit/component (Vitest + Testing Library) cobrindo o bloqueio
 
 ## Sequenciamento
 
@@ -48,3 +48,12 @@ Referência na spec:
 - Categorias com `isSystem=true` não exibem/permitem edição na UI.
 - Tentativas de edição (se ocorrerem) mostram erro amigável.
 - Testes passam.
+
+## Checklist de Conclusão
+
+- [x] 5.0 Frontend: suportar `isSystem` e desabilitar edição de categoria ✅ CONCLUÍDA
+	- [x] 5.1 Implementação completada
+	- [x] 5.2 Definição da tarefa, PRD e tech spec validados
+	- [x] 5.3 Análise de regras e conformidade verificadas
+	- [x] 5.4 Revisão de código completada
+	- [x] 5.5 Pronto para deploy

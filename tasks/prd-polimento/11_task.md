@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: false # Se pode executar em paralelo
 blocked_by: ["10.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -35,10 +35,19 @@ Atualizar a documentação mínima de self-hosting e preparar artefatos de relea
 
 ## Subtarefas
 
-- [ ] 11.1 Atualizar README na raiz (Quick Start + Config + Backup/Restore)
-- [ ] 11.2 Criar `CHANGELOG.md` com resumo por fase (MVP)
-- [ ] 11.3 Criar `LICENSE` (MIT) conforme decisão do produto
-- [ ] 11.4 Documentar tags/versões de imagens (ex.: `gestorfinanceiro-api:1.0.0`, `gestorfinanceiro-web:1.0.0`)
+- [x] 11.1 Atualizar README na raiz (Quick Start + Config + Backup/Restore)
+- [x] 11.2 Criar `CHANGELOG.md` com resumo por fase (MVP)
+- [x] 11.3 Criar `LICENSE` (MIT) conforme decisão do produto
+- [x] 11.4 Documentar tags/versões de imagens (ex.: `gestorfinanceiro-api:1.0.0`, `gestorfinanceiro-web:1.0.0`)
+
+## Status de Conclusão
+
+- [x] 11.0 Docs/Release: README Quick Start + CHANGELOG + LICENSE + tag v1.0.0 ✅ CONCLUÍDA
+  - [x] 11.1 Implementação completada
+  - [x] 11.2 Definição da tarefa, PRD e tech spec validados
+  - [x] 11.3 Análise de regras e conformidade verificadas
+  - [x] 11.4 Revisão de código completada
+  - [x] 11.5 Pronto para deploy
 
 ## Sequenciamento
 

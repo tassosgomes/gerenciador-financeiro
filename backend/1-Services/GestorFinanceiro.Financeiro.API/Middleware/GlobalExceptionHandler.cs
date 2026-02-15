@@ -84,6 +84,9 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             CategoryNameAlreadyExistsException categoryNameAlreadyExistsException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Nome de categoria já existe", categoryNameAlreadyExistsException.Message, "https://httpstatuses.com/400"), false),
 
+            SystemCategoryCannotBeChangedException systemCategoryCannotBeChangedException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Categoria do sistema não pode ser alterada", systemCategoryCannotBeChangedException.Message, "https://httpstatuses.com/400"), false),
+
             InsufficientBalanceException insufficientBalanceException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Saldo insuficiente", insufficientBalanceException.Message, "https://httpstatuses.com/400"), false),
 

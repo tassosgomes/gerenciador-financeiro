@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: false # Se pode executar em paralelo
 blocked_by: ["2.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -31,10 +31,10 @@ E marcar as categorias seed como `IsSystem=true`.
 
 ## Subtarefas
 
-- [ ] 3.1 Levantar IDs/nomes atuais das categorias seed existentes (para manter compat)
-- [ ] 3.2 Criar migration com SQL idempotente (INSERT ... WHERE NOT EXISTS, UPDATE por ID fixo)
-- [ ] 3.3 Atualizar/expandir testes de seed/migration (ex.: `CategorySeedTests`) para novo conjunto
-- [ ] 3.4 Validar em base "antiga" (com dados) e base "vazia" (fresh) que resultado converge
+- [x] 3.1 Levantar IDs/nomes atuais das categorias seed existentes (para manter compat)
+- [x] 3.2 Criar migration com SQL idempotente (INSERT ... WHERE NOT EXISTS, UPDATE por ID fixo)
+- [x] 3.3 Atualizar/expandir testes de seed/migration (ex.: `CategorySeedTests`) para novo conjunto
+- [x] 3.4 Validar em base "antiga" (com dados) e base "vazia" (fresh) que resultado converge
 
 ## Sequenciamento
 

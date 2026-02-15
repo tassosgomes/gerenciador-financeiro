@@ -2,7 +2,11 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using AwesomeAssertions;
+using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.HttpIntegrationTests.Base;
+using GestorFinanceiro.Financeiro.Infra.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GestorFinanceiro.Financeiro.HttpIntegrationTests.Controllers;
 
@@ -83,5 +87,43 @@ public class CategoriesControllerHttpTests : IntegrationTestBase
         });
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [DockerAvailableFact]
+    public async Task UpdateCategory_WhenIsSystemCategory_ReturnsBadRequestProblemDetails()
+    {
+        var client = await AuthenticateAsAdminAsync();
+
+        var categoryId = Guid.NewGuid();
+        using (var scope = Factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<FinanceiroDbContext>();
+            var systemCategory = Category.Restore(
+                categoryId,
+                "Categoria Sistema Teste",
+                CategoryType.Despesa,
+                isActive: true,
+                isSystem: true,
+                "seed",
+                DateTime.UtcNow,
+                null,
+                null);
+
+            await dbContext.Categories.AddAsync(systemCategory);
+            await dbContext.SaveChangesAsync();
+        }
+
+        // Try to update the system category
+        var updateResponse = await client.PutAsJsonAsync($"/api/v1/categories/{categoryId}", new
+        {
+            name = "Tentando Alterar Sistema"
+        });
+
+        // Assert it returns 400 Bad Request with Problem Details
+        await AssertProblemDetailsAsync(updateResponse, HttpStatusCode.BadRequest);
+
+        var problemDetails = await updateResponse.Content.ReadFromJsonAsync<JsonObject>(JsonSerializerOptions);
+        problemDetails.Should().NotBeNull();
+        problemDetails!["title"]!.GetValue<string>().Should().Contain("sistema");
     }
 }

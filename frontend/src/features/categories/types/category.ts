@@ -9,6 +9,7 @@ export interface CategoryResponse {
   id: string;
   name: string;
   type: CategoryType;
+  isSystem: boolean;
   createdAt: string;
   updatedAt: string | null;
 }

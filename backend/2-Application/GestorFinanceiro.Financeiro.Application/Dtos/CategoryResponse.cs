@@ -7,6 +7,7 @@ public record CategoryResponse(
     string Name,
     CategoryType Type,
     bool IsActive,
+    bool IsSystem,
     DateTime CreatedAt,
     DateTime? UpdatedAt
 );

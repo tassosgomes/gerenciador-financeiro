@@ -118,6 +118,7 @@ public class CategoriesControllerTests
             "Alimentacao",
             CategoryType.Despesa,
             true,
+            false,
             DateTime.UtcNow,
             DateTime.UtcNow);
     }

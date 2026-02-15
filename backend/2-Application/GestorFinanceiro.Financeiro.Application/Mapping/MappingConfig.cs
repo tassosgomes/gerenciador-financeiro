@@ -60,6 +60,7 @@ public static class MappingConfig
                 source.Name,
                 source.Type,
                 source.IsActive,
+                source.IsSystem,
                 source.CreatedBy,
                 source.CreatedAt,
                 source.UpdatedBy,

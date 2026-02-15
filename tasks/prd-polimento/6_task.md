@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: [] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -48,3 +48,12 @@ Referência na spec:
 
 - Em largura ~320px, menu hambúrguer permite navegar por todas as telas.
 - Testes de componente passam.
+
+## Checklist de Conclusão
+
+- [x] 6.0 Frontend: menu hambúrguer no mobile (Topbar + testes) ✅ CONCLUÍDA
+	- [x] 6.1 Implementação completada
+	- [x] 6.2 Definição da tarefa, PRD e tech spec validados
+	- [x] 6.3 Análise de regras e conformidade verificadas
+	- [x] 6.4 Revisão de código completada
+	- [x] 6.5 Pronto para deploy

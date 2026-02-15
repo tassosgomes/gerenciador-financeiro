@@ -50,13 +50,15 @@ public sealed class CategorySeedTests : IntegrationTestBase
             [new Guid("00000000-0000-0000-0000-000000000006")] = "Educação",
             [new Guid("00000000-0000-0000-0000-000000000007")] = "Vestuário",
             [new Guid("00000000-0000-0000-0000-000000000008")] = "Outros",
+            [new Guid("00000000-0000-0000-0000-000000000013")] = "Serviços",
+            [new Guid("00000000-0000-0000-0000-000000000014")] = "Impostos",
         };
 
         var expectedIncomeCategories = new Dictionary<Guid, string>
         {
             [new Guid("00000000-0000-0000-0000-000000000009")] = "Salário",
             [new Guid("00000000-0000-0000-0000-000000000010")] = "Freelance",
-            [new Guid("00000000-0000-0000-0000-000000000011")] = "Investimento",
+            [new Guid("00000000-0000-0000-0000-000000000011")] = "Investimentos",
             [new Guid("00000000-0000-0000-0000-000000000012")] = "Outros",
         };
 
@@ -72,10 +74,11 @@ public sealed class CategorySeedTests : IntegrationTestBase
             .Where(category => category.Type == CategoryType.Receita)
             .ToList();
 
-        categories.Should().HaveCount(12);
-        expenseCategories.Should().HaveCount(8);
+        categories.Should().HaveCount(14);
+        expenseCategories.Should().HaveCount(10);
         incomeCategories.Should().HaveCount(4);
         categories.Should().OnlyContain(category => category.IsActive);
+        categories.Should().OnlyContain(category => category.IsSystem);
         categories.Should().OnlyContain(category => category.CreatedBy == "system");
         categories.Should().OnlyContain(category => category.CreatedAt.Kind == DateTimeKind.Utc);
         categories.Should().OnlyContain(category => category.CreatedAt == expectedCreatedAtUtc);

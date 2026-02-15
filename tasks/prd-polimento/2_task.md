@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: [] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -28,10 +28,12 @@ Adicionar suporte a categorias de sistema (`IsSystem`) e garantir no backend que
 
 ## Subtarefas
 
-- [ ] 2.1 Alterar Domain: adicionar `IsSystem` e validar atualização (exceção específica)
-- [ ] 2.2 Alterar Infra: mapping EF Core + migration adicionando coluna `is_system` (default/retrocompat)
-- [ ] 2.3 Alterar Application/API: handler de update deve propagar/marcar erro de regra de negócio
-- [ ] 2.4 Testes: unit `Category.UpdateName` + teste do handler/update retornando erro
+- [x] 2.0 Backend: `Category.IsSystem` + regra de bloqueio de alteração ✅ CONCLUÍDA
+	- [x] 2.1 Implementação completada
+	- [x] 2.2 Definição da tarefa, PRD e tech spec validados
+	- [x] 2.3 Análise de regras e conformidade verificadas
+	- [x] 2.4 Revisão de código completada
+	- [x] 2.5 Pronto para deploy
 
 ## Sequenciamento
 

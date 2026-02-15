@@ -173,8 +173,6 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-await SeedAdminUserAsync(app);
-
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
@@ -211,41 +209,6 @@ app.MapControllers();
 app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
-
-static async Task SeedAdminUserAsync(WebApplication app)
-{
-    using var scope = app.Services.CreateScope();
-
-    var logger = scope.ServiceProvider
-        .GetRequiredService<ILoggerFactory>()
-        .CreateLogger("AdminSeed");
-
-    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-
-    var existingUsers = await userRepository.GetAllAsync(CancellationToken.None);
-    if (existingUsers.Any())
-    {
-        return;
-    }
-
-    var adminName = app.Configuration["AdminSeed:Name"] ?? "Administrador";
-    var adminEmail = app.Configuration["AdminSeed:Email"] ?? "admin@gestorfinanceiro.local";
-    var adminPassword = app.Configuration["AdminSeed:Password"] ?? "Admin123!";
-
-    var adminUser = User.Create(
-        adminName,
-        adminEmail,
-        passwordHasher.Hash(adminPassword),
-        UserRole.Admin,
-        "system");
-
-    await userRepository.AddAsync(adminUser, CancellationToken.None);
-    await unitOfWork.SaveChangesAsync(CancellationToken.None);
-
-logger.LogInformation("Default admin user seeded with email {AdminEmail}", adminEmail);
-}
 
 public partial class Program
 {

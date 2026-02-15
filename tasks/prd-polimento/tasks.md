@@ -24,17 +24,17 @@ Esta fase torna o GestorFinanceiro "suba e use" via Docker Compose (PostgreSQL +
 
 ## Tarefas
 
-- [ ] 1.0 Backend: startup tasks (migrate + seed com retry)
-- [ ] 2.0 Backend: `Category.IsSystem` + regra de bloqueio de alteração
-- [ ] 3.0 Backend: migration incremental das categorias padrão v1.0
-- [ ] 4.0 Backend: seed do admin (defaults PRD + idempotência + logs)
-- [ ] 5.0 Frontend: suportar `isSystem` e desabilitar edição de categoria
-- [ ] 6.0 Frontend: menu hambúrguer no mobile (Topbar + testes)
-- [ ] 7.0 Frontend: responsividade 320px+ (tabelas/forms/dashboard/touch)
-- [ ] 8.0 Docker: Dockerfile da API (.NET) multi-stage
-- [ ] 9.0 Docker: Nginx config (proxy `/api` + SPA fallback) + runtime env
-- [ ] 10.0 Docker: `docker-compose.yml` raiz + `.env.example` + health checks
-- [ ] 11.0 Docs/Release: README Quick Start + CHANGELOG + LICENSE + tag v1.0.0
+- [x] 1.0 Backend: startup tasks (migrate + seed com retry)
+- [x] 2.0 Backend: `Category.IsSystem` + regra de bloqueio de alteração
+- [x] 3.0 Backend: migration incremental das categorias padrão v1.0
+- [x] 4.0 Backend: seed do admin (defaults PRD + idempotência + logs)
+- [x] 5.0 Frontend: suportar `isSystem` e desabilitar edição de categoria
+- [x] 6.0 Frontend: menu hambúrguer no mobile (Topbar + testes)
+- [x] 7.0 Frontend: responsividade 320px+ (tabelas/forms/dashboard/touch)
+- [x] 8.0 Docker: Dockerfile da API (.NET) multi-stage
+- [x] 9.0 Docker: Nginx config (proxy `/api` + SPA fallback) + runtime env
+- [x] 10.0 Docker: `docker-compose.yml` raiz + `.env.example` + health checks
+- [x] 11.0 Docs/Release: README Quick Start + CHANGELOG + LICENSE + tag v1.0.0
 
 ## Análise de Paralelização
 

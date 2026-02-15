@@ -1,0 +1,72 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gestorfinanceiro}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - gestor-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:-gestorfinanceiro};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}"
+      JwtSettings__SecretKey: ${JWT_SECRET}
+      JwtSettings__Issuer: "GestorFinanceiro"
+      JwtSettings__Audience: "GestorFinanceiro"
+      JwtSettings__AccessTokenExpirationMinutes: 1440
+      JwtSettings__RefreshTokenExpirationDays: 7
+      AdminSeed__Name: ${ADMIN_NAME:-Administrador}
+      AdminSeed__Email: ${ADMIN_EMAIL:-admin@gestorfinanceiro.local}
+      AdminSeed__Password: ${ADMIN_PASSWORD:-mudar123}
+      Cors__AllowedOrigins__0: http://localhost:${WEB_PORT:-8080}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+    networks:
+      - gestor-network
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      API_URL: /api
+      OTEL_ENDPOINT: ${OTEL_ENDPOINT:-}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    networks:
+      - gestor-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  gestor-network:
+    driver: bridge

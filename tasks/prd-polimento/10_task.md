@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: false # Se pode executar em paralelo
 blocked_by: ["1.0","3.0","8.0","9.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -31,10 +31,19 @@ Entregar o `docker-compose.yml` definitivo na raiz com 3 serviços (PostgreSQL +
 
 ## Subtarefas
 
-- [ ] 10.1 Criar `docker-compose.yml` raiz seguindo a spec (depends_on + condition: service_healthy)
-- [ ] 10.2 Criar `.env.example` (WEB_PORT, POSTGRES_*, JWT_SECRET, ADMIN_*)
-- [ ] 10.3 Validar subida end-to-end: `docker compose up -d` e health checks ficam `healthy`
-- [ ] 10.4 Documentar comandos mínimos de uso (serão referenciados no README)
+- [x] 10.1 Criar `docker-compose.yml` raiz seguindo a spec (depends_on + condition: service_healthy)
+- [x] 10.2 Criar `.env.example` (WEB_PORT, POSTGRES_*, JWT_SECRET, ADMIN_*)
+- [x] 10.3 Validar subida end-to-end: `docker compose up -d` e health checks ficam `healthy`
+- [x] 10.4 Documentar comandos mínimos de uso (serão referenciados no README)
+
+## Status de Conclusão
+
+- [x] 10.0 Docker: `docker-compose.yml` raiz + `.env.example` + health checks ✅ CONCLUÍDA
+  - [x] 10.1 Implementação completada
+  - [x] 10.2 Definição da tarefa, PRD e tech spec validados
+  - [x] 10.3 Análise de regras e conformidade verificadas
+  - [x] 10.4 Revisão de código completada
+  - [x] 10.5 Pronto para deploy
 
 ## Sequenciamento
 

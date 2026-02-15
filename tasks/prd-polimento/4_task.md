@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: ["1.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -30,10 +30,10 @@ Ajustar o seed do usuário admin para ficar alinhado ao PRD v1.0, garantindo ide
 
 ## Subtarefas
 
-- [ ] 4.1 Alinhar leitura de config (`AdminSeed__*`) e defaults do PRD
-- [ ] 4.2 Implementar checagem idempotente (não criar se existir qualquer usuário)
-- [ ] 4.3 Garantir comportamento `MustChangePassword` e mensagens de log
-- [ ] 4.4 Testes: unit/integration garantindo idempotência e criação com defaults
+- [x] 4.1 Alinhar leitura de config (`AdminSeed__*`) e defaults do PRD
+- [x] 4.2 Implementar checagem idempotente (não criar se existir qualquer usuário)
+- [x] 4.3 Garantir comportamento `MustChangePassword` e mensagens de log
+- [x] 4.4 Testes: unit/integration garantindo idempotência e criação com defaults
 
 ## Sequenciamento
 

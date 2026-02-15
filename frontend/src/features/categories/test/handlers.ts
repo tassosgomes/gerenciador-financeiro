@@ -8,6 +8,7 @@ const mockCategories: CategoryResponse[] = [
     id: '1',
     name: 'Alimentação',
     type: CategoryType.Expense,
+    isSystem: true,
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: null,
   },
@@ -15,6 +16,7 @@ const mockCategories: CategoryResponse[] = [
     id: '2',
     name: 'Transporte',
     type: CategoryType.Expense,
+    isSystem: true,
     createdAt: '2026-01-16T10:00:00Z',
     updatedAt: null,
   },
@@ -22,6 +24,7 @@ const mockCategories: CategoryResponse[] = [
     id: '3',
     name: 'Salário',
     type: CategoryType.Income,
+    isSystem: true,
     createdAt: '2026-01-17T10:00:00Z',
     updatedAt: null,
   },
@@ -29,6 +32,7 @@ const mockCategories: CategoryResponse[] = [
     id: '4',
     name: 'Freelance',
     type: CategoryType.Income,
+    isSystem: false,
     createdAt: '2026-01-18T10:00:00Z',
     updatedAt: null,
   },
@@ -36,6 +40,7 @@ const mockCategories: CategoryResponse[] = [
     id: '5',
     name: 'Moradia',
     type: CategoryType.Expense,
+    isSystem: true,
     createdAt: '2026-01-19T10:00:00Z',
     updatedAt: null,
   },
@@ -43,6 +48,7 @@ const mockCategories: CategoryResponse[] = [
     id: '6',
     name: 'Lazer',
     type: CategoryType.Expense,
+    isSystem: false,
     createdAt: '2026-01-20T10:00:00Z',
     updatedAt: null,
   },
@@ -50,6 +56,7 @@ const mockCategories: CategoryResponse[] = [
     id: '7',
     name: 'Investimento',
     type: CategoryType.Income,
+    isSystem: false,
     createdAt: '2026-01-21T10:00:00Z',
     updatedAt: null,
   },
@@ -80,6 +87,7 @@ export const categoriesHandlers = [
       id: String(mockCategories.length + 1),
       name: body.name,
       type: body.type,
+      isSystem: false,
       createdAt: new Date().toISOString(),
       updatedAt: null,
     };
@@ -96,6 +104,19 @@ export const categoriesHandlers = [
 
     if (categoryIndex === -1) {
       return new HttpResponse(null, { status: 404 });
+    }
+
+    // Bloquear edição de categorias do sistema
+    if (mockCategories[categoryIndex].isSystem) {
+      return HttpResponse.json(
+        {
+          type: 'https://tools.ietf.org/html/rfc9457#section-3',
+          title: 'Categoria do sistema não pode ser alterada',
+          status: 400,
+          detail: 'Categorias do sistema não podem ser editadas ou removidas.',
+        },
+        { status: 400 }
+      );
     }
 
     mockCategories[categoryIndex] = {

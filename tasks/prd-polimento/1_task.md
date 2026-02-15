@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: [] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -29,10 +29,12 @@ Implementar uma rotina de inicialização no backend (.NET 8) para aplicar migra
 
 ## Subtarefas
 
-- [ ] 1.1 Criar abstração `IStartupTask` e implementações (migrate + seed) conforme techspec
-- [ ] 1.2 Orquestrar execução em ordem (hosted service ou no startup), com retry/backoff
-- [ ] 1.3 Ajustar health/readiness para refletir estado “inicializado” (quando aplicável)
-- [ ] 1.4 Testes: unitários para a orquestração (ordem/erros/retry) e smoke local (opcional)
+- [x] 1.0 Backend: startup tasks (migrate + seed com retry) ✅ CONCLUÍDA
+	- [x] 1.1 Implementação completada
+	- [x] 1.2 Definição da tarefa, PRD e tech spec validados
+	- [x] 1.3 Análise de regras e conformidade verificadas
+	- [x] 1.4 Revisão de código completada
+	- [x] 1.5 Pronto para deploy
 
 ## Sequenciamento
 

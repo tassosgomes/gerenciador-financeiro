@@ -5,6 +5,7 @@ using GestorFinanceiro.Financeiro.Infra.Audit;
 using GestorFinanceiro.Financeiro.Infra.Auth;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using GestorFinanceiro.Financeiro.Infra.Repository;
+using GestorFinanceiro.Financeiro.Infra.StartupTasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +41,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+
+        // Startup tasks - order matters
+        services.AddScoped<IStartupTask, MigrateDatabaseStartupTask>();
+        services.AddScoped<IStartupTask, SeedAdminUserStartupTask>();
+        services.AddHostedService<StartupTasksHostedService>();
 
         return services;
     }

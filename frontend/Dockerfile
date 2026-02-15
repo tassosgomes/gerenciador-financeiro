@@ -15,6 +15,7 @@ WORKDIR /usr/share/nginx/html
 COPY --from=builder /app/dist ./
 COPY --from=builder /app/public/runtime-env.template.js ./runtime-env.template.js
 COPY docker/40-runtime-env.sh /docker-entrypoint.d/40-runtime-env.sh
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 RUN chmod +x /docker-entrypoint.d/40-runtime-env.sh
 
 EXPOSE 80

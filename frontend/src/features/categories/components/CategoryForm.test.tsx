@@ -10,7 +10,17 @@ const mockCategory: CategoryResponse = {
   id: '1',
   name: 'Alimentação',
   type: CategoryType.Expense,
+  isSystem: false,
   createdAt: '2026-01-15T10:00:00Z',
+  updatedAt: null,
+};
+
+const mockSystemCategory: CategoryResponse = {
+  id: '2',
+  name: 'Salário',
+  type: CategoryType.Income,
+  isSystem: true,
+  createdAt: '2026-01-16T10:00:00Z',
   updatedAt: null,
 };
 
@@ -110,5 +120,47 @@ describe('CategoryForm', () => {
 
     const nameInput = screen.getByLabelText(/Nome/i) as HTMLInputElement;
     expect(nameInput.value).toBe('');
+  });
+
+  it('displays warning message for system categories', () => {
+    renderWithClient(
+      <CategoryForm open={true} onOpenChange={mockOnOpenChange} category={mockSystemCategory} />
+    );
+
+    expect(screen.getByText(/Esta é uma categoria do sistema e não pode ser editada ou removida/i)).toBeInTheDocument();
+  });
+
+  it('disables name input for system categories', () => {
+    renderWithClient(
+      <CategoryForm open={true} onOpenChange={mockOnOpenChange} category={mockSystemCategory} />
+    );
+
+    const nameInput = screen.getByLabelText(/Nome/i);
+    expect(nameInput).toBeDisabled();
+  });
+
+  it('hides save button for system categories', () => {
+    renderWithClient(
+      <CategoryForm open={true} onOpenChange={mockOnOpenChange} category={mockSystemCategory} />
+    );
+
+    expect(screen.queryByRole('button', { name: /Salvar/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Fechar/i })).toBeInTheDocument();
+  });
+
+  it('does not attempt to save when submitting system category', async () => {
+    renderWithClient(
+      <CategoryForm open={true} onOpenChange={mockOnOpenChange} category={mockSystemCategory} />
+    );
+
+    // Força o submit do formulário (caso alguém consiga acessar via programação)
+    const form = screen.getByRole('button', { name: /Fechar/i }).closest('form');
+    if (form) {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    }
+
+    // Não deve chamar onOpenChange porque a categoria é do sistema
+    // e o submit deve ser bloqueado
+    expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
   });
 });

@@ -221,7 +221,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="simple">Simples</TabsTrigger>
             <TabsTrigger value="installment">Parcelada</TabsTrigger>
             <TabsTrigger value="recurrence">Recorrente</TabsTrigger>
@@ -267,7 +267,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Categoria e Conta */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Categoria</label>
                    <Select
@@ -318,7 +318,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Tipo */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Tipo</label>
                    <Select
@@ -337,7 +337,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Datas */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Dt. Competência</label>
                   <Input type="date" {...simpleForm.register('competenceDate')} />
@@ -447,7 +447,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Categoria e Conta */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Categoria</label>
                    <Select
@@ -515,7 +515,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Datas */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstCompetenceDate" className="block text-sm font-medium mb-2">
                     Primeira Dt. Competência
@@ -596,7 +596,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Categoria e Conta */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Categoria</label>
                    <Select
@@ -664,7 +664,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Datas */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="startDate" className="block text-sm font-medium mb-2">Data de Início</label>
                   <Input id="startDate" type="date" {...recurrenceForm.register('startDate')} />
@@ -740,7 +740,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               </div>
 
               {/* Contas */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Conta Origem</label>
                    <Select

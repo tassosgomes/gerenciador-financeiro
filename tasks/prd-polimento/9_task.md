@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: [] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -28,10 +28,12 @@ Versionar uma configuração Nginx para servir o bundle React e fazer proxy reve
 
 ## Subtarefas
 
-- [ ] 9.1 Criar `frontend/docker/nginx.conf` com proxy `/api/` e fallback SPA
-- [ ] 9.2 Ajustar `frontend/Dockerfile` para copiar a config para o local correto
-- [ ] 9.3 Garantir que o script de runtime env (ex.: `40-runtime-env.sh`) roda no startup
-- [ ] 9.4 Teste manual: navegar em rota não-root e dar refresh (SPA fallback)
+- [x] 9.0 Docker: Nginx config (proxy `/api` + SPA fallback) + runtime env ✅ CONCLUÍDA
+  - [x] 9.1 Implementação completada
+  - [x] 9.2 Definição da tarefa, PRD e tech spec validados
+  - [x] 9.3 Análise de regras e conformidade verificadas
+  - [x] 9.4 Revisão de código completada
+  - [x] 9.5 Pronto para deploy
 
 ## Sequenciamento
 

@@ -1,5 +1,5 @@
 ---
-status: pending # Opcoes: pending, in-progress, completed, excluded
+status: completed # Opcoes: pending, in-progress, completed, excluded
 parallelizable: true # Se pode executar em paralelo
 blocked_by: ["6.0"] # IDs de tarefas que devem ser completadas primeiro
 ---
@@ -34,11 +34,12 @@ Garantir que as telas principais do frontend sejam utilizáveis em 320px+, com f
 
 ## Subtarefas
 
-- [ ] 7.1 Mapear telas críticas (dashboard, transações, categorias, contas, etc.) e pontos de quebra
-- [ ] 7.2 Ajustar tabelas (overflow-x, wrappers) e garantir legibilidade
-- [ ] 7.3 Ajustar formulários (grid → stack em `sm`/`md`), inputs/botões e espaçamentos
-- [ ] 7.4 Ajustar dashboard (cards em coluna única) e gráficos responsivos
-- [ ] 7.5 Testes: atualizar/adicionar testes de componentes críticos quando aplicável
+- [x] 7.0 Frontend: responsividade 320px+ (tabelas/forms/dashboard/touch) ✅ CONCLUÍDA
+	- [x] 7.1 Implementação completada
+	- [x] 7.2 Definição da tarefa, PRD e tech spec validados
+	- [x] 7.3 Análise de regras e conformidade verificadas
+	- [x] 7.4 Revisão de código completada
+	- [x] 7.5 Pronto para deploy
 
 ## Sequenciamento
 

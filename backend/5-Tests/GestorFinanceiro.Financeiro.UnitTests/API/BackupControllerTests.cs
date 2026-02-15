@@ -87,7 +87,7 @@ public class BackupControllerTests
         return new BackupDataDto(
             [new UserBackupDto(userId, "Admin", "admin@test.com", UserRole.Admin, true, true, "system", now, null, null)],
             [new AccountBackupDto(accountId, "Conta", AccountType.Corrente, 10m, true, true, "system", now, null, null)],
-            [new CategoryBackupDto(categoryId, "Categoria", CategoryType.Receita, true, "system", now, null, null)],
+            [new CategoryBackupDto(categoryId, "Categoria", CategoryType.Receita, true, false, "system", now, null, null)],
             [
                 new TransactionBackupDto(
                     Guid.NewGuid(),

@@ -28,6 +28,7 @@ interface CategoryFormProps {
 
 export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps): JSX.Element {
   const isEditing = !!category;
+  const isSystemCategory = isEditing && category?.isSystem;
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();
 
@@ -81,6 +82,11 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
   async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
 
+    // Bloquear edição de categorias do sistema
+    if (isSystemCategory) {
+      return;
+    }
+
     if (!validate()) return;
 
     try {
@@ -117,6 +123,15 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
           </DialogDescription>
         </DialogHeader>
 
+        {/* Aviso para categorias do sistema */}
+        {isSystemCategory && (
+          <div className="rounded-md bg-amber-50 border border-amber-200 p-3">
+            <p className="text-sm text-amber-800">
+              ⚠️ Esta é uma categoria do sistema e não pode ser editada ou removida.
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nome */}
           <div className="space-y-2">
@@ -129,7 +144,7 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Alimentação"
               className={errors.name ? 'border-red-500' : ''}
-              disabled={isLoading}
+              disabled={isLoading || isSystemCategory}
             />
             {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
           </div>
@@ -170,11 +185,13 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              Cancelar
+              {isSystemCategory ? 'Fechar' : 'Cancelar'}
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Salvando...' : isEditing ? 'Salvar' : 'Criar'}
-            </Button>
+            {!isSystemCategory && (
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? 'Salvando...' : isEditing ? 'Salvar' : 'Criar'}
+              </Button>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

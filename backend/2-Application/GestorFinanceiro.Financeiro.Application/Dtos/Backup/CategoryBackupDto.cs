@@ -7,6 +7,7 @@ public record CategoryBackupDto(
     string Name,
     CategoryType Type,
     bool IsActive,
+    bool IsSystem,
     string CreatedBy,
     DateTime CreatedAt,
     string? UpdatedBy,

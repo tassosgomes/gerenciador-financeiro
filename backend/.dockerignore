@@ -1,0 +1,26 @@
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+
+# Development and test files
+**/5-Tests/
+**/*.DotSettings.user
+**/.vs/
+**/.vscode/
+**/.idea/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+**/README.md
+**/CHANGELOG.md
+**/*.md
+
+# Other
+**/node_modules/
+**/.DS_Store
+**/Thumbs.db

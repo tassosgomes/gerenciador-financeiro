@@ -10,6 +10,7 @@ const mockCategories: CategoryResponse[] = [
     id: '1',
     name: 'Alimentação',
     type: CategoryType.Expense,
+    isSystem: true,
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: null,
   },
@@ -17,6 +18,7 @@ const mockCategories: CategoryResponse[] = [
     id: '2',
     name: 'Salário',
     type: CategoryType.Income,
+    isSystem: false,
     createdAt: '2026-01-16T10:00:00Z',
     updatedAt: null,
   },
@@ -57,15 +59,22 @@ describe('CategoryList', () => {
     expect(incomeBadges[0]).toHaveClass('bg-green-100', 'text-green-800');
   });
 
-  it('calls onEdit when edit button is clicked', async () => {
+  it('calls onEdit when edit button is clicked for non-system category', async () => {
     const user = userEvent.setup();
 
     render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
 
-    const editButtons = screen.getAllByRole('button', { name: /Editar/i });
-    await user.click(editButtons[0]);
-
-    expect(mockOnEdit).toHaveBeenCalledWith(mockCategories[0]);
+    // Buscar um botão de edição que não está desabilitado (categoria não-sistema)
+    const editButtons = screen.getAllByRole('button');
+    const enabledEditButton = editButtons.find(btn => 
+      btn.getAttribute('aria-label')?.includes('Editar categoria Salário')
+    );
+    
+    expect(enabledEditButton).toBeDefined();
+    if (enabledEditButton) {
+      await user.click(enabledEditButton);
+      expect(mockOnEdit).toHaveBeenCalledWith(mockCategories[1]);
+    }
   });
 
   it('renders table headers correctly', () => {
@@ -74,5 +83,35 @@ describe('CategoryList', () => {
     expect(screen.getByText('Nome')).toBeInTheDocument();
     expect(screen.getByText('Tipo')).toBeInTheDocument();
     expect(screen.getByText('Ações')).toBeInTheDocument();
+  });
+
+  it('displays lock icon for system categories', () => {
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+
+    const lockIcon = screen.getByLabelText('Categoria do sistema');
+    expect(lockIcon).toBeInTheDocument();
+  });
+
+  it('disables edit button for system categories', () => {
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+
+    const editButtons = screen.getAllByRole('button', { name: /Categoria.*sistema/i });
+    expect(editButtons[0]).toBeDisabled();
+    expect(editButtons[0]).toHaveClass('cursor-not-allowed', 'opacity-40');
+  });
+
+  it('enables edit button for non-system categories', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+
+    const editButtons = screen.getAllByRole('button');
+    const nonSystemButton = editButtons.find(btn => !btn.hasAttribute('disabled'));
+    
+    expect(nonSystemButton).toBeDefined();
+    if (nonSystemButton) {
+      await user.click(nonSystemButton);
+      expect(mockOnEdit).toHaveBeenCalled();
+    }
   });
 });
