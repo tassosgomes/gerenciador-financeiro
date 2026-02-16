@@ -2,7 +2,7 @@ using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Entity;
 
 public class UserTests
 {

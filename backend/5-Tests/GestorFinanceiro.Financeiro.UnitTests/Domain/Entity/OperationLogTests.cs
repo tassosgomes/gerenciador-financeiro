@@ -1,7 +1,7 @@
 using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Entity;
 
 public class OperationLogTests
 {

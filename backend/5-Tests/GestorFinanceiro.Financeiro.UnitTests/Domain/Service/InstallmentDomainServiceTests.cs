@@ -4,7 +4,7 @@ using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Service;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Service;
 
 public class InstallmentDomainServiceTests
 {

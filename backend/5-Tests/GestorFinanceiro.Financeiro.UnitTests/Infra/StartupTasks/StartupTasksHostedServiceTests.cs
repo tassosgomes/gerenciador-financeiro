@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Infra.StartupTasks;
 
 public class StartupTasksHostedServiceTests
 {

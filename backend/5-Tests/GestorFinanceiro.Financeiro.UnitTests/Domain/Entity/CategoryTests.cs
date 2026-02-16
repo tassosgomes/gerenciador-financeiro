@@ -3,7 +3,7 @@ using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Entity;
 
 public class CategoryTests
 {

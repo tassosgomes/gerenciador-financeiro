@@ -3,7 +3,7 @@ using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Service;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Service;
 
 public class TransferDomainServiceTests
 {
@@ -215,7 +215,7 @@ public class TransferDomainServiceTests
             "user-1",
             "op-123");
 
-        action.Should().Throw<Exception>();
+        action.Should().Throw<System.Exception>();
         debitAccount.Balance.Should().Be(500m);
     }
 

@@ -1,7 +1,7 @@
 using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 
-namespace GestorFinanceiro.Financeiro.UnitTests;
+namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Exception;
 
 public class AuthExceptionTests
 {
