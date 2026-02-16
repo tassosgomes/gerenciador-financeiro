@@ -17,4 +17,18 @@ public class CreateAccountRequest
     public decimal InitialBalance { get; set; }
 
     public bool AllowNegativeBalance { get; set; }
+
+    // Campos de cartão de crédito (opcionais, obrigatórios apenas quando Type == Cartao)
+    [Range(0.01, double.MaxValue)]
+    public decimal? CreditLimit { get; set; }
+
+    [Range(1, 28)]
+    public int? ClosingDay { get; set; }
+
+    [Range(1, 28)]
+    public int? DueDay { get; set; }
+
+    public Guid? DebitAccountId { get; set; }
+
+    public bool? EnforceCreditLimit { get; set; }
 }

@@ -53,6 +53,17 @@ public static class TestDataSeeder
         var expenseCategoryOne = Category.Create("Alimentacao", CategoryType.Despesa, "seed");
         var expenseCategoryTwo = Category.Create("Moradia", CategoryType.Despesa, "seed");
 
+        var invoicePaymentCategory = Category.Restore(
+            Guid.NewGuid(),
+            "Pagamento de Fatura",
+            CategoryType.Despesa,
+            isActive: true,
+            isSystem: true,
+            createdBy: "system",
+            createdAt: DateTime.UtcNow,
+            updatedBy: null,
+            updatedAt: null);
+
         var salaryTransaction = Transaction.Create(
             checkingAccount.Id,
             incomeCategory.Id,
@@ -77,7 +88,7 @@ public static class TestDataSeeder
 
         await context.Users.AddRangeAsync([adminUser, memberUser], cancellationToken);
         await context.Accounts.AddRangeAsync([checkingAccount, investmentAccount], cancellationToken);
-        await context.Categories.AddRangeAsync([incomeCategory, expenseCategoryOne, expenseCategoryTwo], cancellationToken);
+        await context.Categories.AddRangeAsync([incomeCategory, expenseCategoryOne, expenseCategoryTwo, invoicePaymentCategory], cancellationToken);
         await context.Transactions.AddRangeAsync([salaryTransaction, expenseTransaction], cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);

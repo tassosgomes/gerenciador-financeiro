@@ -5,6 +5,7 @@ using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Domain.Service;
+using FluentValidation;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -47,11 +48,7 @@ public class PayInvoiceCommandHandler : ICommandHandler<PayInvoiceCommand, IRead
         CancellationToken cancellationToken)
     {
         var validator = new PayInvoiceCommandValidator();
-        var validationResult = validator.Validate(command);
-        if (!validationResult.IsValid)
-        {
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", validationResult.Errors.Select(error => error.ErrorMessage))}");
-        }
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
 
         if (!string.IsNullOrEmpty(command.OperationId))
         {
