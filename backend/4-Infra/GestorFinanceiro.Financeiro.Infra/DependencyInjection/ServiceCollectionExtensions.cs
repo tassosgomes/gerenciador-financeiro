@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         // Startup tasks - order matters
         services.AddScoped<IStartupTask, MigrateDatabaseStartupTask>();
         services.AddScoped<IStartupTask, SeedAdminUserStartupTask>();
+        services.AddScoped<IStartupTask, SeedInvoicePaymentCategoryStartupTask>();
         services.AddHostedService<StartupTasksHostedService>();
 
         return services;

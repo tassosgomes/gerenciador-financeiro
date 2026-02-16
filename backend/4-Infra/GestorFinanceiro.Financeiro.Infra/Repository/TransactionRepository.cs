@@ -1,4 +1,5 @@
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,24 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
             .AsNoTracking()
             .Where(transaction => transaction.AccountId == accountId)
             .OrderByDescending(transaction => transaction.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Transaction>> GetByAccountAndPeriodAsync(
+        Guid accountId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Transactions
+            .AsNoTracking()
+            .Where(transaction =>
+                transaction.AccountId == accountId
+                && transaction.CompetenceDate > startDate
+                && transaction.CompetenceDate <= endDate
+                && transaction.Status == TransactionStatus.Paid)
+            .OrderBy(transaction => transaction.CompetenceDate)
+                .ThenBy(transaction => transaction.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 }

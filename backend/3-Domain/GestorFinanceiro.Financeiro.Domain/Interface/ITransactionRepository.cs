@@ -9,4 +9,5 @@ public interface ITransactionRepository : IRepository<Transaction>
     Task<IEnumerable<Transaction>> GetByTransferGroupAsync(Guid groupId, CancellationToken cancellationToken);
     Task<Transaction?> GetByOperationIdAsync(string operationId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Transaction>> GetByAccountIdAsync(Guid accountId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Transaction>> GetByAccountAndPeriodAsync(Guid accountId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
 }
