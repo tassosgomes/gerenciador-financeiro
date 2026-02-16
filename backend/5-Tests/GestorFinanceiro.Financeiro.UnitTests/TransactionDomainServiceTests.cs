@@ -186,6 +186,163 @@ public class TransactionDomainServiceTests
         account.Balance.Should().Be(100m);
     }
 
+    [Fact]
+    public void CreateTransaction_DebitOnCreditCardWithEnforceLimit_ExceedsLimit_ShouldThrowCreditLimitExceededException()
+    {
+        // Arrange
+        var creditCard = Account.CreateCreditCard(
+            "Cartão Visa",
+            creditLimit: 1000m,
+            closingDay: 10,
+            dueDay: 20,
+            debitAccountId: Guid.NewGuid(),
+            enforceCreditLimit: true,
+            userId: "user-1");
+
+        // Act & Assert
+        var action = () => _sut.CreateTransaction(
+            creditCard,
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            1500m,
+            "Compra acima do limite",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        action.Should().Throw<CreditLimitExceededException>();
+    }
+
+    [Fact]
+    public void CreateTransaction_DebitOnCreditCardWithEnforceLimit_WithinLimit_ShouldSucceed()
+    {
+        // Arrange
+        var creditCard = Account.CreateCreditCard(
+            "Cartão Visa",
+            creditLimit: 1000m,
+            closingDay: 10,
+            dueDay: 20,
+            debitAccountId: Guid.NewGuid(),
+            enforceCreditLimit: true,
+            userId: "user-1");
+
+        // Act
+        var transaction = _sut.CreateTransaction(
+            creditCard,
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            500m,
+            "Compra dentro do limite",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        // Assert
+        transaction.Should().NotBeNull();
+        transaction.Amount.Should().Be(500m);
+        creditCard.Balance.Should().Be(-500m);
+        creditCard.GetAvailableLimit().Should().Be(500m);
+    }
+
+    [Fact]
+    public void CreateTransaction_DebitOnCreditCardWithoutEnforceLimit_ExceedsLimit_ShouldSucceed()
+    {
+        // Arrange
+        var creditCard = Account.CreateCreditCard(
+            "Cartão Mastercard",
+            creditLimit: 1000m,
+            closingDay: 10,
+            dueDay: 20,
+            debitAccountId: Guid.NewGuid(),
+            enforceCreditLimit: false,
+            userId: "user-1");
+
+        // Act
+        var transaction = _sut.CreateTransaction(
+            creditCard,
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            1500m,
+            "Compra acima do limite informativo",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        // Assert
+        transaction.Should().NotBeNull();
+        transaction.Amount.Should().Be(1500m);
+        creditCard.Balance.Should().Be(-1500m);
+    }
+
+    [Fact]
+    public void CreateTransaction_DebitOnRegularAccount_ShouldNotCallValidateCreditLimit()
+    {
+        // Arrange
+        var regularAccount = CreateActiveAccount(initialBalance: 100m);
+
+        // Act
+        var transaction = _sut.CreateTransaction(
+            regularAccount,
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            50m,
+            "Despesa normal",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        // Assert
+        transaction.Should().NotBeNull();
+        transaction.Amount.Should().Be(50m);
+        regularAccount.Balance.Should().Be(50m);
+    }
+
+    [Fact]
+    public void CreateTransaction_CreditOnCreditCard_ShouldNotValidateLimit()
+    {
+        // Arrange
+        var creditCard = Account.CreateCreditCard(
+            "Cartão Visa",
+            creditLimit: 1000m,
+            closingDay: 10,
+            dueDay: 20,
+            debitAccountId: Guid.NewGuid(),
+            enforceCreditLimit: true,
+            userId: "user-1");
+
+        var debitTransaction = _sut.CreateTransaction(
+            creditCard,
+            Guid.NewGuid(),
+            TransactionType.Debit,
+            800m,
+            "Compra",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        // Act - Pagamento/crédito nunca é bloqueado, mesmo que exceda o limite
+        var creditTransaction = _sut.CreateTransaction(
+            creditCard,
+            Guid.NewGuid(),
+            TransactionType.Credit,
+            1500m,
+            "Pagamento de fatura",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Paid,
+            "user-1");
+
+        // Assert
+        creditTransaction.Should().NotBeNull();
+        creditTransaction.Amount.Should().Be(1500m);
+        creditCard.Balance.Should().Be(700m);
+    }
+
     private static Account CreateActiveAccount(decimal initialBalance = 100m)
     {
         return Account.Create("Conta", AccountType.Corrente, initialBalance, false, "user-1");

@@ -26,7 +26,7 @@ Formulário dinâmico, card diferenciado, drawer de fatura, pagamento de fatura,
 
 - [x] 1.0 Value Object CreditCardDetails e Exceções
 - [x] 2.0 Extensão da Entidade Account
-- [ ] 3.0 CreditCardDomainService e Validação de Limite
+- [x] 3.0 CreditCardDomainService e Validação de Limite
 - [ ] 4.0 Migration EF Core e Configuração de Persistência
 - [ ] 5.0 Extensão de Repositórios e Seed de Categoria
 - [ ] 6.0 Commands de Conta Adaptados para Cartão
