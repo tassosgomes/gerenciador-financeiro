@@ -13,6 +13,7 @@ const mockAccounts: AccountResponse[] = [
     isActive: true,
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: null,
+    creditCard: null,
   },
   {
     id: '2',
@@ -23,6 +24,14 @@ const mockAccounts: AccountResponse[] = [
     isActive: true,
     createdAt: '2026-01-16T10:00:00Z',
     updatedAt: null,
+    creditCard: {
+      creditLimit: 5000,
+      closingDay: 10,
+      dueDay: 20,
+      debitAccountId: '1',
+      enforceCreditLimit: true,
+      availableLimit: 4150,
+    },
   },
   {
     id: '3',
@@ -33,6 +42,7 @@ const mockAccounts: AccountResponse[] = [
     isActive: true,
     createdAt: '2026-01-17T10:00:00Z',
     updatedAt: null,
+    creditCard: null,
   },
   {
     id: '4',
@@ -43,6 +53,7 @@ const mockAccounts: AccountResponse[] = [
     isActive: true,
     createdAt: '2026-01-18T10:00:00Z',
     updatedAt: null,
+    creditCard: null,
   },
   {
     id: '5',
@@ -53,6 +64,7 @@ const mockAccounts: AccountResponse[] = [
     isActive: false,
     createdAt: '2026-01-19T10:00:00Z',
     updatedAt: '2026-01-20T10:00:00Z',
+    creditCard: null,
   },
 ];
 
@@ -84,11 +96,21 @@ export const accountsHandlers = [
       id: String(mockAccounts.length + 1),
       name: body.name,
       type: body.type,
-      balance: body.initialBalance,
-      allowNegativeBalance: body.allowNegativeBalance,
+      balance: body.initialBalance ?? 0,
+      allowNegativeBalance: body.allowNegativeBalance ?? false,
       isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: null,
+      creditCard: body.type === AccountType.Cartao && body.creditLimit && body.closingDay && body.dueDay && body.debitAccountId
+        ? {
+            creditLimit: body.creditLimit,
+            closingDay: body.closingDay,
+            dueDay: body.dueDay,
+            debitAccountId: body.debitAccountId,
+            enforceCreditLimit: body.enforceCreditLimit ?? true,
+            availableLimit: body.creditLimit,
+          }
+        : null,
     };
 
     mockAccounts.push(newAccount);
@@ -105,11 +127,23 @@ export const accountsHandlers = [
       return new HttpResponse(null, { status: 404 });
     }
 
+    const currentAccount = mockAccounts[accountIndex];
+
     mockAccounts[accountIndex] = {
-      ...mockAccounts[accountIndex],
+      ...currentAccount,
       name: body.name,
-      allowNegativeBalance: body.allowNegativeBalance,
+      allowNegativeBalance: body.allowNegativeBalance ?? currentAccount.allowNegativeBalance,
       updatedAt: new Date().toISOString(),
+      creditCard: currentAccount.type === AccountType.Cartao && body.creditLimit
+        ? {
+            creditLimit: body.creditLimit,
+            closingDay: body.closingDay ?? currentAccount.creditCard?.closingDay ?? 1,
+            dueDay: body.dueDay ?? currentAccount.creditCard?.dueDay ?? 10,
+            debitAccountId: body.debitAccountId ?? currentAccount.creditCard?.debitAccountId ?? '',
+            enforceCreditLimit: body.enforceCreditLimit ?? currentAccount.creditCard?.enforceCreditLimit ?? true,
+            availableLimit: body.creditLimit - Math.abs(currentAccount.balance),
+          }
+        : currentAccount.creditCard,
     };
 
     return HttpResponse.json(mockAccounts[accountIndex]);

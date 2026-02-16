@@ -14,6 +14,7 @@ const mockAccount: AccountResponse = {
   isActive: true,
   createdAt: '2026-01-15T10:00:00Z',
   updatedAt: null,
+  creditCard: null,
 };
 
 describe('AccountCard', () => {

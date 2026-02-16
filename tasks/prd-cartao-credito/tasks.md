@@ -33,7 +33,7 @@ Formulário dinâmico, card diferenciado, drawer de fatura, pagamento de fatura,
 - [x] 7.0 Query de Fatura Mensal
 - [x] 8.0 Command de Pagamento de Fatura
 - [x] 9.0 Endpoints API (Controllers e Requests)
-- [ ] 10.0 Frontend — Formulário e Tipos Adaptados
+- [x] 10.0 Frontend — Formulário e Tipos Adaptados
 - [ ] 11.0 Frontend — Card de Cartão e Drawer de Fatura
 - [ ] 12.0 Frontend — Dashboard Estendido
 

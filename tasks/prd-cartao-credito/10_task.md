@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: completed
 parallelizable: false
 blocked_by: ["9.0"]
 ---
@@ -35,7 +35,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### Tipos TypeScript
 
-- [ ] 10.1 Estender `AccountResponse` em `features/accounts/types/account.ts`:
+- [x] 10.1 Estender `AccountResponse` em `features/accounts/types/account.ts`:
   ```typescript
   export interface CreditCardDetailsResponse {
     creditLimit: number;
@@ -52,7 +52,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
   }
   ```
 
-- [ ] 10.2 Estender `CreateAccountRequest` e `UpdateAccountRequest` com campos opcionais:
+- [x] 10.2 Estender `CreateAccountRequest` e `UpdateAccountRequest` com campos opcionais:
   ```typescript
   export interface CreateAccountRequest {
     name: string;
@@ -68,7 +68,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
   }
   ```
 
-- [ ] 10.3 Criar tipos de fatura em `features/accounts/types/invoice.ts`:
+- [x] 10.3 Criar tipos de fatura em `features/accounts/types/invoice.ts`:
   ```typescript
   export interface InvoiceResponse {
     accountId: string;
@@ -103,7 +103,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### Schemas Zod
 
-- [ ] 10.4 Estender `accountSchema.ts` com validação condicional:
+- [x] 10.4 Estender `accountSchema.ts` com validação condicional:
   ```typescript
   export const createAccountSchema = z.discriminatedUnion('type', [
     // Schema para Corrente/Investimento/Carteira (existente)
@@ -129,7 +129,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### API Client
 
-- [ ] 10.5 Estender `accountsApi.ts` com funções de fatura:
+- [x] 10.5 Estender `accountsApi.ts` com funções de fatura:
   ```typescript
   export const getInvoice = async (
     accountId: string, month: number, year: number
@@ -154,7 +154,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### Hooks React Query
 
-- [ ] 10.6 Criar hook `useInvoice` em `features/accounts/hooks/useInvoice.ts`:
+- [x] 10.6 Criar hook `useInvoice` em `features/accounts/hooks/useInvoice.ts`:
   ```typescript
   export function useInvoice(accountId: string, month: number, year: number) {
     return useQuery({
@@ -182,7 +182,7 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### Formulário Dinâmico
 
-- [ ] 10.7 Adaptar `AccountForm.tsx` para campos condicionais por tipo:
+- [x] 10.7 Adaptar `AccountForm.tsx` para campos condicionais por tipo:
   - Observar o valor do campo `type` via `watch('type')` (react-hook-form)
   - Quando `type === AccountType.Cartao`:
     - **Ocultar**: "Saldo Inicial", "Permitir Saldo Negativo"
@@ -192,23 +192,23 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
     - **Ocultar**: campos de cartão
   - Transição suave entre os campos (animação CSS, conforme PRD)
 
-- [ ] 10.8 Implementar select de "Conta de Débito" no formulário:
+- [x] 10.8 Implementar select de "Conta de Débito" no formulário:
   - Listar contas ativas do tipo Corrente e Carteira (usar `useAccounts` com filtro)
   - O select deve excluir a própria conta sendo editada (para edição)
   - Mostrar nome e saldo de cada conta no options
 
-- [ ] 10.9 Adaptar formulário de edição (`AccountForm` modo edição):
+- [x] 10.9 Adaptar formulário de edição (`AccountForm` modo edição):
   - Quando editando cartão, preencher campos de cartão com dados de `account.creditCard`
   - Campos de cartão visíveis, tipo não editável (select desabilitado)
 
 ### Constantes
 
-- [ ] 10.10 Atualizar `constants.ts` se necessário:
+- [x] 10.10 Atualizar `constants.ts` se necessário:
   - Verificar se `ACCOUNT_TYPE_LABELS` e `ACCOUNT_TYPE_ICONS` já mapeiam tipo 2 (Cartão) — sim, já existem: `{2: 'Cartão'}` e `{2: CreditCard}`
 
 ### Testes Frontend
 
-- [ ] 10.11 Criar/estender testes para `AccountForm` em `features/accounts/__tests__/AccountForm.test.tsx`:
+- [x] 10.11 Criar/estender testes para `AccountForm` em `features/accounts/__tests__/AccountForm.test.tsx`:
   - `should show credit card fields when type is Cartao`
   - `should hide credit card fields when type is Corrente`
   - `should show initial balance when type is Corrente`
@@ -220,8 +220,8 @@ Adaptar os tipos TypeScript, schemas Zod, API client e formulário de conta (`Ac
 
 ### Validação
 
-- [ ] 10.12 Validar build frontend: `npm run build` e `npm run lint`
-- [ ] 10.13 Executar testes frontend: `npm test`
+- [x] 10.12 Validar build frontend: `npm run build` e `npm run lint`
+- [x] 10.13 Executar testes frontend: `npm test`
 
 ## Sequenciamento
 
