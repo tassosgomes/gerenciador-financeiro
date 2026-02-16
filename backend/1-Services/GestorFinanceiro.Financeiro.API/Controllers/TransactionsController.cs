@@ -40,7 +40,7 @@ public class TransactionsController : ControllerBase
             request.Description,
             request.CompetenceDate,
             request.DueDate,
-            TransactionStatus.Pending,
+            request.Status ?? TransactionStatus.Pending,
             userId.ToString(),
             request.OperationId);
 

@@ -26,6 +26,8 @@ public class CreateTransactionRequest
 
     public DateTime? DueDate { get; set; }
 
+    public TransactionStatus? Status { get; set; }
+
     [MaxLength(100)]
     public string? OperationId { get; set; }
 }

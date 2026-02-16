@@ -37,7 +37,7 @@ export function TransactionHistoryTimeline({ history }: TransactionHistoryTimeli
       <CardContent>
         <div className="relative space-y-6 before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-border">
           {history.map((entry, index) => (
-            <div key={entry.id} className="relative flex gap-4">
+            <div key={getHistoryEntryKey(entry, index)} className="relative flex gap-4">
               {/* Indicador */}
               <div
                 className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 bg-background ${
@@ -70,6 +70,14 @@ export function TransactionHistoryTimeline({ history }: TransactionHistoryTimeli
       </CardContent>
     </Card>
   );
+}
+
+function getHistoryEntryKey(entry: TransactionHistoryEntry, index: number): string {
+  if (entry.id && entry.id.trim() !== '') {
+    return `${entry.id}-${index}`;
+  }
+
+  return [entry.transactionId, entry.action, entry.performedAt, entry.details ?? '', index].join('-');
 }
 
 function getActionLabel(action: string): string {
