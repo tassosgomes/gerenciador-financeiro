@@ -68,6 +68,12 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 
         builder.OwnsOne(account => account.CreditCard, creditCard =>
         {
+            creditCard.ToTable("credit_card_details");
+
+            // Configurar explicitamente a FK para a tabela principal com nome snake_case
+            creditCard.WithOwner()
+                .HasForeignKey("account_id");
+
             creditCard.Property(cc => cc.CreditLimit)
                 .HasColumnName("credit_limit")
                 .HasColumnType("numeric(18,2)");
@@ -86,7 +92,14 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 
             creditCard.Property(cc => cc.EnforceCreditLimit)
                 .HasColumnName("enforce_credit_limit")
-                .HasColumnType("boolean");
+                .HasColumnType("boolean")
+                .HasDefaultValue(true);
+
+            // FK para conta de débito vinculada — RESTRICT impede remoção
+            creditCard.HasOne<Account>()
+                .WithMany()
+                .HasForeignKey(cc => cc.DebitAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

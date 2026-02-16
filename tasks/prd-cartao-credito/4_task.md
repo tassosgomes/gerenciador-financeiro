@@ -34,7 +34,7 @@ Configurar a persistência da composição `Account` ↔ `CreditCardDetails` via
 
 ### Configuração EF Core
 
-- [ ] 4.1 Estender `AccountConfiguration.cs` para mapear o owned entity `CreditCardDetails`:
+- [x] 4.1 Estender `AccountConfiguration.cs` para mapear o owned entity `CreditCardDetails`:
   - Adicionar bloco `OwnsOne(account => account.CreditCard, cc => { ... })` no método `Configure`
   - Dentro do bloco:
     - `cc.ToTable("credit_card_details")`
@@ -47,20 +47,20 @@ Configurar a persistência da composição `Account` ↔ `CreditCardDetails` via
 
 ### Migration
 
-- [ ] 4.2 Gerar migration EF Core: `dotnet ef migrations add AddCreditCardDetailsTable`
+- [x] 4.2 Gerar migration EF Core: `dotnet ef migrations add AddCreditCardDetailsTable`
   - Verificar que a migration **somente** cria a tabela `credit_card_details`
   - Verificar que **não** altera a tabela `accounts`
   - Verificar FKs geradas: `account_id` → `accounts(id)` CASCADE, `debit_account_id` → `accounts(id)` RESTRICT
 
-- [ ] 4.3 Verificar/criar índice composto em `transactions`:
+- [x] 4.3 Verificar/criar índice composto em `transactions`:
   - Verificar se já existe `idx_transactions_account_competence_status` em `(account_id, competence_date, status)`
   - Se não existir, adicionar na mesma migration ou em migration separada
 
 ### Validação
 
-- [ ] 4.4 Aplicar migration em banco de desenvolvimento: `dotnet ef database update`
-- [ ] 4.5 Verificar schema gerado no PostgreSQL — confirmar tabela, colunas, FKs e índices
-- [ ] 4.6 Validar build com `dotnet build` a partir de `backend/`
+- [x] 4.4 Aplicar migration em banco de desenvolvimento: `dotnet ef database update`
+- [x] 4.5 Verificar schema gerado no PostgreSQL — confirmar tabela, colunas, FKs e índices
+- [x] 4.6 Validar build com `dotnet build` a partir de `backend/`
 
 ## Sequenciamento
 

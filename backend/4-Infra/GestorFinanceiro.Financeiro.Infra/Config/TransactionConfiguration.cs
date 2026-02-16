@@ -183,5 +183,8 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.HasIndex(transaction => new { transaction.Status, transaction.DueDate })
             .HasDatabaseName("ix_transactions_status_due_date")
             .HasFilter("status = 2");
+
+        builder.HasIndex(transaction => new { transaction.AccountId, transaction.CompetenceDate, transaction.Status })
+            .HasDatabaseName("idx_transactions_account_competence_status");
     }
 }
