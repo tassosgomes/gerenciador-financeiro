@@ -6,6 +6,7 @@ import { Badge, Button, EmptyState, Table, TableBody, TableCell, TableHead, Tabl
 import { ConfirmationModal } from '@/shared/components/ui/ConfirmationModal';
 import { useToggleUserStatus } from '@/features/admin/hooks/useUsers';
 import { formatDate } from '@/shared/utils/formatters';
+import { useAuthStore } from '@/features/auth/store/authStore';
 
 interface UserTableProps {
   users: UserResponse[];
@@ -19,6 +20,7 @@ export function UserTable({ users }: UserTableProps): JSX.Element {
   } | null>(null);
 
   const toggleUserStatus = useToggleUserStatus();
+  const currentUser = useAuthStore((state) => state.user);
 
   const handleToggleClick = (user: UserResponse) => {
     setConfirmToggleModal({
@@ -100,7 +102,8 @@ export function UserTable({ users }: UserTableProps): JSX.Element {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleToggleClick(user)}
-                  disabled={toggleUserStatus.isPending}
+                  disabled={toggleUserStatus.isPending || user.id === currentUser?.id}
+                  title={user.id === currentUser?.id ? 'Não é possível alterar o status do próprio usuário' : undefined}
                 >
                   <span className="material-icons text-base">
                     {user.isActive ? 'block' : 'check_circle'}

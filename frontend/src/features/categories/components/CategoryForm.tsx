@@ -177,7 +177,7 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
             <div className="space-y-2">
               <label className="text-sm font-medium">Tipo</label>
               <div className="text-sm text-slate-500 bg-slate-50 p-2 rounded">
-                {category.type === CategoryType.Income ? 'Receita' : 'Despesa'}
+                {category.type === CategoryType.Expense ? 'Despesa' : 'Receita'}
                 <span className="ml-2 text-xs">(não editável)</span>
               </div>
             </div>

@@ -33,7 +33,7 @@ export function BarChartWidget({ data, height = 280 }: BarChartWidgetProps): JSX
           tickFormatter={(value) => formatCurrency(Number(value))}
         />
         <Tooltip formatter={(value: number) => formatCurrency(value)} />
-        <Legend formatter={(value) => (value === 'revenue' ? 'Receita' : 'Despesa')} />
+        <Legend />
         <Bar dataKey="revenue" fill="#137fec" name="Receita" radius={[4, 4, 0, 0]} />
         <Bar dataKey="expense" fill="#94a3b8" name="Despesa" radius={[4, 4, 0, 0]} />
       </BarChart>

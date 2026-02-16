@@ -31,6 +31,12 @@ public class ToggleUserStatusCommandHandler : ICommandHandler<ToggleUserStatusCo
     {
         _logger.LogInformation("Updating status for user {UserId} to active={IsActive}", command.UserId, command.IsActive);
 
+        // Previne auto-inativação
+        if (!command.IsActive && command.UserId.ToString() == command.UpdatedByUserId)
+        {
+            throw new CannotDeactivateSelfException();
+        }
+
         var user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
         if (user is null)
         {

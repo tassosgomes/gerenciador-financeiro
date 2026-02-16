@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X, Search } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import {
   Select,
@@ -148,15 +148,26 @@ export function TransactionFilters({
         </div>
       </div>
 
-      {/* Botão Limpar Filtros */}
-      {hasActiveFilters && (
-        <div className="flex justify-end">
-          <Button variant="outline" size="sm" onClick={onClearFilters}>
-            <X className="mr-2 h-4 w-4" />
-            Limpar filtros
-          </Button>
-        </div>
-      )}
+      {/* Botões de Ação */}
+      <div className="flex justify-end gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onClearFilters}
+          disabled={!hasActiveFilters}
+        >
+          <X className="mr-2 h-4 w-4" />
+          Limpar
+        </Button>
+        <Button 
+          variant="default" 
+          size="sm"
+          disabled={!hasActiveFilters}
+        >
+          <Search className="mr-2 h-4 w-4" />
+          Buscar
+        </Button>
+      </div>
     </div>
   );
 }
