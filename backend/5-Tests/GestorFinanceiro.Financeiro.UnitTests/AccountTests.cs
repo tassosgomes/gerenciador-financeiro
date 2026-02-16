@@ -136,4 +136,297 @@ public class AccountTests
 
         action.Should().NotThrow();
     }
+
+    [Fact]
+    public void CreateCreditCard_WithValidParameters_ShouldSetBalanceToZero()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.Balance.Should().Be(0m);
+    }
+
+    [Fact]
+    public void CreateCreditCard_WithValidParameters_ShouldSetAllowNegativeBalanceToTrue()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.AllowNegativeBalance.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CreateCreditCard_WithValidParameters_ShouldSetTypeToCartao()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.Type.Should().Be(AccountType.Cartao);
+    }
+
+    [Fact]
+    public void CreateCreditCard_WithValidParameters_ShouldHaveCreditCardDetailsPopulated()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.CreditCard.Should().NotBeNull();
+        account.CreditCard!.CreditLimit.Should().Be(5000m);
+        account.CreditCard.ClosingDay.Should().Be(10);
+        account.CreditCard.DueDay.Should().Be(15);
+        account.CreditCard.DebitAccountId.Should().Be(debitAccountId);
+        account.CreditCard.EnforceCreditLimit.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CreateCreditCard_WithInvalidCreditLimit_ShouldThrowException()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var action = () => Account.CreateCreditCard(
+            "Nubank",
+            -100m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        action.Should().Throw<InvalidCreditCardConfigException>();
+    }
+
+    [Fact]
+    public void UpdateCreditCard_WithValidParameters_ShouldUpdateNameAndDetails()
+    {
+        var debitAccountId = Guid.NewGuid();
+        var newDebitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.UpdateCreditCard(
+            "Nubank Gold",
+            8000m,
+            12,
+            17,
+            newDebitAccountId,
+            false,
+            "user-2");
+
+        account.Name.Should().Be("Nubank Gold");
+        account.CreditCard!.CreditLimit.Should().Be(8000m);
+        account.CreditCard.ClosingDay.Should().Be(12);
+        account.CreditCard.DueDay.Should().Be(17);
+        account.CreditCard.DebitAccountId.Should().Be(newDebitAccountId);
+        account.CreditCard.EnforceCreditLimit.Should().BeFalse();
+    }
+
+    [Fact]
+    public void UpdateCreditCard_WhenNotCreditCard_ShouldThrowInvalidCreditCardConfigException()
+    {
+        var account = Account.Create("Conta Corrente", AccountType.Corrente, 100m, false, "user-1");
+        var debitAccountId = Guid.NewGuid();
+
+        var action = () => account.UpdateCreditCard(
+            "Nome",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-2");
+
+        action.Should().Throw<InvalidCreditCardConfigException>()
+            .WithMessage("Conta n\u00e3o \u00e9 um cart\u00e3o de cr\u00e9dito.");
+    }
+
+    [Fact]
+    public void UpdateCreditCard_ShouldUpdateAudit()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.UpdateCreditCard(
+            "Nubank Gold",
+            8000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-2");
+
+        account.UpdatedBy.Should().Be("user-2");
+        account.UpdatedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void ValidateCreditLimit_WhenCreditCardIsNull_ShouldNotThrow()
+    {
+        var account = Account.Create("Conta Corrente", AccountType.Corrente, 100m, false, "user-1");
+
+        var action = () => account.ValidateCreditLimit(200m);
+
+        action.Should().NotThrow();
+    }
+
+    [Fact]
+    public void ValidateCreditLimit_WhenEnforceIsFalse_ShouldNotThrow()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            false,
+            "user-1");
+
+        account.ApplyDebit(4500m, "user-1");
+
+        var action = () => account.ValidateCreditLimit(1000m);
+
+        action.Should().NotThrow();
+    }
+
+    [Fact]
+    public void ValidateCreditLimit_WhenAmountExceedsLimit_ShouldThrowCreditLimitExceededException()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.ApplyDebit(4500m, "user-1");
+
+        var action = () => account.ValidateCreditLimit(1000m);
+
+        action.Should().Throw<CreditLimitExceededException>();
+    }
+
+    [Fact]
+    public void ValidateCreditLimit_WhenAmountWithinLimit_ShouldNotThrow()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.ApplyDebit(3000m, "user-1");
+
+        var action = () => account.ValidateCreditLimit(1500m);
+
+        action.Should().NotThrow();
+    }
+
+    [Fact]
+    public void GetAvailableLimit_WhenCreditCardIsNull_ShouldReturnZero()
+    {
+        var account = Account.Create("Conta Corrente", AccountType.Corrente, 100m, false, "user-1");
+
+        var availableLimit = account.GetAvailableLimit();
+
+        availableLimit.Should().Be(0m);
+    }
+
+    [Fact]
+    public void GetAvailableLimit_WithNegativeBalance_ShouldReturnLimitMinusAbsBalance()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.ApplyDebit(2000m, "user-1");
+
+        var availableLimit = account.GetAvailableLimit();
+
+        availableLimit.Should().Be(3000m);
+    }
+
+    [Fact]
+    public void GetAvailableLimit_WithPositiveBalance_ShouldReturnLimitMinusAbsBalance()
+    {
+        var debitAccountId = Guid.NewGuid();
+
+        var account = Account.CreateCreditCard(
+            "Nubank",
+            5000m,
+            10,
+            15,
+            debitAccountId,
+            true,
+            "user-1");
+
+        account.ApplyCredit(500m, "user-1");
+
+        var availableLimit = account.GetAvailableLimit();
+
+        availableLimit.Should().Be(4500m);
+    }
 }

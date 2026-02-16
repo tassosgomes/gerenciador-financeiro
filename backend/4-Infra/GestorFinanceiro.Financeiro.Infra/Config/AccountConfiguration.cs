@@ -65,5 +65,28 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         builder.Property(account => account.UpdatedAt)
             .HasColumnName("updated_at")
             .HasColumnType("timestamp with time zone");
+
+        builder.OwnsOne(account => account.CreditCard, creditCard =>
+        {
+            creditCard.Property(cc => cc.CreditLimit)
+                .HasColumnName("credit_limit")
+                .HasColumnType("numeric(18,2)");
+
+            creditCard.Property(cc => cc.ClosingDay)
+                .HasColumnName("closing_day")
+                .HasColumnType("smallint");
+
+            creditCard.Property(cc => cc.DueDay)
+                .HasColumnName("due_day")
+                .HasColumnType("smallint");
+
+            creditCard.Property(cc => cc.DebitAccountId)
+                .HasColumnName("debit_account_id")
+                .HasColumnType("uuid");
+
+            creditCard.Property(cc => cc.EnforceCreditLimit)
+                .HasColumnName("enforce_credit_limit")
+                .HasColumnType("boolean");
+        });
     }
 }

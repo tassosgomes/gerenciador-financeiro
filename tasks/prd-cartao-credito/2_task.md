@@ -38,35 +38,35 @@ Estender a entidade `Account` para suportar composição com `CreditCardDetails`
 
 ### Extensão de Account
 
-- [ ] 2.1 Adicionar propriedade `CreditCard` (`CreditCardDetails?`, nullable) em `Account.cs`:
+- [x] 2.1 Adicionar propriedade `CreditCard` (`CreditCardDetails?`, nullable) em `Account.cs`:
   - Setter privado
   - Property é `null` para contas dos tipos Corrente, Investimento e Carteira
 
-- [ ] 2.2 Criar factory method `CreateCreditCard(...)` em `Account.cs`:
+- [x] 2.2 Criar factory method `CreateCreditCard(...)` em `Account.cs`:
   - Parâmetros: `name`, `creditLimit`, `closingDay`, `dueDay`, `debitAccountId`, `enforceCreditLimit`, `userId`
   - Força: `Balance = 0`, `AllowNegativeBalance = true`, `Type = AccountType.Cartao`
   - Delega criação de `CreditCardDetails` ao factory method `CreditCardDetails.Create(...)`
   - Chama `SetAuditOnCreate(userId)`
 
-- [ ] 2.3 Criar método `UpdateCreditCard(...)` em `Account.cs`:
+- [x] 2.3 Criar método `UpdateCreditCard(...)` em `Account.cs`:
   - Parâmetros: `name`, `creditLimit`, `closingDay`, `dueDay`, `debitAccountId`, `enforceCreditLimit`, `userId`
   - Valida que `CreditCard != null` (senão `InvalidCreditCardConfigException`)
   - Atualiza `Name` diretamente
   - Delega atualização de campos de cartão para `CreditCard.Update(...)`
   - Chama `SetAuditOnUpdate(userId)`
 
-- [ ] 2.4 Criar método `ValidateCreditLimit(decimal amount)` em `Account.cs`:
+- [x] 2.4 Criar método `ValidateCreditLimit(decimal amount)` em `Account.cs`:
   - Se `CreditCard == null` → retorna (bypass — não é cartão)
   - Se `!CreditCard.EnforceCreditLimit` → retorna (limite informativo)
   - Se `GetAvailableLimit() < amount` → lança `CreditLimitExceededException(Id, GetAvailableLimit(), amount)`
 
-- [ ] 2.5 Criar método `GetAvailableLimit()` em `Account.cs`:
+- [x] 2.5 Criar método `GetAvailableLimit()` em `Account.cs`:
   - Se `CreditCard == null` → retorna 0
   - Retorna `CreditCard.CreditLimit - Math.Abs(Balance)`
 
 ### Testes Unitários
 
-- [ ] 2.6 Criar/estender testes em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/AccountTests.cs`:
+- [x] 2.6 Criar/estender testes em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/AccountTests.cs`:
   - `CreateCreditCard_WithValidParameters_ShouldSetBalanceToZero`
   - `CreateCreditCard_WithValidParameters_ShouldSetAllowNegativeBalanceToTrue`
   - `CreateCreditCard_WithValidParameters_ShouldSetTypeToCarto`
@@ -85,8 +85,8 @@ Estender a entidade `Account` para suportar composição com `CreditCardDetails`
 
 ### Validação
 
-- [ ] 2.7 Validar build com `dotnet build` a partir de `backend/`
-- [ ] 2.8 Executar testes unitários com `dotnet test` para o projeto de testes unitários
+- [x] 2.7 Validar build com `dotnet build` a partir de `backend/`
+- [x] 2.8 Executar testes unitários com `dotnet test` para o projeto de testes unitários
 
 ## Sequenciamento
 
