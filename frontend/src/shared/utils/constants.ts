@@ -6,8 +6,8 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', path: '/dashboard', icon: 'dashboard', title: 'Visao Geral' },
-  { label: 'Transacoes', path: '/transactions', icon: 'receipt_long', title: 'Transacoes' },
+  { label: 'Dashboard', path: '/dashboard', icon: 'dashboard', title: 'Visão Geral' },
+  { label: 'Transações', path: '/transactions', icon: 'receipt_long', title: 'Transações' },
   { label: 'Contas', path: '/accounts', icon: 'account_balance', title: 'Minhas Contas' },
   { label: 'Categorias', path: '/categories', icon: 'category', title: 'Categorias' },
   { label: 'Admin', path: '/admin', icon: 'admin_panel_settings', title: 'Painel Admin' },

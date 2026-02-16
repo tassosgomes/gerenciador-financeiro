@@ -40,7 +40,7 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
 
         builder.Property(auditLog => auditLog.Timestamp)
             .HasColumnName("timestamp")
-            .HasColumnType("timestamp")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
 
         builder.Property(auditLog => auditLog.PreviousData)

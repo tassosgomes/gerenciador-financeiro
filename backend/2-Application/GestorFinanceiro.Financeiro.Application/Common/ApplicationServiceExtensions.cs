@@ -15,6 +15,7 @@ using GestorFinanceiro.Financeiro.Application.Queries.Account;
 using GestorFinanceiro.Financeiro.Application.Queries.Audit;
 using GestorFinanceiro.Financeiro.Application.Queries.Backup;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
+using GestorFinanceiro.Financeiro.Application.Queries.Dashboard;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
 using FluentValidation;
@@ -71,6 +72,8 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<ListTransactionsQuery, PagedResult<TransactionResponse>>, ListTransactionsQueryHandler>();
         services.AddScoped<IQueryHandler<ListAuditLogsQuery, PagedResult<AuditLogDto>>, ListAuditLogsQueryHandler>();
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetDashboardSummaryQuery, DashboardSummaryResponse>, GetDashboardSummaryQueryHandler>();
+        services.AddScoped<IQueryHandler<GetDashboardChartsQuery, DashboardChartsResponse>, GetDashboardChartsQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ExportBackupQuery, BackupExportDto>, ExportBackupQueryHandler>();

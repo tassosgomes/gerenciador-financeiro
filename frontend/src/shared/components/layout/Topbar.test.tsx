@@ -32,7 +32,7 @@ describe('Topbar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: /visao geral/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /visão geral/i })).toBeInTheDocument();
     expect(screen.getByText(/carlos silva/i)).toBeInTheDocument();
     expect(screen.getByText(/administrador/i)).toBeInTheDocument();
   });
@@ -93,7 +93,7 @@ describe('Topbar', () => {
 
     expect(links.length).toBeGreaterThan(0);
     expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /transacoes/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /transações/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /contas/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /categorias/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /admin/i })).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe('Topbar', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    const transactionsLink = screen.getByRole('link', { name: /transacoes/i });
+    const transactionsLink = screen.getByRole('link', { name: /transações/i });
 
     await user.click(transactionsLink);
 

@@ -18,9 +18,6 @@ export function Sidebar(): JSX.Element {
     [],
   );
 
-  const userName = user?.name ?? 'Usuario';
-  const userRoleLabel = isAdmin ? 'Administrador' : 'Membro da familia';
-
   return (
     <aside className="hidden h-full w-64 flex-shrink-0 flex-col border-r border-slate-200 bg-surface-light shadow-sm md:flex">
       <div className="flex h-16 items-center border-b border-slate-200 px-6">
@@ -88,16 +85,6 @@ export function Sidebar(): JSX.Element {
         <div className="mb-3 flex items-center gap-3 rounded-xl bg-slate-50 p-3">
           <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
           <span className="text-xs font-medium text-slate-500">Sistema Online</span>
-        </div>
-
-        <div className="flex items-center gap-3 px-1">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary ring-2 ring-slate-100">
-            {userName.charAt(0).toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-slate-800">{userName}</p>
-            <p className="truncate text-xs text-slate-500">{userRoleLabel}</p>
-          </div>
         </div>
       </div>
     </aside>
