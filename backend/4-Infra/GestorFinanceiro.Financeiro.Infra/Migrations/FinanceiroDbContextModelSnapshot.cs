@@ -108,7 +108,7 @@ namespace GestorFinanceiro.Financeiro.Infra.Migrations
                         .HasColumnName("previous_data");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("timestamp");
 
                     b.Property<string>("UserId")
