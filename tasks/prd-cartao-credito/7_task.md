@@ -35,7 +35,7 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
 
 ### Query e Handler
 
-- [ ] 7.1 Criar `GetInvoiceQuery` em `2-Application/GestorFinanceiro.Financeiro.Application/Queries/Invoice/GetInvoiceQuery.cs`:
+- [x] 7.1 Criar `GetInvoiceQuery` em `2-Application/GestorFinanceiro.Financeiro.Application/Queries/Invoice/GetInvoiceQuery.cs`:
   ```csharp
   public record GetInvoiceQuery(
       Guid AccountId,
@@ -44,7 +44,7 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
   ) : IQuery<InvoiceResponse>;
   ```
 
-- [ ] 7.2 Criar `GetInvoiceQueryHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Queries/Invoice/GetInvoiceQueryHandler.cs`:
+- [x] 7.2 Criar `GetInvoiceQueryHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Queries/Invoice/GetInvoiceQueryHandler.cs`:
   - Carregar conta via `IAccountRepository.GetByIdAsync`
   - Validar que conta existe e √© tipo Cart√£o (`CreditCard != null`)
   - Calcular per√≠odo de fatura via `CreditCardDomainService.CalculateInvoicePeriod(closingDay, month, year)`
@@ -54,14 +54,14 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
   - Calcular `AmountDue` = `TotalAmount - PreviousBalance` (m√≠nimo 0)
   - Montar `InvoiceResponse` com lista de `InvoiceTransactionDto`
 
-- [ ] 7.3 Criar `GetInvoiceQueryValidator`:
+- [x] 7.3 Criar `GetInvoiceQueryValidator`:
   - `AccountId` n√£o pode ser `Guid.Empty`
   - `Month` entre 1 e 12
   - `Year` > 0
 
 ### DTOs
 
-- [ ] 7.4 Criar `InvoiceResponse` em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/InvoiceResponse.cs`:
+- [x] 7.4 Criar `InvoiceResponse` em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/InvoiceResponse.cs`:
   ```csharp
   public record InvoiceResponse(
       Guid AccountId,
@@ -78,7 +78,7 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
   );
   ```
 
-- [ ] 7.5 Criar `InvoiceTransactionDto` em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/InvoiceTransactionDto.cs`:
+- [x] 7.5 Criar `InvoiceTransactionDto` em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/InvoiceTransactionDto.cs`:
   ```csharp
   public record InvoiceTransactionDto(
       Guid Id,
@@ -93,7 +93,7 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
 
 ### Testes Unit√°rios
 
-- [ ] 7.6 Criar testes para `GetInvoiceQueryHandler` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Application/Queries/GetInvoiceQueryHandlerTests.cs`:
+- [x] 7.6 Criar testes para `GetInvoiceQueryHandler` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Application/Queries/GetInvoiceQueryHandlerTests.cs`:
   - `Handle_WithValidCardAndTransactions_ShouldReturnInvoiceResponse`
   - `Handle_WithNoTransactions_ShouldReturnZeroTotalAmount`
   - `Handle_AccountNotFound_ShouldThrowNotFoundException`
@@ -103,15 +103,15 @@ Implementar a query `GetInvoiceQuery` que retorna a fatura (invoice) de um cart√
   - `Handle_WithPreviousPositiveBalance_ShouldAbateFromTotal`
   - `Handle_WithCreditTransactions_ShouldSubtractFromTotal`
 
-- [ ] 7.7 Criar testes para `GetInvoiceQueryValidator`:
+- [x] 7.7 Criar testes para `GetInvoiceQueryValidator`:
   - `Validate_WithEmptyAccountId_ShouldFail`
   - `Validate_WithInvalidMonth_ShouldFail`
   - `Validate_WithValidParameters_ShouldPass`
 
 ### Valida√ß√£o
 
-- [ ] 7.8 Validar build com `dotnet build`
-- [ ] 7.9 Executar testes com `dotnet test`
+- [x] 7.8 Validar build com `dotnet build`
+- [x] 7.9 Executar testes com `dotnet test`
 
 ## Sequenciamento
 

@@ -30,7 +30,7 @@ Formulário dinâmico, card diferenciado, drawer de fatura, pagamento de fatura,
 - [x] 4.0 Migration EF Core e Configuração de Persistência
 - [x] 5.0 Extensão de Repositórios e Seed de Categoria
 - [x] 6.0 Commands de Conta Adaptados para Cartão
-- [ ] 7.0 Query de Fatura Mensal
+- [x] 7.0 Query de Fatura Mensal
 - [ ] 8.0 Command de Pagamento de Fatura
 - [ ] 9.0 Endpoints API (Controllers e Requests)
 - [ ] 10.0 Frontend — Formulário e Tipos Adaptados

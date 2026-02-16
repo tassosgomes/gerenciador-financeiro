@@ -16,8 +16,10 @@ using GestorFinanceiro.Financeiro.Application.Queries.Audit;
 using GestorFinanceiro.Financeiro.Application.Queries.Backup;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Dashboard;
+using GestorFinanceiro.Financeiro.Application.Queries.Invoice;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
+using GestorFinanceiro.Financeiro.Domain.Service;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,6 +32,7 @@ public static class ApplicationServiceExtensions
         // Register Dispatcher
         services.AddScoped<IDispatcher, Dispatcher>();
         services.AddScoped<IBackupIntegrityValidator, BackupIntegrityValidator>();
+        services.AddScoped<CreditCardDomainService>();
 
         // Configure mappings
         MappingConfig.ConfigureMappings();
@@ -74,6 +77,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardSummaryQuery, DashboardSummaryResponse>, GetDashboardSummaryQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardChartsQuery, DashboardChartsResponse>, GetDashboardChartsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetInvoiceQuery, InvoiceResponse>, GetInvoiceQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ExportBackupQuery, BackupExportDto>, ExportBackupQueryHandler>();
@@ -85,6 +89,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<CreateUserCommandValidator>();
         services.AddScoped<IValidator<ImportBackupCommand>, ImportBackupValidator>();
         services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
+        services.AddScoped<IValidator<GetInvoiceQuery>, GetInvoiceQueryValidator>();
 
         return services;
     }
