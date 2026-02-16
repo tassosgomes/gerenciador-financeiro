@@ -11,12 +11,24 @@ type CategoryApiResponse = Omit<CategoryResponse, 'type'> & {
 };
 
 function normalizeCategoryType(type: CategoryApiResponse['type']): CategoryResponse['type'] {
+  // Se já é um número válido, retorna diretamente
   if (typeof type === 'number') {
-    return type;
+    // Valida se é um valor válido do enum
+    if (type === CategoryType.Income || type === CategoryType.Expense) {
+      return type;
+    }
   }
 
-  const normalized = CategoryType[type as keyof typeof CategoryType];
-  return normalized ?? CategoryType.Expense;
+  // Se é uma string, tenta converter pela chave
+  if (typeof type === 'string') {
+    const normalized = CategoryType[type as keyof typeof CategoryType];
+    if (normalized !== undefined) {
+      return normalized;
+    }
+  }
+
+  // Fallback para Expense em caso de valor inválido
+  return CategoryType.Expense;
 }
 
 function normalizeCategory(category: CategoryApiResponse): CategoryResponse {
