@@ -3,6 +3,8 @@ export interface DashboardSummaryResponse {
   monthlyIncome: number;
   monthlyExpenses: number;
   creditCardDebt: number;
+  totalCreditLimit: number | null;
+  creditUtilizationPercent: number | null;
 }
 
 export interface MonthlyComparisonDto {

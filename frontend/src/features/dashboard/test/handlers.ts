@@ -14,6 +14,8 @@ export const dashboardHandlers = [
       monthlyIncome: 8200.00,
       monthlyExpenses: 4100.00,
       creditCardDebt: 1450.00,
+      totalCreditLimit: 10000.00,
+      creditUtilizationPercent: 14.5,
     };
     return HttpResponse.json(response);
   }),

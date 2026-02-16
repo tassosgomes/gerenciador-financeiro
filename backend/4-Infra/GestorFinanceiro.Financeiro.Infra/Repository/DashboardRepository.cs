@@ -58,6 +58,23 @@ public class DashboardRepository : IDashboardRepository
             .SumAsync(a => (decimal?)a.Balance ?? 0, cancellationToken);
     }
 
+    public async Task<decimal?> GetTotalCreditLimitAsync(CancellationToken cancellationToken)
+    {
+        var hasActiveCreditCards = await _context.Accounts
+            .AsNoTracking()
+            .AnyAsync(a => a.Type == AccountType.Cartao && a.IsActive && a.CreditCard != null, cancellationToken);
+
+        if (!hasActiveCreditCards)
+        {
+            return null;
+        }
+
+        return await _context.Accounts
+            .AsNoTracking()
+            .Where(a => a.Type == AccountType.Cartao && a.IsActive && a.CreditCard != null)
+            .SumAsync(a => (decimal?)a.CreditCard!.CreditLimit ?? 0, cancellationToken);
+    }
+
     public async Task<List<MonthlyComparisonDto>> GetRevenueVsExpenseAsync(
         int month,
         int year,
