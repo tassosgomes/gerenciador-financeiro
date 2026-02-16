@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Commands.Backup;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
+using GestorFinanceiro.Financeiro.Application.Commands.Invoice;
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
@@ -56,6 +57,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<GenerateRecurrenceCommand, Unit>, GenerateRecurrenceCommandHandler>();
         services.AddScoped<ICommandHandler<CreateTransferCommand, IReadOnlyList<TransactionResponse>>, CreateTransferCommandHandler>();
         services.AddScoped<ICommandHandler<CancelTransferCommand, Unit>, CancelTransferCommandHandler>();
+        services.AddScoped<ICommandHandler<PayInvoiceCommand, IReadOnlyList<TransactionResponse>>, PayInvoiceCommandHandler>();
         services.AddScoped<ICommandHandler<LoginCommand, AuthResponse>, LoginCommandHandler>();
         services.AddScoped<ICommandHandler<RefreshTokenCommand, AuthResponse>, RefreshTokenCommandHandler>();
         services.AddScoped<ICommandHandler<LogoutCommand, Unit>, LogoutCommandHandler>();
@@ -87,6 +89,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<RefreshTokenCommandValidator>();
         services.AddScoped<ChangePasswordCommandValidator>();
         services.AddScoped<CreateUserCommandValidator>();
+        services.AddScoped<PayInvoiceCommandValidator>();
         services.AddScoped<IValidator<ImportBackupCommand>, ImportBackupValidator>();
         services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
         services.AddScoped<IValidator<GetInvoiceQuery>, GetInvoiceQueryValidator>();
