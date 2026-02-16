@@ -2,6 +2,7 @@ using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using Mapster;
@@ -60,7 +61,42 @@ public class UpdateAccountCommandHandler : ICommandHandler<UpdateAccountCommand,
 
             var previousData = account.Adapt<AccountResponse>();
 
-            account.Update(command.Name, command.AllowNegativeBalance, command.UserId);
+            // Bifurcação por tipo de conta
+            if (account.CreditCard != null)
+            {
+                // É cartão - validar conta de débito se fornecida
+                if (command.DebitAccountId.HasValue)
+                {
+                    var debitAccount = await _accountRepository.GetByIdAsync(command.DebitAccountId.Value, cancellationToken);
+                    if (debitAccount == null)
+                        throw new AccountNotFoundException(command.DebitAccountId.Value);
+                    if (!debitAccount.IsActive)
+                        throw new InvalidCreditCardConfigException("Conta de débito está inativa.");
+                    if (debitAccount.Type != AccountType.Corrente && debitAccount.Type != AccountType.Carteira)
+                        throw new InvalidCreditCardConfigException("Conta de débito deve ser do tipo Corrente ou Carteira.");
+                }
+
+                // Usar valores existentes se não fornecidos
+                var creditLimit = command.CreditLimit ?? account.CreditCard.CreditLimit;
+                var closingDay = command.ClosingDay ?? account.CreditCard.ClosingDay;
+                var dueDay = command.DueDay ?? account.CreditCard.DueDay;
+                var debitAccountId = command.DebitAccountId ?? account.CreditCard.DebitAccountId;
+                var enforceCreditLimit = command.EnforceCreditLimit ?? account.CreditCard.EnforceCreditLimit;
+
+                account.UpdateCreditCard(
+                    command.Name,
+                    creditLimit,
+                    closingDay,
+                    dueDay,
+                    debitAccountId,
+                    enforceCreditLimit,
+                    command.UserId);
+            }
+            else
+            {
+                // Fluxo existente para contas regulares
+                account.Update(command.Name, command.AllowNegativeBalance, command.UserId);
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

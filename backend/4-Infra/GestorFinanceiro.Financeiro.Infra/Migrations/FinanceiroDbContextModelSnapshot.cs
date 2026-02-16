@@ -155,6 +155,12 @@ namespace GestorFinanceiro.Financeiro.Infra.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
+                    b.Property<bool>("IsSystem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_system");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(150)")
@@ -175,116 +181,6 @@ namespace GestorFinanceiro.Financeiro.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("categories", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Alimentação",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Transporte",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Moradia",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Lazer",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Saúde",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Educação",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Vestuário",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000008"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Outros",
-                            Type = (short)2
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Salário",
-                            Type = (short)1
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000010"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Freelance",
-                            Type = (short)1
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000011"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Investimento",
-                            Type = (short)1
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000012"),
-                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "system",
-                            IsActive = true,
-                            Name = "Outros",
-                            Type = (short)1
-                        });
                 });
 
             modelBuilder.Entity("GestorFinanceiro.Financeiro.Domain.Entity.OperationLog", b =>
@@ -624,6 +520,9 @@ namespace GestorFinanceiro.Financeiro.Infra.Migrations
                         .HasDatabaseName("ix_transactions_status_due_date")
                         .HasFilter("status = 2");
 
+                    b.HasIndex("AccountId", "CompetenceDate", "Status")
+                        .HasDatabaseName("idx_transactions_account_competence_status");
+
                     b.ToTable("transactions", null, t =>
                         {
                             t.HasCheckConstraint("ck_transactions_amount_positive", "amount > 0");
@@ -695,6 +594,54 @@ namespace GestorFinanceiro.Financeiro.Infra.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("GestorFinanceiro.Financeiro.Domain.Entity.Account", b =>
+                {
+                    b.OwnsOne("GestorFinanceiro.Financeiro.Domain.Entity.CreditCardDetails", "CreditCard", b1 =>
+                        {
+                            b1.Property<Guid>("account_id")
+                                .HasColumnType("uuid");
+
+                            b1.Property<short>("ClosingDay")
+                                .HasColumnType("smallint")
+                                .HasColumnName("closing_day");
+
+                            b1.Property<decimal>("CreditLimit")
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("credit_limit");
+
+                            b1.Property<Guid>("DebitAccountId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("debit_account_id");
+
+                            b1.Property<short>("DueDay")
+                                .HasColumnType("smallint")
+                                .HasColumnName("due_day");
+
+                            b1.Property<bool>("EnforceCreditLimit")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(true)
+                                .HasColumnName("enforce_credit_limit");
+
+                            b1.HasKey("account_id");
+
+                            b1.HasIndex("DebitAccountId");
+
+                            b1.ToTable("credit_card_details", (string)null);
+
+                            b1.HasOne("GestorFinanceiro.Financeiro.Domain.Entity.Account", null)
+                                .WithMany()
+                                .HasForeignKey("DebitAccountId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
+
+                            b1.WithOwner()
+                                .HasForeignKey("account_id");
+                        });
+
+                    b.Navigation("CreditCard");
                 });
 
             modelBuilder.Entity("GestorFinanceiro.Financeiro.Domain.Entity.RecurrenceTemplate", b =>

@@ -10,6 +10,7 @@ public class Account : BaseEntity
     public decimal Balance { get; private set; }
     public bool AllowNegativeBalance { get; private set; }
     public bool IsActive { get; private set; } = true;
+    public CreditCardDetails? CreditCard { get; private set; }
 
     public static Account Create(
         string name,
@@ -57,6 +58,33 @@ public class Account : BaseEntity
         };
     }
 
+    public static Account CreateCreditCard(
+        string name,
+        decimal creditLimit,
+        int closingDay,
+        int dueDay,
+        Guid debitAccountId,
+        bool enforceCreditLimit,
+        string userId)
+    {
+        var account = new Account
+        {
+            Name = name,
+            Type = AccountType.Cartao,
+            Balance = 0,
+            AllowNegativeBalance = true,
+            CreditCard = CreditCardDetails.Create(
+                creditLimit,
+                closingDay,
+                dueDay,
+                debitAccountId,
+                enforceCreditLimit)
+        };
+
+        account.SetAuditOnCreate(userId);
+        return account;
+    }
+
     public void Activate(string userId)
     {
         IsActive = true;
@@ -73,6 +101,23 @@ public class Account : BaseEntity
     {
         Name = name;
         AllowNegativeBalance = allowNegativeBalance;
+        SetAuditOnUpdate(userId);
+    }
+
+    public void UpdateCreditCard(
+        string name,
+        decimal creditLimit,
+        int closingDay,
+        int dueDay,
+        Guid debitAccountId,
+        bool enforceCreditLimit,
+        string userId)
+    {
+        if (CreditCard == null)
+            throw new InvalidCreditCardConfigException("Conta não é um cartão de crédito.");
+
+        Name = name;
+        CreditCard.Update(creditLimit, closingDay, dueDay, debitAccountId, enforceCreditLimit);
         SetAuditOnUpdate(userId);
     }
 
@@ -111,5 +156,19 @@ public class Account : BaseEntity
         {
             throw new InactiveAccountException(Id);
         }
+    }
+
+    public void ValidateCreditLimit(decimal amount)
+    {
+        if (CreditCard == null) return;
+        if (!CreditCard.EnforceCreditLimit) return;
+        if (GetAvailableLimit() < amount)
+            throw new CreditLimitExceededException(Id, GetAvailableLimit(), amount);
+    }
+
+    public decimal GetAvailableLimit()
+    {
+        if (CreditCard == null) return 0;
+        return CreditCard.CreditLimit - Math.Abs(Balance);
     }
 }

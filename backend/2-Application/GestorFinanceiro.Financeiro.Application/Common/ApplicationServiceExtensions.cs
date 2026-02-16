@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Commands.Backup;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
+using GestorFinanceiro.Financeiro.Application.Commands.Invoice;
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
@@ -16,8 +17,10 @@ using GestorFinanceiro.Financeiro.Application.Queries.Audit;
 using GestorFinanceiro.Financeiro.Application.Queries.Backup;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Dashboard;
+using GestorFinanceiro.Financeiro.Application.Queries.Invoice;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Application.Queries.User;
+using GestorFinanceiro.Financeiro.Domain.Service;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,6 +33,7 @@ public static class ApplicationServiceExtensions
         // Register Dispatcher
         services.AddScoped<IDispatcher, Dispatcher>();
         services.AddScoped<IBackupIntegrityValidator, BackupIntegrityValidator>();
+        services.AddScoped<CreditCardDomainService>();
 
         // Configure mappings
         MappingConfig.ConfigureMappings();
@@ -53,6 +57,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<GenerateRecurrenceCommand, Unit>, GenerateRecurrenceCommandHandler>();
         services.AddScoped<ICommandHandler<CreateTransferCommand, IReadOnlyList<TransactionResponse>>, CreateTransferCommandHandler>();
         services.AddScoped<ICommandHandler<CancelTransferCommand, Unit>, CancelTransferCommandHandler>();
+        services.AddScoped<ICommandHandler<PayInvoiceCommand, IReadOnlyList<TransactionResponse>>, PayInvoiceCommandHandler>();
         services.AddScoped<ICommandHandler<LoginCommand, AuthResponse>, LoginCommandHandler>();
         services.AddScoped<ICommandHandler<RefreshTokenCommand, AuthResponse>, RefreshTokenCommandHandler>();
         services.AddScoped<ICommandHandler<LogoutCommand, Unit>, LogoutCommandHandler>();
@@ -74,6 +79,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<ListCategoriesQuery, IReadOnlyList<CategoryResponse>>, ListCategoriesQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardSummaryQuery, DashboardSummaryResponse>, GetDashboardSummaryQueryHandler>();
         services.AddScoped<IQueryHandler<GetDashboardChartsQuery, DashboardChartsResponse>, GetDashboardChartsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetInvoiceQuery, InvoiceResponse>, GetInvoiceQueryHandler>();
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ExportBackupQuery, BackupExportDto>, ExportBackupQueryHandler>();
@@ -83,8 +89,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<RefreshTokenCommandValidator>();
         services.AddScoped<ChangePasswordCommandValidator>();
         services.AddScoped<CreateUserCommandValidator>();
+        services.AddScoped<PayInvoiceCommandValidator>();
         services.AddScoped<IValidator<ImportBackupCommand>, ImportBackupValidator>();
         services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
+        services.AddScoped<IValidator<GetInvoiceQuery>, GetInvoiceQueryValidator>();
 
         return services;
     }

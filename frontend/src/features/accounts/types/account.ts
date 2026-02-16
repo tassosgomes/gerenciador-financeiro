@@ -7,6 +7,15 @@ export const AccountType = {
 
 export type AccountType = (typeof AccountType)[keyof typeof AccountType];
 
+export interface CreditCardDetailsResponse {
+  creditLimit: number;
+  closingDay: number;
+  dueDay: number;
+  debitAccountId: string;
+  enforceCreditLimit: boolean;
+  availableLimit: number;
+}
+
 export interface AccountResponse {
   id: string;
   name: string;
@@ -16,17 +25,30 @@ export interface AccountResponse {
   isActive: boolean;
   createdAt: string;
   updatedAt: string | null;
+  creditCard: CreditCardDetailsResponse | null;
 }
 
 export interface CreateAccountRequest {
   name: string;
   type: AccountType;
-  initialBalance: number;
-  allowNegativeBalance: boolean;
+  initialBalance?: number;
+  allowNegativeBalance?: boolean;
+  // Credit card fields
+  creditLimit?: number;
+  closingDay?: number;
+  dueDay?: number;
+  debitAccountId?: string;
+  enforceCreditLimit?: boolean;
   operationId?: string;
 }
 
 export interface UpdateAccountRequest {
   name: string;
-  allowNegativeBalance: boolean;
+  allowNegativeBalance?: boolean;
+  // Credit card fields
+  creditLimit?: number;
+  closingDay?: number;
+  dueDay?: number;
+  debitAccountId?: string;
+  enforceCreditLimit?: boolean;
 }

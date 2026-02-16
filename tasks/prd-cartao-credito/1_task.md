@@ -35,7 +35,7 @@ Criar o value object `CreditCardDetails` — classe de domínio que encapsula to
 
 ### Value Object
 
-- [ ] 1.1 Criar `CreditCardDetails` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Entity/CreditCardDetails.cs`:
+- [x] 1.1 Criar `CreditCardDetails` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Entity/CreditCardDetails.cs`:
   - Propriedades: `CreditLimit` (decimal), `ClosingDay` (int), `DueDay` (int), `DebitAccountId` (Guid), `EnforceCreditLimit` (bool)
   - Construtor `protected CreditCardDetails() { }` para EF Core
   - Factory method `Create(creditLimit, closingDay, dueDay, debitAccountId, enforceCreditLimit)` com validações
@@ -44,17 +44,17 @@ Criar o value object `CreditCardDetails` — classe de domínio que encapsula to
 
 ### Exceções
 
-- [ ] 1.2 Criar `CreditLimitExceededException` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/CreditLimitExceededException.cs`:
+- [x] 1.2 Criar `CreditLimitExceededException` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/CreditLimitExceededException.cs`:
   - Herdar de `DomainException` (padrão existente)
   - Receber `accountId`, `availableLimit`, `requestedAmount` no construtor
   - Mensagem descritiva: "Limite de crédito excedido. Disponível: {available}, Solicitado: {amount}"
-- [ ] 1.3 Criar `InvalidCreditCardConfigException` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/InvalidCreditCardConfigException.cs`:
+- [x] 1.3 Criar `InvalidCreditCardConfigException` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/InvalidCreditCardConfigException.cs`:
   - Herdar de `DomainException`
   - Receber mensagem descritiva no construtor
 
 ### Testes Unitários
 
-- [ ] 1.4 Criar testes para `CreditCardDetails` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/CreditCardDetailsTests.cs`:
+- [x] 1.4 Criar testes para `CreditCardDetails` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/CreditCardDetailsTests.cs`:
   - `Create_WithValidParameters_ShouldReturnInstance`
   - `Create_WithZeroCreditLimit_ShouldThrowInvalidCreditCardConfigException`
   - `Create_WithNegativeCreditLimit_ShouldThrowInvalidCreditCardConfigException`
@@ -64,14 +64,14 @@ Criar o value object `CreditCardDetails` — classe de domínio que encapsula to
   - `Create_WithDueDayGreaterThan28_ShouldThrowInvalidCreditCardConfigException`
   - `Update_WithValidParameters_ShouldUpdateProperties`
   - `Update_WithInvalidParameters_ShouldThrowException` (mesmas regras do Create)
-- [ ] 1.5 Criar testes para `CreditLimitExceededException` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/CreditLimitExceededExceptionTests.cs`:
+- [x] 1.5 Criar testes para `CreditLimitExceededException` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/CreditLimitExceededExceptionTests.cs`:
   - `Constructor_ShouldContainAccountIdAndAmountsInMessage`
-- [ ] 1.6 Criar testes para `InvalidCreditCardConfigException` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/InvalidCreditCardConfigExceptionTests.cs`:
+- [x] 1.6 Criar testes para `InvalidCreditCardConfigException` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/InvalidCreditCardConfigExceptionTests.cs`:
   - `Constructor_ShouldContainCustomMessage`
 
 ### Validação
 
-- [ ] 1.7 Validar build com `dotnet build` a partir de `backend/`
+- [x] 1.7 Validar build com `dotnet build` a partir de `backend/`
 
 ## Sequenciamento
 

@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: completed
 parallelizable: false
 blocked_by: ["6.0", "7.0", "8.0"]
 ---
@@ -33,7 +33,7 @@ Adaptar `AccountsController` para aceitar campos de cartão no POST e PUT, criar
 
 ### Adaptação de Requests
 
-- [ ] 9.1 Estender `CreateAccountRequest` para incluir campos opcionais de cartão:
+- [x] 9.1 Estender `CreateAccountRequest` para incluir campos opcionais de cartão:
   ```csharp
   public record CreateAccountRequest(
       string Name,
@@ -49,9 +49,9 @@ Adaptar `AccountsController` para aceitar campos de cartão no POST e PUT, criar
   );
   ```
 
-- [ ] 9.2 Estender `UpdateAccountRequest` com campos de cartão similares
+- [x] 9.2 Estender `UpdateAccountRequest` com campos de cartão similares
 
-- [ ] 9.3 Criar `PayInvoiceRequest`:
+- [x] 9.3 Criar `PayInvoiceRequest`:
   ```csharp
   public record PayInvoiceRequest(
       decimal Amount,
@@ -62,29 +62,29 @@ Adaptar `AccountsController` para aceitar campos de cartão no POST e PUT, criar
 
 ### Adaptação de AccountsController
 
-- [ ] 9.4 Adaptar endpoint `POST /api/v1/accounts`:
+- [x] 9.4 Adaptar endpoint `POST /api/v1/accounts`:
   - Mapear campos de cartão do request para o `CreateAccountCommand`
   - Quando `type != Cartao`, campos de cartão no request são ignorados
   - Retorna `201 Created` com `AccountResponse` (que agora inclui `CreditCard?`)
 
-- [ ] 9.5 Adaptar endpoint `PUT /api/v1/accounts/{id}`:
+- [x] 9.5 Adaptar endpoint `PUT /api/v1/accounts/{id}`:
   - Mapear campos de cartão do request para o `UpdateAccountCommand`
   - Retorna `200 OK` com `AccountResponse` atualizado
 
 ### Novo InvoicesController
 
-- [ ] 9.6 Criar `InvoicesController` em `1-Services/GestorFinanceiro.Financeiro.API/Controllers/InvoicesController.cs`:
+- [x] 9.6 Criar `InvoicesController` em `1-Services/GestorFinanceiro.Financeiro.API/Controllers/InvoicesController.cs`:
   - Rota base: `api/v1/accounts/{accountId}/invoices` (sub-recurso de accounts)
   - Injeção de `IDispatcher` (padrão existente)
 
-- [ ] 9.7 Implementar `GET /api/v1/accounts/{accountId}/invoices`:
+- [x] 9.7 Implementar `GET /api/v1/accounts/{accountId}/invoices`:
   - Query parameters: `month` (int), `year` (int)
   - Mapeia para `GetInvoiceQuery(accountId, month, year)`
   - Retorna `200 OK` com `InvoiceResponse`
   - Retorna `404 Not Found` se conta não existe
   - Retorna `400 Bad Request` se conta não é cartão
 
-- [ ] 9.8 Implementar `POST /api/v1/accounts/{accountId}/invoices/pay`:
+- [x] 9.8 Implementar `POST /api/v1/accounts/{accountId}/invoices/pay`:
   - Body: `PayInvoiceRequest`
   - Mapeia para `PayInvoiceCommand(accountId, amount, competenceDate, userId, operationId)`
   - Extrai `userId` do token JWT (padrão existente)
@@ -94,7 +94,7 @@ Adaptar `AccountsController` para aceitar campos de cartão no POST e PUT, criar
 
 ### Testes de Integração HTTP
 
-- [ ] 9.9 Estender testes de integração HTTP em `5-Tests/GestorFinanceiro.Financeiro.HttpIntegrationTests/`:
+- [x] 9.9 Estender testes de integração HTTP em `5-Tests/GestorFinanceiro.Financeiro.HttpIntegrationTests/`:
   - `POST_CreateCreditCardAccount_ShouldReturn201WithCreditCardDetails`
   - `POST_CreateCreditCardAccount_WithInvalidClosingDay_ShouldReturn400`
   - `POST_CreateRegularAccount_ShouldReturn201WithoutCreditCardDetails`
@@ -106,8 +106,8 @@ Adaptar `AccountsController` para aceitar campos de cartão no POST e PUT, criar
 
 ### Validação
 
-- [ ] 9.10 Validar build com `dotnet build`
-- [ ] 9.11 Executar testes de integração HTTP
+- [x] 9.10 Validar build com `dotnet build`
+- [x] 9.11 Executar testes de integração HTTP
 
 ## Sequenciamento
 

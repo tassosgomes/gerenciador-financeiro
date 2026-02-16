@@ -4,7 +4,9 @@ import type {
   CreateAccountRequest,
   UpdateAccountRequest,
 } from '@/features/accounts/types/account';
+import type { InvoiceResponse, PayInvoiceRequest } from '@/features/accounts/types/invoice';
 import { AccountType } from '@/features/accounts/types/account';
+import type { TransactionResponse } from '@/features/transactions/types/transaction';
 
 type AccountApiResponse = Omit<AccountResponse, 'type'> & {
   type: AccountResponse['type'] | keyof typeof AccountType;
@@ -51,4 +53,27 @@ export async function updateAccount(
 
 export async function toggleAccountStatus(id: string, isActive: boolean): Promise<void> {
   await apiClient.patch(`/api/v1/accounts/${id}/status`, { isActive });
+}
+
+export async function getInvoice(
+  accountId: string,
+  month: number,
+  year: number
+): Promise<InvoiceResponse> {
+  const response = await apiClient.get<InvoiceResponse>(
+    `/api/v1/accounts/${accountId}/invoices`,
+    { params: { month, year } }
+  );
+  return response.data;
+}
+
+export async function payInvoice(
+  accountId: string,
+  request: PayInvoiceRequest
+): Promise<TransactionResponse[]> {
+  const response = await apiClient.post<TransactionResponse[]>(
+    `/api/v1/accounts/${accountId}/invoices/pay`,
+    request
+  );
+  return response.data;
 }

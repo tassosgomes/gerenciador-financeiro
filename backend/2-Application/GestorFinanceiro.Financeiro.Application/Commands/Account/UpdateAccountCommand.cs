@@ -8,5 +8,10 @@ public record UpdateAccountCommand(
     string Name,
     bool AllowNegativeBalance,
     string UserId,
-    string? OperationId = null
+    string? OperationId = null,
+    decimal? CreditLimit = null,
+    int? ClosingDay = null,
+    int? DueDay = null,
+    Guid? DebitAccountId = null,
+    bool? EnforceCreditLimit = null
 ) : ICommand<AccountResponse>;

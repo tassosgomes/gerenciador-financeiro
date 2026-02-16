@@ -65,4 +65,47 @@ public class TransferDomainService
         _transactionService.CancelTransaction(sourceAccount, debit, userId, reason);
         _transactionService.CancelTransaction(destinationAccount, credit, userId, reason);
     }
+
+    public IReadOnlyList<Transaction> CreateInvoicePayment(
+        Account debitAccount,
+        Account creditCardAccount,
+        decimal amount,
+        DateTime competenceDate,
+        Guid categoryId,
+        string userId,
+        string? operationId)
+    {
+        var transferGroupId = Guid.NewGuid();
+        var description = $"Pgto. Fatura — {creditCardAccount.Name}";
+
+        var debitTransaction = _transactionService.CreateTransaction(
+            debitAccount,
+            categoryId,
+            TransactionType.Debit,
+            amount,
+            description,
+            competenceDate,
+            null,
+            TransactionStatus.Paid,
+            userId,
+            operationId);
+
+        debitTransaction.SetTransferGroup(transferGroupId);
+
+        var creditTransaction = _transactionService.CreateTransaction(
+            creditCardAccount,
+            categoryId,
+            TransactionType.Credit,
+            amount,
+            description,
+            competenceDate,
+            null,
+            TransactionStatus.Paid,
+            userId,
+            operationId != null ? $"{operationId}-credit" : null);
+
+        creditTransaction.SetTransferGroup(transferGroupId);
+
+        return new List<Transaction> { debitTransaction, creditTransaction };
+    }
 }

@@ -29,6 +29,18 @@ export {
   SelectTrigger,
   SelectValue,
 } from './select';
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetOverlay,
+  SheetPortal,
+  SheetTitle,
+  SheetTrigger,
+} from './sheet';
 export { Skeleton } from './skeleton';
 export { Toaster } from './sonner';
 export { Switch } from './switch';

@@ -37,11 +37,18 @@ public class GetDashboardSummaryQueryHandler : IQueryHandler<GetDashboardSummary
             request.Year,
             cancellationToken);
         var creditCardDebt = await _dashboardRepository.GetCreditCardDebtAsync(cancellationToken);
+        var totalCreditLimit = await _dashboardRepository.GetTotalCreditLimitAsync(cancellationToken);
+
+        var creditUtilizationPercent = totalCreditLimit.HasValue && totalCreditLimit.Value > 0
+            ? Math.Round(Math.Abs(creditCardDebt) / totalCreditLimit.Value * 100, 1)
+            : (decimal?)null;
 
         return new DashboardSummaryResponse(
             totalBalance,
             monthlyIncome,
             monthlyExpenses,
-            Math.Abs(creditCardDebt));
+            Math.Abs(creditCardDebt),
+            totalCreditLimit,
+            creditUtilizationPercent);
     }
 }

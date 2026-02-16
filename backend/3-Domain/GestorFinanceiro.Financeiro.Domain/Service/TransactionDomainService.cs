@@ -107,6 +107,7 @@ public class TransactionDomainService
     {
         if (type == TransactionType.Debit)
         {
+            account.ValidateCreditLimit(amount);
             account.ApplyDebit(amount, userId);
             return;
         }

@@ -24,18 +24,18 @@ Formulário dinâmico, card diferenciado, drawer de fatura, pagamento de fatura,
 
 ## Tarefas
 
-- [ ] 1.0 Value Object CreditCardDetails e Exceções
-- [ ] 2.0 Extensão da Entidade Account
-- [ ] 3.0 CreditCardDomainService e Validação de Limite
-- [ ] 4.0 Migration EF Core e Configuração de Persistência
-- [ ] 5.0 Extensão de Repositórios e Seed de Categoria
-- [ ] 6.0 Commands de Conta Adaptados para Cartão
-- [ ] 7.0 Query de Fatura Mensal
-- [ ] 8.0 Command de Pagamento de Fatura
-- [ ] 9.0 Endpoints API (Controllers e Requests)
-- [ ] 10.0 Frontend — Formulário e Tipos Adaptados
-- [ ] 11.0 Frontend — Card de Cartão e Drawer de Fatura
-- [ ] 12.0 Frontend — Dashboard Estendido
+- [x] 1.0 Value Object CreditCardDetails e Exceções
+- [x] 2.0 Extensão da Entidade Account
+- [x] 3.0 CreditCardDomainService e Validação de Limite
+- [x] 4.0 Migration EF Core e Configuração de Persistência
+- [x] 5.0 Extensão de Repositórios e Seed de Categoria
+- [x] 6.0 Commands de Conta Adaptados para Cartão
+- [x] 7.0 Query de Fatura Mensal
+- [x] 8.0 Command de Pagamento de Fatura
+- [x] 9.0 Endpoints API (Controllers e Requests)
+- [x] 10.0 Frontend — Formulário e Tipos Adaptados
+- [x] 11.0 Frontend — Card de Cartão e Drawer de Fatura
+- [x] 12.0 Frontend — Dashboard Estendido
 
 ## Análise de Paralelização
 

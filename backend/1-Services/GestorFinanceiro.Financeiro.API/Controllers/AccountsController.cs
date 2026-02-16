@@ -34,7 +34,13 @@ public class AccountsController : ControllerBase
             request.Type!.Value,
             request.InitialBalance,
             request.AllowNegativeBalance,
-            userId.ToString());
+            userId.ToString(),
+            null, // OperationId
+            request.CreditLimit,
+            request.ClosingDay,
+            request.DueDay,
+            request.DebitAccountId,
+            request.EnforceCreditLimit);
 
         var response = await _dispatcher.DispatchCommandAsync<CreateAccountCommand, AccountResponse>(command, cancellationToken);
         return CreatedAtAction(nameof(GetByIdAsync), new { id = response.Id }, response);
@@ -72,7 +78,17 @@ public class AccountsController : ControllerBase
     public async Task<ActionResult<AccountResponse>> UpdateAsync(Guid id, [FromBody] UpdateAccountRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        var command = new UpdateAccountCommand(id, request.Name, request.AllowNegativeBalance!.Value, userId.ToString());
+        var command = new UpdateAccountCommand(
+            id,
+            request.Name,
+            request.AllowNegativeBalance!.Value,
+            userId.ToString(),
+            null, // OperationId
+            request.CreditLimit,
+            request.ClosingDay,
+            request.DueDay,
+            request.DebitAccountId,
+            request.EnforceCreditLimit);
         var response = await _dispatcher.DispatchCommandAsync<UpdateAccountCommand, AccountResponse>(command, cancellationToken);
         return Ok(response);
     }

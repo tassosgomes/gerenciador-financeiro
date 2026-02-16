@@ -37,7 +37,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
 
 ### Extensão de TransferDomainService
 
-- [ ] 8.1 Criar método `CreateInvoicePayment` em `TransferDomainService`:
+- [x] 8.1 Criar método `CreateInvoicePayment` em `TransferDomainService`:
   - Parâmetros: `Account debitAccount`, `Account creditCardAccount`, `decimal amount`, `DateTime competenceDate`, `Guid categoryId`, `string userId`, `string? operationId`
   - Reutiliza/adapta lógica de `CreateTransfer` existente
   - Diferenças em relação a transferência comum:
@@ -51,7 +51,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
 
 ### Command e Handler
 
-- [ ] 8.2 Criar `PayInvoiceCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Invoice/PayInvoiceCommand.cs`:
+- [x] 8.2 Criar `PayInvoiceCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Invoice/PayInvoiceCommand.cs`:
   ```csharp
   public record PayInvoiceCommand(
       Guid CreditCardAccountId,
@@ -62,7 +62,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
   ) : ICommand<IReadOnlyList<TransactionResponse>>;
   ```
 
-- [ ] 8.3 Criar `PayInvoiceCommandHandler`:
+- [x] 8.3 Criar `PayInvoiceCommandHandler`:
   - Verificar idempotência via `OperationId` (padrão existente)
   - Carregar cartão com lock: `IAccountRepository.GetByIdWithLockAsync(creditCardAccountId, ct)`
   - Validar que conta é cartão (`CreditCard != null`)
@@ -76,7 +76,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
   - Commit via `IUnitOfWork`
   - Retornar `IReadOnlyList<TransactionResponse>` mapeado
 
-- [ ] 8.4 Criar `PayInvoiceCommandValidator`:
+- [x] 8.4 Criar `PayInvoiceCommandValidator`:
   - `CreditCardAccountId` != Guid.Empty
   - `Amount` > 0
   - `CompetenceDate` não pode ser futura
@@ -84,7 +84,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
 
 ### Testes Unitários
 
-- [ ] 8.5 Criar testes para `TransferDomainService.CreateInvoicePayment` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/TransferDomainServiceTests.cs`:
+- [x] 8.5 Criar testes para `TransferDomainService.CreateInvoicePayment` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/TransferDomainServiceTests.cs`:
   - `CreateInvoicePayment_WithValidAccounts_ShouldReturnTwoTransactions`
   - `CreateInvoicePayment_ShouldCreateDebitOnDebitAccount`
   - `CreateInvoicePayment_ShouldCreateCreditOnCardAccount`
@@ -92,7 +92,7 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
   - `CreateInvoicePayment_ShouldUseInvoicePaymentDescription`
   - `CreateInvoicePayment_DebitAccountWithInsufficientBalance_ShouldThrow` (se AllowNegativeBalance=false)
 
-- [ ] 8.6 Criar testes para `PayInvoiceCommandHandler` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Application/Commands/PayInvoiceCommandHandlerTests.cs`:
+- [x] 8.6 Criar testes para `PayInvoiceCommandHandler` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Application/Commands/PayInvoiceCommandHandlerTests.cs`:
   - `Handle_WithValidPayment_ShouldReturnTransactionResponses`
   - `Handle_AccountNotFound_ShouldThrowNotFoundException`
   - `Handle_AccountIsNotCard_ShouldThrowDomainException`
@@ -102,15 +102,15 @@ Implementar o `PayInvoiceCommand` — operação dedicada de pagamento de fatura
   - `Handle_PartialPayment_ShouldSucceed` (valor menor que fatura)
   - `Handle_OverPayment_ShouldSucceed` (crédito a favor)
 
-- [ ] 8.7 Criar testes para `PayInvoiceCommandValidator`:
+- [x] 8.7 Criar testes para `PayInvoiceCommandValidator`:
   - `Validate_WithEmptyAccountId_ShouldFail`
   - `Validate_WithZeroAmount_ShouldFail`
   - `Validate_WithValidParameters_ShouldPass`
 
 ### Validação
 
-- [ ] 8.8 Validar build com `dotnet build`
-- [ ] 8.9 Executar testes com `dotnet test`
+- [x] 8.8 Validar build com `dotnet build`
+- [x] 8.9 Executar testes com `dotnet test`
 
 ## Sequenciamento
 

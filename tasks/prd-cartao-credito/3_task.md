@@ -33,7 +33,7 @@ Criar o `CreditCardDomainService` — responsável por cálculo do período de f
 
 ### CreditCardDomainService
 
-- [ ] 3.1 Criar `CreditCardDomainService` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Service/CreditCardDomainService.cs`:
+- [x] 3.1 Criar `CreditCardDomainService` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Service/CreditCardDomainService.cs`:
   - Método `CalculateInvoicePeriod(int closingDay, int month, int year)` retorna `(DateTime start, DateTime end)`:
     - `start`: dia seguinte ao fechamento do mês anterior (closingDay + 1 do mês anterior)
     - `end`: dia de fechamento do mês atual
@@ -45,14 +45,14 @@ Criar o `CreditCardDomainService` — responsável por cálculo do período de f
 
 ### Integração com TransactionDomainService
 
-- [ ] 3.2 Estender `TransactionDomainService.CreateTransaction(...)`:
+- [x] 3.2 Estender `TransactionDomainService.CreateTransaction(...)`:
   - Antes de chamar `ApplyBalanceImpact`, verificar se a transação é de débito (`TransactionType.Debit`)
   - Se for débito, chamar `account.ValidateCreditLimit(amount)` antes de `account.ApplyDebit(amount)`
   - A chamada é segura para contas não-cartão (bypass interno no `ValidateCreditLimit`)
 
 ### Testes Unitários
 
-- [ ] 3.3 Criar testes para `CreditCardDomainService` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/CreditCardDomainServiceTests.cs`:
+- [x] 3.3 Criar testes para `CreditCardDomainService` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/CreditCardDomainServiceTests.cs`:
   - `CalculateInvoicePeriod_January_ShouldCrossYear` (fechamento dia 3 de janeiro → start: 4/dez do ano anterior)
   - `CalculateInvoicePeriod_RegularMonth_ShouldReturnCorrectPeriod` (fechamento dia 10 de março → start: 11/fev, end: 10/mar)
   - `CalculateInvoicePeriod_ClosingDay28_ShouldHandleFebruary` (edge case com dia 28)
@@ -62,7 +62,7 @@ Criar o `CreditCardDomainService` — responsável por cálculo do período de f
   - `CalculateInvoiceTotal_WithCreditsOnly_ShouldReturnNegativeAmount` (crédito a favor)
   - `CalculateInvoiceTotal_WithNoTransactions_ShouldReturnZero`
 
-- [ ] 3.4 Estender testes em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/TransactionDomainServiceTests.cs`:
+- [x] 3.4 Estender testes em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/TransactionDomainServiceTests.cs`:
   - `CreateTransaction_DebitOnCreditCardWithEnforceLimit_ExceedsLimit_ShouldThrowCreditLimitExceededException`
   - `CreateTransaction_DebitOnCreditCardWithEnforceLimit_WithinLimit_ShouldSucceed`
   - `CreateTransaction_DebitOnCreditCardWithoutEnforceLimit_ExceedsLimit_ShouldSucceed`
@@ -71,8 +71,8 @@ Criar o `CreditCardDomainService` — responsável por cálculo do período de f
 
 ### Validação
 
-- [ ] 3.5 Validar build com `dotnet build` a partir de `backend/`
-- [ ] 3.6 Executar todos os testes unitários com `dotnet test`
+- [x] 3.5 Validar build com `dotnet build` a partir de `backend/`
+- [x] 3.6 Executar todos os testes unitários com `dotnet test`
 
 ## Sequenciamento
 

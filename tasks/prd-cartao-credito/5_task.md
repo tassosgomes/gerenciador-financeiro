@@ -33,17 +33,17 @@ Estender os repositórios existentes com novos métodos para suportar a feature 
 
 ### Extensão de Interfaces (Domain)
 
-- [ ] 5.1 Adicionar método `GetActiveByTypeAsync(AccountType type, CancellationToken ct)` em `IAccountRepository`:
+- [x] 5.1 Adicionar método `GetActiveByTypeAsync(AccountType type, CancellationToken ct)` em `IAccountRepository`:
   - Retorna `Task<IReadOnlyList<Account>>`
   - Filtra por `IsActive == true` e tipo informado
 
-- [ ] 5.2 Adicionar método `GetByAccountAndPeriodAsync(Guid accountId, DateTime startDate, DateTime endDate, CancellationToken ct)` em `ITransactionRepository`:
+- [x] 5.2 Adicionar método `GetByAccountAndPeriodAsync(Guid accountId, DateTime startDate, DateTime endDate, CancellationToken ct)` em `ITransactionRepository`:
   - Retorna `Task<IReadOnlyList<Transaction>>`
   - Filtra por `AccountId`, `CompetenceDate` entre `startDate` e `endDate`, `Status == Paid`
 
 ### Implementação de Repositórios (Infra)
 
-- [ ] 5.3 Implementar `GetActiveByTypeAsync` em `AccountRepository`:
+- [x] 5.3 Implementar `GetActiveByTypeAsync` em `AccountRepository`:
   ```csharp
   public async Task<IReadOnlyList<Account>> GetActiveByTypeAsync(
       AccountType type, CancellationToken ct)
@@ -55,7 +55,7 @@ Estender os repositórios existentes com novos métodos para suportar a feature 
   }
   ```
 
-- [ ] 5.4 Implementar `GetByAccountAndPeriodAsync` em `TransactionRepository`:
+- [x] 5.4 Implementar `GetByAccountAndPeriodAsync` em `TransactionRepository`:
   ```csharp
   public async Task<IReadOnlyList<Transaction>> GetByAccountAndPeriodAsync(
       Guid accountId, DateTime startDate, DateTime endDate, CancellationToken ct)
@@ -73,20 +73,20 @@ Estender os repositórios existentes com novos métodos para suportar a feature 
 
 ### Seed de Categoria
 
-- [ ] 5.5 Criar `SeedInvoicePaymentCategoryStartupTask` em `4-Infra/GestorFinanceiro.Financeiro.Infra/StartupTasks/SeedInvoicePaymentCategoryStartupTask.cs`:
+- [x] 5.5 Criar `SeedInvoicePaymentCategoryStartupTask` em `4-Infra/GestorFinanceiro.Financeiro.Infra/StartupTasks/SeedInvoicePaymentCategoryStartupTask.cs`:
   - Implementa `IStartupTask` (padrão existente)
   - Verifica se já existe categoria com nome "Pagamento de Fatura" e `IsSystem == true`
   - Se não existir, cria via `Category.Create("Pagamento de Fatura", CategoryType.Despesa, "system")`
   - Define `IsSystem = true` na entidade (via reflection ou método dedicado se existir)
   - Persiste via `ICategoryRepository` + `IUnitOfWork`
 
-- [ ] 5.6 Registrar `SeedInvoicePaymentCategoryStartupTask` na DI:
+- [x] 5.6 Registrar `SeedInvoicePaymentCategoryStartupTask` na DI:
   - Em `ServiceCollectionExtensions` ou onde os `IStartupTask` são registrados
   - Garantir que executa após o seed do admin user (ordem de registro)
 
 ### Testes Unitários
 
-- [ ] 5.7 Testes de integração para os novos métodos de repositório (se o projeto tiver suporte a Testcontainers):
+- [x] 5.7 Testes de integração para os novos métodos de repositório (se o projeto tiver suporte a Testcontainers):
   - `GetActiveByTypeAsync_WithMatchingType_ShouldReturnActiveAccounts`
   - `GetActiveByTypeAsync_WithInactiveAccounts_ShouldExclude`
   - `GetByAccountAndPeriodAsync_WithTransactionsInPeriod_ShouldReturnFiltered`
@@ -95,9 +95,9 @@ Estender os repositórios existentes com novos métodos para suportar a feature 
 
 ### Validação
 
-- [ ] 5.8 Validar build com `dotnet build` a partir de `backend/`
+- [x] 5.8 Validar build com `dotnet build` a partir de `backend/`
 - [ ] 5.9 Executar testes com `dotnet test`
-- [ ] 5.10 Verificar que o seed cria a categoria no banco de desenvolvimento
+- [x] 5.10 Verificar que o seed cria a categoria no banco de desenvolvimento
 
 ## Sequenciamento
 

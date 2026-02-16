@@ -1,4 +1,5 @@
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,15 @@ public class AccountRepository : Repository<Account>, IAccountRepository
     {
         return await _context.Accounts
             .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Account>> GetActiveByTypeAsync(AccountType type, CancellationToken cancellationToken)
+    {
+        return await _context.Accounts
+            .AsNoTracking()
+            .Where(account => account.Type == type && account.IsActive)
+            .OrderBy(account => account.Name)
             .ToListAsync(cancellationToken);
     }
 }

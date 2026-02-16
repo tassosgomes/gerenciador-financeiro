@@ -36,19 +36,19 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
 
 ### Extensão de Commands
 
-- [ ] 6.1 Estender `CreateAccountCommand` com campos de cartão opcionais:
+- [x] 6.1 Estender `CreateAccountCommand` com campos de cartão opcionais:
   - `decimal? CreditLimit`
   - `int? ClosingDay`
   - `int? DueDay`
   - `Guid? DebitAccountId`
   - `bool? EnforceCreditLimit`
 
-- [ ] 6.2 Estender `UpdateAccountCommand` com campos de cartão opcionais:
+- [x] 6.2 Estender `UpdateAccountCommand` com campos de cartão opcionais:
   - Mesmos campos opcionais do create
 
 ### Extensão de Validators
 
-- [ ] 6.3 Estender `CreateAccountCommandValidator` com regras condicionais:
+- [x] 6.3 Estender `CreateAccountCommandValidator` com regras condicionais:
   - `When(x => x.Type == AccountType.Cartao, () => { ... })`:
     - `CreditLimit` obrigatório e > 0
     - `ClosingDay` obrigatório, entre 1 e 28
@@ -58,11 +58,11 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
   - `When(x => x.Type != AccountType.Cartao, () => { ... })`:
     - Manter validações existentes de `InitialBalance`, `AllowNegativeBalance`
 
-- [ ] 6.4 Estender `UpdateAccountCommandValidator` com regras condicionais similares
+- [x] 6.4 Estender `UpdateAccountCommandValidator` com regras condicionais similares
 
 ### Extensão de Handlers
 
-- [ ] 6.5 Estender `CreateAccountCommandHandler`:
+- [x] 6.5 Estender `CreateAccountCommandHandler`:
   - Manter fluxo existente para idempotência (`OperationId`) e verificação de nome único
   - **Bifurcação**: se `command.Type == AccountType.Cartao`:
     - Validar que `DebitAccountId` aponta para conta ativa do tipo Corrente ou Carteira (via `IAccountRepository.GetByIdAsync`)
@@ -70,7 +70,7 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
   - Senão: manter `Account.Create(name, type, initialBalance, allowNegativeBalance, userId)` inalterado
   - Persistir, auditar (via `IAuditService.LogAsync`), commit
 
-- [ ] 6.6 Estender `UpdateAccountCommandHandler`:
+- [x] 6.6 Estender `UpdateAccountCommandHandler`:
   - **Bifurcação**: se conta é tipo Cartão (`account.CreditCard != null`):
     - Validar que `DebitAccountId` aponta para conta ativa do tipo Corrente ou Carteira
     - Chamar `account.UpdateCreditCard(name, creditLimit, closingDay, dueDay, debitAccountId, enforceCreditLimit, userId)`
@@ -79,7 +79,7 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
 
 ### Extensão de DTOs
 
-- [ ] 6.7 Criar `CreditCardDetailsResponse` em DTOs:
+- [x] 6.7 Criar `CreditCardDetailsResponse` em DTOs:
   ```csharp
   public record CreditCardDetailsResponse(
       decimal CreditLimit,
@@ -91,7 +91,7 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
   );
   ```
 
-- [ ] 6.8 Estender `AccountResponse` com campo `CreditCard?`:
+- [x] 6.8 Estender `AccountResponse` com campo `CreditCard?`:
   ```csharp
   public record AccountResponse(
       // ... campos existentes ...
@@ -99,12 +99,12 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
   );
   ```
 
-- [ ] 6.9 Atualizar mapeamento Mapster (se usado) para incluir `CreditCardDetails` → `CreditCardDetailsResponse`:
+- [x] 6.9 Atualizar mapeamento Mapster (se usado) para incluir `CreditCardDetails` → `CreditCardDetailsResponse`:
   - `AvailableLimit` é campo calculado: `account.GetAvailableLimit()`
 
 ### Testes Unitários
 
-- [ ] 6.10 Testes para `CreateAccountCommandHandler`:
+- [x] 6.10 Testes para `CreateAccountCommandHandler`:
   - `Handle_WithTypeCarto_ShouldCreateCreditCardAccount`
   - `Handle_WithTypeCarto_ShouldSetBalanceToZero`
   - `Handle_WithTypeCarto_ShouldSetAllowNegativeBalanceToTrue`
@@ -114,21 +114,21 @@ Adaptar os commands de criação e edição de conta para suportar o tipo Cartã
   - `Handle_WithTypeCorrente_ShouldMaintainExistingBehavior` (regressão)
   - `Handle_WithTypeCarto_ShouldAuditLog`
 
-- [ ] 6.11 Testes para `UpdateAccountCommandHandler`:
+- [x] 6.11 Testes para `UpdateAccountCommandHandler`:
   - `Handle_UpdateCreditCard_ShouldUpdateAllFields`
   - `Handle_UpdateCreditCard_InvalidDebitAccount_ShouldThrow`
   - `Handle_UpdateRegularAccount_ShouldMaintainExistingBehavior` (regressão)
   - `Handle_UpdateCreditCard_ShouldAuditLog`
 
-- [ ] 6.12 Testes para validators:
+- [x] 6.12 Testes para validators:
   - `CreateAccountCommandValidator_TypeCarto_MissingCreditLimit_ShouldFail`
   - `CreateAccountCommandValidator_TypeCarto_ValidFields_ShouldPass`
   - `CreateAccountCommandValidator_TypeCorrente_WithoutCreditFields_ShouldPass`
 
 ### Validação
 
-- [ ] 6.13 Validar build com `dotnet build`
-- [ ] 6.14 Executar testes com `dotnet test`
+- [x] 6.13 Validar build com `dotnet build`
+- [x] 6.14 Executar testes com `dotnet test`
 
 ## Sequenciamento
 

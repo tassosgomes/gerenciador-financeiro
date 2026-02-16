@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: completed
 parallelizable: false
 blocked_by: ["10.0"]
 ---
@@ -36,7 +36,7 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
 
 ### Adaptação do AccountCard
 
-- [ ] 11.1 Adaptar `AccountCard.tsx` para exibição condicional:
+- [x] 11.1 Adaptar `AccountCard.tsx` para exibição condicional:
   - Quando `account.type === AccountType.Cartao` e `account.creditCard`:
     - Label principal: "Fatura Atual" (Math.abs(account.balance)) ao invés de "Saldo Atual"
     - Exibir: "Limite: R$ {creditCard.creditLimit}"
@@ -47,27 +47,27 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
     - Exibir badge: "Crédito disponível: R$ {account.balance}" com cor verde
   - Quando não é cartão: manter exibição inalterada
 
-- [ ] 11.2 Implementar alertas visuais de limite:
+- [x] 11.2 Implementar alertas visuais de limite:
   - Se `creditCard.availableLimit / creditCard.creditLimit < 0.20`:
     - Badge amarelo: "Limite baixo ({percentage}% disponível)"
   - Se `creditCard.availableLimit <= 0`:
     - Badge vermelho: "Limite esgotado"
   - Os alertas são badges não-intrusivos (conforme PRD — sem modais)
 
-- [ ] 11.3 Manter compatibilidade para contas sem `CreditCardDetails` (legacy):
+- [x] 11.3 Manter compatibilidade para contas sem `CreditCardDetails` (legacy):
   - Se `account.type === AccountType.Cartao` mas `account.creditCard === null`:
     - Exibir como conta normal (sem campos de cartão)
     - Opcionalmente: badge "Configure seu cartão" incentivando edição
 
 ### InvoiceDrawer
 
-- [ ] 11.4 Criar componente `InvoiceDrawer` em `features/accounts/components/InvoiceDrawer.tsx`:
+- [x] 11.4 Criar componente `InvoiceDrawer` em `features/accounts/components/InvoiceDrawer.tsx`:
   - Drawer lateral (shadcn/ui `Sheet` component)
   - Props: `accountId`, `isOpen`, `onClose`
   - Usa `useInvoice(accountId, currentMonth, currentYear)` para buscar dados
   - Navegação de mês: botões < > para navegar entre meses
 
-- [ ] 11.5 Implementar conteúdo do drawer:
+- [x] 11.5 Implementar conteúdo do drawer:
   - Header: "Fatura de {mês/ano}" + nome do cartão
   - Resumo:
     - "Período: {periodStart} a {periodEnd}"
@@ -81,7 +81,7 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
     - Débitos com valor positivo, créditos com valor negativo (com cor diferenciada)
   - Estado vazio: "Nenhuma transação neste período"
 
-- [ ] 11.6 Implementar botão "Pagar Fatura" no drawer:
+- [x] 11.6 Implementar botão "Pagar Fatura" no drawer:
   - Abre um dialog/modal de pagamento com:
     - Input de valor (pré-preenchido com `amountDue` — atalho para pagamento total, PRD req 28)
     - Botão "Pagar Total" que preenche automaticamente o valor total
@@ -91,14 +91,14 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
   - Em caso de sucesso: fecha dialog, invalida queries, mostra toast
   - Desabilitar botão se `amountDue <= 0` (nada a pagar)
 
-- [ ] 11.7 Implementar navegação de meses no drawer:
+- [x] 11.7 Implementar navegação de meses no drawer:
   - Estado local: `currentMonth`, `currentYear`
   - Botão "<" (mês anterior) e ">" (próximo mês)
   - Usar `useInvoice` com os novos parâmetros
 
 ### Testes Frontend
 
-- [ ] 11.8 Criar testes para `AccountCard` adaptações:
+- [x] 11.8 Criar testes para `AccountCard` adaptações:
   - `should display "Fatura Atual" for credit card accounts`
   - `should display "Saldo Atual" for regular accounts`
   - `should show limit and available limit for credit cards`
@@ -107,7 +107,7 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
   - `should show green badge for positive balance (credit favor)`
   - `should show "Ver Fatura" button for credit cards`
 
-- [ ] 11.9 Criar testes para `InvoiceDrawer`:
+- [x] 11.9 Criar testes para `InvoiceDrawer`:
   - `should render invoice transactions`
   - `should display installment info for parceled transactions`
   - `should show empty state when no transactions`
@@ -117,8 +117,8 @@ Adaptar o componente `AccountCard` para exibir informações diferenciadas quand
 
 ### Validação
 
-- [ ] 11.10 Validar build: `npm run build` e `npm run lint`
-- [ ] 11.11 Executar testes: `npm test`
+- [x] 11.10 Validar build: `npm run build` e `npm run lint`
+- [x] 11.11 Executar testes: `npm test`
 
 ## Sequenciamento
 

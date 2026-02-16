@@ -1,8 +1,11 @@
 import { TrendingDown, TrendingUp, Wallet, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Progress } from '@/shared/components/ui/progress';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useFormatCurrency } from '@/shared/hooks';
+import { cn } from '@/shared/utils';
 import type { DashboardSummaryResponse } from '@/features/dashboard/types/dashboard';
 
 interface SummaryCardsProps {
@@ -55,6 +58,9 @@ function SummaryCardSkeleton(): JSX.Element {
 }
 
 export function SummaryCards({ data, isLoading, isError }: SummaryCardsProps): JSX.Element {
+  const navigate = useNavigate();
+  const formatCurrency = useFormatCurrency;
+
   if (isError) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -78,6 +84,13 @@ export function SummaryCards({ data, isLoading, isError }: SummaryCardsProps): J
     );
   }
 
+  const getProgressIndicatorColor = (utilization: number | null): string => {
+    if (utilization === null) return '[&>div]:bg-primary';
+    if (utilization > 80) return '[&>div]:bg-red-500';
+    if (utilization > 50) return '[&>div]:bg-yellow-500';
+    return '[&>div]:bg-green-500';
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <SummaryCard
@@ -98,12 +111,32 @@ export function SummaryCards({ data, isLoading, isError }: SummaryCardsProps): J
         value={data.monthlyExpenses}
         variant="danger"
       />
-      <SummaryCard
-        icon={<CreditCard className="h-5 w-5" />}
-        title="Dívida Cartões"
-        value={data.creditCardDebt}
-        variant="danger"
-      />
+      <Card
+        onClick={() => navigate('/contas?type=2')}
+        className="cursor-pointer transition-colors hover:bg-accent/50"
+      >
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Dívida Cartões</CardTitle>
+          <div className="text-red-600">
+            <CreditCard className="h-5 w-5" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatCurrency(data.creditCardDebt)}</div>
+          {data.totalCreditLimit !== null && (
+            <div className="mt-2 space-y-1">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Limite total: {formatCurrency(data.totalCreditLimit)}</span>
+                <span>{data.creditUtilizationPercent}% utilizado</span>
+              </div>
+              <Progress
+                value={data.creditUtilizationPercent ?? 0}
+                className={cn('h-2', getProgressIndicatorColor(data.creditUtilizationPercent))}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

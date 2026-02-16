@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using Mapster;
@@ -59,13 +60,40 @@ public class CreateAccountCommandHandler : ICommandHandler<CreateAccountCommand,
 
         try
         {
-            // Create account
-            var account = GestorFinanceiro.Financeiro.Domain.Entity.Account.Create(
-                command.Name,
-                command.Type,
-                command.InitialBalance,
-                command.AllowNegativeBalance,
-                command.UserId);
+            // Bifurcação por tipo de conta
+            GestorFinanceiro.Financeiro.Domain.Entity.Account account;
+
+            if (command.Type == AccountType.Cartao)
+            {
+                // Validar conta de débito
+                var debitAccount = await _accountRepository.GetByIdAsync(command.DebitAccountId!.Value, cancellationToken);
+                if (debitAccount == null)
+                    throw new AccountNotFoundException(command.DebitAccountId!.Value);
+                if (!debitAccount.IsActive)
+                    throw new InvalidCreditCardConfigException("Conta de débito está inativa.");
+                if (debitAccount.Type != AccountType.Corrente && debitAccount.Type != AccountType.Carteira)
+                    throw new InvalidCreditCardConfigException("Conta de débito deve ser do tipo Corrente ou Carteira.");
+
+                // Criar cartão de crédito
+                account = GestorFinanceiro.Financeiro.Domain.Entity.Account.CreateCreditCard(
+                    command.Name,
+                    command.CreditLimit!.Value,
+                    command.ClosingDay!.Value,
+                    command.DueDay!.Value,
+                    command.DebitAccountId!.Value,
+                    command.EnforceCreditLimit ?? true,
+                    command.UserId);
+            }
+            else
+            {
+                // Fluxo existente para outros tipos
+                account = GestorFinanceiro.Financeiro.Domain.Entity.Account.Create(
+                    command.Name,
+                    command.Type,
+                    command.InitialBalance,
+                    command.AllowNegativeBalance,
+                    command.UserId);
+            }
 
             await _accountRepository.AddAsync(account, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

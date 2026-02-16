@@ -10,5 +10,6 @@ public record AccountResponse(
     bool AllowNegativeBalance,
     bool IsActive,
     DateTime CreatedAt,
-    DateTime? UpdatedAt
+    DateTime? UpdatedAt,
+    CreditCardDetailsResponse? CreditCard
 );
