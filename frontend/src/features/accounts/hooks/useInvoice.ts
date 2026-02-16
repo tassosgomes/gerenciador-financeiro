@@ -3,11 +3,11 @@ import { toast } from 'sonner';
 import { getInvoice, payInvoice } from '@/features/accounts/api/accountsApi';
 import type { PayInvoiceRequest } from '@/features/accounts/types/invoice';
 
-export function useInvoice(accountId: string, month: number, year: number) {
+export function useInvoice(accountId: string, month: number, year: number, enabled = true) {
   return useQuery({
     queryKey: ['invoice', accountId, month, year],
     queryFn: () => getInvoice(accountId, month, year),
-    enabled: !!accountId && !!month && !!year,
+    enabled: enabled && !!accountId && !!month && !!year,
   });
 }
 
