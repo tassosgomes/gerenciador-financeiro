@@ -68,6 +68,59 @@ Famílias ou indivíduos que desejam:
    http://localhost:8080
    ```
 
+## 🧪 Execução Local em Debug (Frontend + Backend + Banco)
+
+Quando quiser debugar localmente com hot reload no frontend e backend, use os scripts em `scripts/debug`.
+
+### Pré-requisitos para debug local
+
+- Docker (para o PostgreSQL)
+- .NET SDK 8+
+- Node.js 18+ e npm
+
+### Subir tudo em debug (recomendado)
+
+```bash
+./scripts/debug/start-all.sh
+```
+
+### Debug com 1 clique no VS Code (F5)
+
+Também foi configurado debug via VS Code em `.vscode/launch.json` e `.vscode/tasks.json`:
+
+- Configuração: `Debug Full Stack`
+- Atalho: `F5`
+
+O fluxo automático no F5:
+- sobe o banco (`db`) com porta publicada no host;
+- builda e inicia o backend em modo Debug;
+- inicia o frontend com Vite em `http://localhost:5173`;
+- abre o frontend no Chrome com debugger anexado.
+
+Esse comando:
+- sobe apenas o serviço `db` no Docker Compose;
+- aplica o override `docker-compose.debug.yml` para expor o PostgreSQL no host;
+- garante que o database exista;
+- inicia o backend com `dotnet watch` em `http://localhost:5156`;
+- inicia o frontend com Vite em `http://localhost:5173`.
+
+### Comandos separados
+
+```bash
+./scripts/debug/start-db.sh
+./scripts/debug/start-backend.sh
+./scripts/debug/start-frontend.sh
+./scripts/debug/stop-db.sh
+```
+
+### Portas e variáveis opcionais
+
+Você pode ajustar no `.env`:
+- `API_PORT` (padrão `5156`)
+- `FRONTEND_PORT` (padrão `5173`)
+- `DB_PORT` (padrão `5432`)
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`
+
 ### Primeiro Acesso
 
 1. Faça login com as credenciais configuradas no `.env`:

@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "debug: start db",
+      "type": "shell",
+      "command": "POSTGRES_DB=gestorfinanceiro_dev ./scripts/debug/start-db.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "debug: stop db",
+      "type": "shell",
+      "command": "./scripts/debug/stop-db.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "debug: backend build",
+      "type": "shell",
+      "command": "dotnet build ./backend/1-Services/GestorFinanceiro.Financeiro.API/GestorFinanceiro.Financeiro.API.csproj -c Debug",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "debug: backend prepare",
+      "dependsOn": [
+        "debug: start db",
+        "debug: backend build"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "debug: frontend dev",
+      "type": "shell",
+      "command": "npm run dev -- --host localhost --port 5173",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^(?!x)x$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\s*> frontend@|^\\s*VITE v",
+          "endsPattern": "Local:\\s+http://localhost:5173"
+        }
+      }
+    }
+  ]
+}

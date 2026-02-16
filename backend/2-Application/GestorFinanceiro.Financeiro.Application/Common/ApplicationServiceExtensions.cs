@@ -34,6 +34,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IDispatcher, Dispatcher>();
         services.AddScoped<IBackupIntegrityValidator, BackupIntegrityValidator>();
         services.AddScoped<CreditCardDomainService>();
+        services.AddScoped<TransactionDomainService>();
+        services.AddScoped<InstallmentDomainService>();
+        services.AddScoped<RecurrenceDomainService>();
+        services.AddScoped<TransferDomainService>();
 
         // Configure mappings
         MappingConfig.ConfigureMappings();

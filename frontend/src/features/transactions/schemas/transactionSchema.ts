@@ -1,6 +1,18 @@
 import { z } from 'zod';
 import { TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
 
+const optionalDateString = z
+  .string()
+  .optional()
+  .transform((value) => {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  });
+
 // Schema para transação simples
 export const simpleTransactionSchema = z.object({
   accountId: z.string().min(1, 'Selecione uma conta'),
@@ -9,7 +21,7 @@ export const simpleTransactionSchema = z.object({
   amount: z.coerce.number().min(0.01, 'Valor deve ser maior que zero'),
   description: z.string().min(3, 'Descrição deve ter no mínimo 3 caracteres').max(200),
   competenceDate: z.string().min(1, 'Data de competência é obrigatória'),
-  dueDate: z.string().optional(),
+  dueDate: optionalDateString,
   status: z.nativeEnum(TransactionStatus),
 });
 
@@ -22,7 +34,7 @@ export const installmentSchema = z.object({
   installmentCount: z.coerce.number().min(2, 'Número de parcelas deve ser no mínimo 2').max(60, 'Máximo de 60 parcelas'),
   description: z.string().min(3, 'Descrição deve ter no mínimo 3 caracteres').max(200),
   firstCompetenceDate: z.string().min(1, 'Data da primeira competência é obrigatória'),
-  firstDueDate: z.string().optional(),
+  firstDueDate: optionalDateString,
 });
 
 // Schema para transação recorrente
@@ -33,7 +45,7 @@ export const recurrenceSchema = z.object({
   amount: z.coerce.number().min(0.01, 'Valor deve ser maior que zero'),
   description: z.string().min(3, 'Descrição deve ter no mínimo 3 caracteres').max(200),
   startDate: z.string().min(1, 'Data de início é obrigatória'),
-  dueDate: z.string().optional(),
+  dueDate: optionalDateString,
 });
 
 // Schema para transferência
