@@ -59,7 +59,6 @@ function SummaryCardSkeleton(): JSX.Element {
 
 export function SummaryCards({ data, isLoading, isError }: SummaryCardsProps): JSX.Element {
   const navigate = useNavigate();
-  const formatCurrency = useFormatCurrency;
 
   if (isError) {
     return (
@@ -111,32 +110,61 @@ export function SummaryCards({ data, isLoading, isError }: SummaryCardsProps): J
         value={data.monthlyExpenses}
         variant="danger"
       />
-      <Card
-        onClick={() => navigate('/contas?type=2')}
-        className="cursor-pointer transition-colors hover:bg-accent/50"
-      >
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Dívida Cartões</CardTitle>
-          <div className="text-red-600">
-            <CreditCard className="h-5 w-5" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(data.creditCardDebt)}</div>
-          {data.totalCreditLimit !== null && (
-            <div className="mt-2 space-y-1">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Limite total: {formatCurrency(data.totalCreditLimit)}</span>
-                <span>{data.creditUtilizationPercent}% utilizado</span>
-              </div>
-              <Progress
-                value={data.creditUtilizationPercent ?? 0}
-                className={cn('h-2', getProgressIndicatorColor(data.creditUtilizationPercent))}
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <CardDebtSummary 
+        creditCardDebt={data.creditCardDebt}
+        totalCreditLimit={data.totalCreditLimit}
+        creditUtilizationPercent={data.creditUtilizationPercent}
+        navigate={navigate}
+        getProgressIndicatorColor={getProgressIndicatorColor}
+      />
     </div>
+  );
+}
+
+interface CardDebtSummaryProps {
+  creditCardDebt: number;
+  totalCreditLimit: number | null;
+  creditUtilizationPercent: number | null;
+  navigate: ReturnType<typeof useNavigate>;
+  getProgressIndicatorColor: (utilization: number | null) => string;
+}
+
+function CardDebtSummary({ 
+  creditCardDebt, 
+  totalCreditLimit, 
+  creditUtilizationPercent, 
+  navigate, 
+  getProgressIndicatorColor 
+}: CardDebtSummaryProps): JSX.Element {
+  const formattedDebt = useFormatCurrency(creditCardDebt);
+  const formattedLimit = totalCreditLimit !== null ? useFormatCurrency(totalCreditLimit) : null;
+
+  return (
+    <Card
+      onClick={() => navigate('/contas?type=2')}
+      className="cursor-pointer transition-colors hover:bg-accent/50"
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">Dívida Cartões</CardTitle>
+        <div className="text-red-600">
+          <CreditCard className="h-5 w-5" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{formattedDebt}</div>
+        {totalCreditLimit !== null && (
+          <div className="mt-2 space-y-1">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Limite total: {formattedLimit}</span>
+              <span>{creditUtilizationPercent}% utilizado</span>
+            </div>
+            <Progress
+              value={creditUtilizationPercent ?? 0}
+              className={cn('h-2', getProgressIndicatorColor(creditUtilizationPercent))}
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

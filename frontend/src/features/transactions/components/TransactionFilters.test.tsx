@@ -57,7 +57,7 @@ describe('TransactionFilters', () => {
     expect(screen.getByRole('button', { name: /limpar filtros/i })).toBeInTheDocument();
   });
 
-  it('does not display clear button when no filters are applied', () => {
+  it('disables clear button when no filters are applied', () => {
     renderWithProviders(
       <TransactionFilters
         onFilterChange={mockOnFilterChange}
@@ -65,7 +65,8 @@ describe('TransactionFilters', () => {
       />
     );
 
-    expect(screen.queryByRole('button', { name: /limpar filtros/i })).not.toBeInTheDocument();
+    const clearButton = screen.getByRole('button', { name: /limpar filtros/i });
+    expect(clearButton).toBeDisabled();
   });
 
   it('calls onClearFilters when clear button is clicked', async () => {

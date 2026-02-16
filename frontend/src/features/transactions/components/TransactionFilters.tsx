@@ -157,7 +157,7 @@ export function TransactionFilters({
           disabled={!hasActiveFilters}
         >
           <X className="mr-2 h-4 w-4" />
-          Limpar
+          Limpar Filtros
         </Button>
         <Button 
           variant="default" 

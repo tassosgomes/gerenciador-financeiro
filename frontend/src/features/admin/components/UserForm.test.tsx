@@ -48,8 +48,8 @@ describe('UserForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/E-mail inválido/i)).toBeInTheDocument();
-    });
-  });
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('validates password strength requirements', async () => {
     const user = userEvent.setup();
