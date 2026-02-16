@@ -105,6 +105,10 @@ export interface TransactionHistoryEntry {
   details: string | null;
 }
 
+export interface TransactionHistoryResponse {
+  entries: TransactionHistoryEntry[];
+}
+
 export interface TransactionFilters {
   accountId?: string;
   categoryId?: string;

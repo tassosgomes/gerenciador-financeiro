@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck - react-hook-form + Zod optional fields cause type inference issues in TypeScript
 import { useState, useEffect } from 'react';
-import { useForm, type UseFormReturn } from 'react-hook-form';
+import { useForm, type UseFormReturn, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Save, RepeatIcon } from 'lucide-react';
 import {
@@ -10,10 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/shared/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { CurrencyInput } from '@/shared/components/ui/currency-input';
 import {
   Select,
   SelectContent,
@@ -218,6 +220,9 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{transaction ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>
+          <DialogDescription>
+            Preencha os campos abaixo para criar ou editar uma transação
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>
@@ -236,14 +241,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <label htmlFor="amount" className="block text-center text-sm font-medium mb-2">
                   Valor da transação
                 </label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    className="text-center text-2xl font-bold"
-                    {...simpleForm.register('amount')}
-                  />
+                <Controller
+                  name="amount"
+                  control={simpleForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      id="amount"
+                      placeholder="R$ 0,00"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
                 {simpleForm.formState.errors.amount && (
                   <p className="text-sm text-red-600 mt-1">
                     {simpleForm.formState.errors.amount.message}
@@ -398,14 +407,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <label htmlFor="totalAmount" className="block text-center text-sm font-medium mb-2">
                   Valor total do parcelamento
                 </label>
-                  <Input
-                    id="totalAmount"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    className="text-center text-2xl font-bold"
-                    {...installmentForm.register('totalAmount')}
-                  />
+                <Controller
+                  name="totalAmount"
+                  control={installmentForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      id="totalAmount"
+                      placeholder="R$ 0,00"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
                 {installmentForm.formState.errors.totalAmount && (
                   <p className="text-sm text-red-600 mt-1">
                     {installmentForm.formState.errors.totalAmount.message}
@@ -565,14 +578,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <label htmlFor="recurrenceAmount" className="block text-center text-sm font-medium mb-2">
                   Valor da transação recorrente
                 </label>
-                  <Input
-                    id="recurrenceAmount"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    className="text-center text-2xl font-bold"
-                    {...recurrenceForm.register('amount')}
-                  />
+                <Controller
+                  name="amount"
+                  control={recurrenceForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      id="recurrenceAmount"
+                      placeholder="R$ 0,00"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
                 {recurrenceForm.formState.errors.amount && (
                   <p className="text-sm text-red-600 mt-1">
                     {recurrenceForm.formState.errors.amount.message}
@@ -709,14 +726,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <label htmlFor="transferAmount" className="block text-center text-sm font-medium mb-2">
                   Valor da transferência
                 </label>
-                  <Input
-                    id="transferAmount"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    className="text-center text-2xl font-bold"
-                    {...transferForm.register('amount')}
-                  />
+                <Controller
+                  name="amount"
+                  control={transferForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      id="transferAmount"
+                      placeholder="R$ 0,00"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
                 {transferForm.formState.errors.amount && (
                   <p className="text-sm text-red-600 mt-1">
                     {transferForm.formState.errors.amount.message}

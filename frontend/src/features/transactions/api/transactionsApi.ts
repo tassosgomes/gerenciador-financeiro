@@ -1,4 +1,4 @@
-import { apiClient } from '@/shared/services/apiClient';
+import{ apiClient } from '@/shared/services/apiClient';
 import type {
   TransactionResponse,
   CreateTransactionRequest,
@@ -8,6 +8,7 @@ import type {
   AdjustTransactionRequest,
   CancelTransactionRequest,
   TransactionHistoryEntry,
+  TransactionHistoryResponse,
   TransactionFilters,
   PagedResponse,
 } from '@/features/transactions/types/transaction';
@@ -93,8 +94,8 @@ export async function cancelTransaction(
 }
 
 export async function getTransactionHistory(id: string): Promise<TransactionHistoryEntry[]> {
-  const response = await apiClient.get<TransactionHistoryEntry[]>(
+  const response = await apiClient.get<TransactionHistoryResponse>(
     `/api/v1/transactions/${id}/history`
   );
-  return response.data;
+  return response.data.entries || [];
 }
