@@ -9,7 +9,22 @@ public static class MappingConfig
 {
     public static void ConfigureMappings()
     {
-        TypeAdapterConfig<Account, AccountResponse>.NewConfig();
+        // Configure CreditCardDetails mapping with calculated AvailableLimit
+        TypeAdapterConfig<CreditCardDetails, CreditCardDetailsResponse>.NewConfig()
+            .Map(dest => dest.AvailableLimit, src => 0m); // Placeholder, will be calculated via Account
+
+        // Configure Account mapping with CreditCard support
+        TypeAdapterConfig<Account, AccountResponse>.NewConfig()
+            .Map(dest => dest.CreditCard, src => src.CreditCard != null
+                ? new CreditCardDetailsResponse(
+                    src.CreditCard.CreditLimit,
+                    src.CreditCard.ClosingDay,
+                    src.CreditCard.DueDay,
+                    src.CreditCard.DebitAccountId,
+                    src.CreditCard.EnforceCreditLimit,
+                    src.GetAvailableLimit())
+                : null);
+
         TypeAdapterConfig<Transaction, TransactionResponse>.NewConfig();
         TypeAdapterConfig<Category, CategoryResponse>.NewConfig();
         TypeAdapterConfig<RecurrenceTemplate, RecurrenceTemplateResponse>.NewConfig();
