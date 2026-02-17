@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Users, Database } from 'lucide-react';
+import { Users, Database, Settings } from 'lucide-react';
 
 import { useUsers } from '@/features/admin/hooks/useUsers';
 import { UserTable } from '@/features/admin/components/UserTable';
 import { UserForm } from '@/features/admin/components/UserForm';
 import { BackupExport } from '@/features/admin/components/BackupExport';
 import { BackupImport } from '@/features/admin/components/BackupImport';
+import { ResetSystem } from '@/features/admin/components/ResetSystem';
 import { Button, Card, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui';
 
 export function AdminPage(): JSX.Element {
@@ -38,6 +39,10 @@ export function AdminPage(): JSX.Element {
           <TabsTrigger value="backup" className="flex items-center gap-2">
             <Database className="h-4 w-4" />
             Backup
+          </TabsTrigger>
+          <TabsTrigger value="system" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Sistema
           </TabsTrigger>
         </TabsList>
 
@@ -74,6 +79,20 @@ export function AdminPage(): JSX.Element {
           <div className="grid gap-6 md:grid-cols-2">
             <BackupExport />
             <BackupImport />
+          </div>
+        </TabsContent>
+
+        {/* System Tab */}
+        <TabsContent value="system" className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Configurações do Sistema</h2>
+            <p className="text-sm text-slate-500">
+              Gerenciamento avançado e manutenção do sistema
+            </p>
+          </div>
+
+          <div className="max-w-2xl">
+            <ResetSystem />
           </div>
         </TabsContent>
       </Tabs>

@@ -18,6 +18,20 @@ export function useTransactionFilters() {
     };
   }, [searchParams]);
 
+  const setFilters = (nextFilters: TransactionFilters) => {
+    setSearchParams(() => {
+      const newParams = new URLSearchParams();
+
+      Object.entries(nextFilters).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          newParams.set(key, String(value));
+        }
+      });
+
+      return newParams;
+    });
+  };
+
   const setFilter = (key: string, value: string | number | undefined) => {
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
@@ -41,5 +55,5 @@ export function useTransactionFilters() {
     setSearchParams({});
   };
 
-  return { filters, setFilter, clearFilters };
+  return { filters, setFilters, setFilter, clearFilters };
 }

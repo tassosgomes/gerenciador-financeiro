@@ -4,6 +4,20 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { CancelModal } from '@/features/transactions/components/CancelModal';
 
+const mockCancelMutateAsync = vi.fn();
+const mockDeactivateMutateAsync = vi.fn();
+
+vi.mock('@/features/transactions/hooks/useTransactions', () => ({
+  useCancelTransaction: () => ({
+    mutateAsync: mockCancelMutateAsync,
+    isPending: false,
+  }),
+  useDeactivateRecurrence: () => ({
+    mutateAsync: mockDeactivateMutateAsync,
+    isPending: false,
+  }),
+}));
+
 function renderWithProviders(ui: React.ReactElement): void {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -20,6 +34,10 @@ describe('CancelModal', () => {
 
   beforeEach(() => {
     mockOnClose.mockClear();
+    mockCancelMutateAsync.mockReset();
+    mockCancelMutateAsync.mockResolvedValue(undefined);
+    mockDeactivateMutateAsync.mockReset();
+    mockDeactivateMutateAsync.mockResolvedValue(undefined);
   });
 
   it('renders modal with title and reason field', () => {
@@ -80,6 +98,11 @@ describe('CancelModal', () => {
 
     await waitFor(() => {
       expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    expect(mockCancelMutateAsync).toHaveBeenCalledWith({
+      id: '1',
+      data: { reason: 'Compra cancelada pelo fornecedor' },
     });
   });
 
@@ -155,5 +178,47 @@ describe('CancelModal', () => {
 
     const reasonInput = screen.getByLabelText(/motivo do cancelamento/i);
     expect(reasonInput.tagName).toBe('INPUT');
+  });
+
+  it('renders recurrence deactivation mode without reason field', () => {
+    renderWithProviders(
+      <CancelModal
+        open={true}
+        onClose={mockOnClose}
+        transactionId="5"
+        recurrenceTemplateId="rec-1"
+      />
+    );
+
+    expect(screen.getByText('Desativar Recorrência')).toBeInTheDocument();
+    expect(
+      screen.getByText(/ocorrências futuras não pagas serão removidas automaticamente/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/motivo do cancelamento/i)).not.toBeInTheDocument();
+  });
+
+  it('confirms recurrence deactivation and closes modal', async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <CancelModal
+        open={true}
+        onClose={mockOnClose}
+        transactionId="5"
+        recurrenceTemplateId="rec-1"
+      />
+    );
+
+    const confirmButton = screen.getByRole('button', { name: /confirmar desativação/i });
+    await user.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    expect(mockDeactivateMutateAsync).toHaveBeenCalledWith({
+      recurrenceTemplateId: 'rec-1',
+    });
+    expect(mockCancelMutateAsync).not.toHaveBeenCalled();
   });
 });

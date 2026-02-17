@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<ISystemRepository, SystemRepository>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();
@@ -47,6 +48,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStartupTask, SeedAdminUserStartupTask>();
         services.AddScoped<IStartupTask, SeedInvoicePaymentCategoryStartupTask>();
         services.AddHostedService<StartupTasksHostedService>();
+        services.AddHostedService<RecurrenceMaintenanceWorker>();
 
         return services;
     }

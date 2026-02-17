@@ -453,6 +453,18 @@ export const transactionsHandlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 
+  // POST /api/v1/transactions/recurrences/:id/deactivate
+  http.post(`${BASE_URL}/api/v1/transactions/recurrences/:id/deactivate`, ({ params }) => {
+    const { id } = params;
+    const hasRecurrence = mockTransactions.some((t) => t.recurrenceTemplateId === id);
+
+    if (!hasRecurrence) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return new HttpResponse(null, { status: 204 });
+  }),
+
   // GET /api/v1/transactions/:id/history
   http.get(`${BASE_URL}/api/v1/transactions/:id/history`, () => {
     return HttpResponse.json(mockHistory);

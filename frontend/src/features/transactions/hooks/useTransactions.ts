@@ -9,6 +9,8 @@ import type {
   CreateTransferRequest,
   AdjustTransactionRequest,
   CancelTransactionRequest,
+  MarkTransactionPaidRequest,
+  DeactivateRecurrenceRequest,
   TransactionHistoryEntry,
   TransactionFilters,
   PagedResponse,
@@ -22,6 +24,8 @@ import {
   createTransfer,
   adjustTransaction,
   cancelTransaction,
+  markTransactionAsPaid,
+  deactivateRecurrence,
   getTransactionHistory,
 } from '@/features/transactions/api/transactionsApi';
 import { getErrorMessage } from '@/shared/utils/errorMessages';
@@ -136,6 +140,45 @@ export function useCancelTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       toast.success('Transação cancelada com sucesso!');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useMarkTransactionAsPaid() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data?: MarkTransactionPaidRequest }) =>
+      markTransactionAsPaid(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      toast.success('Transação marcada como paga com sucesso!');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useDeactivateRecurrence() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      recurrenceTemplateId,
+      data,
+    }: {
+      recurrenceTemplateId: string;
+      data?: DeactivateRecurrenceRequest;
+    }) => deactivateRecurrence(recurrenceTemplateId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      toast.success('Recorrência desativada com sucesso!');
     },
     onError: (error) => {
       toast.error(getErrorMessage(error));

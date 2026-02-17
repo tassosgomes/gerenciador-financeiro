@@ -1,6 +1,7 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Domain.Service;
@@ -17,6 +18,7 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
     private readonly IOperationLogRepository _operationLogRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly RecurrenceDomainService _recurrenceDomainService;
+    private readonly TransactionDomainService _transactionDomainService;
     private readonly ILogger<GenerateRecurrenceCommandHandler> _logger;
 
     public GenerateRecurrenceCommandHandler(
@@ -26,6 +28,7 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
         IOperationLogRepository operationLogRepository,
         IUnitOfWork unitOfWork,
         RecurrenceDomainService recurrenceDomainService,
+        TransactionDomainService transactionDomainService,
         ILogger<GenerateRecurrenceCommandHandler> logger)
     {
         _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
@@ -34,6 +37,7 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
         _operationLogRepository = operationLogRepository ?? throw new ArgumentNullException(nameof(operationLogRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _recurrenceDomainService = recurrenceDomainService ?? throw new ArgumentNullException(nameof(recurrenceDomainService));
+        _transactionDomainService = transactionDomainService ?? throw new ArgumentNullException(nameof(transactionDomainService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -64,24 +68,62 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
             if (account == null)
                 throw new AccountNotFoundException(template.AccountId);
 
-            // Generate occurrence
-            var transaction = _recurrenceDomainService.GenerateNextOccurrence(
-                template,
-                account,
-                command.ReferenceDate,
-                command.UserId);
+            var referenceDate = command.ReferenceDate.Date;
+            var recurrenceTransactions = (await _transactionRepository
+                    .GetByRecurrenceTemplateIdAsync(command.RecurrenceId, cancellationToken))
+                .ToList();
 
-            if (transaction != null)
+            var paidNow = 0;
+            foreach (var transaction in recurrenceTransactions.Where(transaction =>
+                         transaction.Status == TransactionStatus.Pending
+                         && ResolveDueDate(transaction) <= referenceDate))
             {
-                await _transactionRepository.AddAsync(transaction, cancellationToken);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                _transactionDomainService.MarkTransactionAsPaid(account, transaction, command.UserId);
+                paidNow++;
+            }
 
-                _logger.LogInformation("Recurrence transaction generated for template {TemplateId}", command.RecurrenceId);
-            }
-            else
+            var generated = 0;
+            for (var monthOffset = 1; monthOffset <= 12; monthOffset++)
             {
-                _logger.LogInformation("No recurrence transaction generated for template {TemplateId}", command.RecurrenceId);
+                var targetMonth = referenceDate.AddMonths(monthOffset);
+                var competenceDate = BuildCompetenceDate(template, targetMonth);
+
+                var alreadyExists = recurrenceTransactions.Any(transaction => transaction.CompetenceDate.Date == competenceDate.Date);
+                if (alreadyExists)
+                {
+                    continue;
+                }
+
+                var futureTransaction = _transactionDomainService.CreateTransaction(
+                    account,
+                    template.CategoryId,
+                    template.Type,
+                    template.Amount,
+                    template.Description,
+                    competenceDate,
+                    competenceDate,
+                    TransactionStatus.Pending,
+                    command.UserId);
+
+                futureTransaction.SetRecurrenceInfo(template.Id);
+                await _transactionRepository.AddAsync(futureTransaction, cancellationToken);
+                recurrenceTransactions.Add(futureTransaction);
+                generated++;
             }
+
+            var maxCompetenceDate = recurrenceTransactions
+                .Select(transaction => transaction.CompetenceDate)
+                .DefaultIfEmpty(referenceDate)
+                .Max();
+            template.MarkGenerated(maxCompetenceDate, command.UserId);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Recurrence maintenance completed for template {TemplateId}. Paid={Paid}, Generated={Generated}",
+                command.RecurrenceId,
+                paidNow,
+                generated);
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))
@@ -91,7 +133,7 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
                     OperationId = command.OperationId,
                     OperationType = "GenerateRecurrence",
                     ResultEntityId = command.RecurrenceId,
-                    ResultPayload = JsonSerializer.Serialize(new { Generated = transaction != null })
+                    ResultPayload = JsonSerializer.Serialize(new { Generated = generated, Paid = paidNow })
                 }, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }
@@ -106,5 +148,16 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
             await _unitOfWork.RollbackAsync(cancellationToken);
             throw;
         }
+    }
+
+    private static DateTime BuildCompetenceDate(RecurrenceTemplate template, DateTime monthDate)
+    {
+        var day = Math.Min(template.DayOfMonth, DateTime.DaysInMonth(monthDate.Year, monthDate.Month));
+        return new DateTime(monthDate.Year, monthDate.Month, day);
+    }
+
+    private static DateTime ResolveDueDate(GestorFinanceiro.Financeiro.Domain.Entity.Transaction transaction)
+    {
+        return (transaction.DueDate ?? transaction.CompetenceDate).Date;
     }
 }

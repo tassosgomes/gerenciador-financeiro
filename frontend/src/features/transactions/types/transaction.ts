@@ -96,6 +96,14 @@ export interface CancelTransactionRequest {
   operationId?: string;
 }
 
+export interface MarkTransactionPaidRequest {
+  operationId?: string;
+}
+
+export interface DeactivateRecurrenceRequest {
+  operationId?: string;
+}
+
 export interface TransactionHistoryEntry {
   id: string;
   transactionId: string;

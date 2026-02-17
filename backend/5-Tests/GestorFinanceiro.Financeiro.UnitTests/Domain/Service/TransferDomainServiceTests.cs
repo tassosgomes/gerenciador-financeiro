@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
+using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Service;
 
 namespace GestorFinanceiro.Financeiro.UnitTests.Domain.Service;
@@ -64,6 +65,44 @@ public class TransferDomainServiceTests
             "user-1");
 
         destination.Balance.Should().Be(220m);
+    }
+
+    [Fact]
+    public void CreateTransfer_ContaOrigemCartao_DeveLancarExcecao()
+    {
+        var debitAccount = Account.Create("Conta Corrente", AccountType.Corrente, 1000m, false, "user-1");
+        var sourceCard = Account.CreateCreditCard("Cartão", 5000m, 10, 20, debitAccount.Id, true, "user-1");
+        var destination = Account.Create("Conta Destino", AccountType.Corrente, 100m, false, "user-1");
+
+        var action = () => _sut.CreateTransfer(
+            sourceCard,
+            destination,
+            Guid.NewGuid(),
+            120m,
+            "Reserva",
+            new DateTime(2026, 2, 10),
+            "user-1");
+
+        action.Should().Throw<TransferOnlyBetweenNonCardAccountsException>();
+    }
+
+    [Fact]
+    public void CreateTransfer_ContaDestinoCartao_DeveLancarExcecao()
+    {
+        var debitAccount = Account.Create("Conta Corrente", AccountType.Corrente, 1000m, false, "user-1");
+        var destinationCard = Account.CreateCreditCard("Cartão", 5000m, 10, 20, debitAccount.Id, true, "user-1");
+        var source = Account.Create("Conta Origem", AccountType.Corrente, 500m, false, "user-1");
+
+        var action = () => _sut.CreateTransfer(
+            source,
+            destinationCard,
+            Guid.NewGuid(),
+            120m,
+            "Reserva",
+            new DateTime(2026, 2, 10),
+            "user-1");
+
+        action.Should().Throw<TransferOnlyBetweenNonCardAccountsException>();
     }
 
     [Fact]

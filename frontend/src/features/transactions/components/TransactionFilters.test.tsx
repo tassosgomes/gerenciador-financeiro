@@ -7,6 +7,7 @@ import { TransactionFilters } from '@/features/transactions/components/Transacti
 
 const mockOnFilterChange = vi.fn();
 const mockOnClearFilters = vi.fn();
+const mockOnSearch = vi.fn();
 
 function renderWithProviders(ui: React.ReactElement): void {
   const queryClient = new QueryClient({
@@ -27,6 +28,7 @@ describe('TransactionFilters', () => {
   beforeEach(() => {
     mockOnFilterChange.mockClear();
     mockOnClearFilters.mockClear();
+    mockOnSearch.mockClear();
   });
 
   it('renders all filter fields', () => {
@@ -34,6 +36,7 @@ describe('TransactionFilters', () => {
       <TransactionFilters
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -41,8 +44,8 @@ describe('TransactionFilters', () => {
     expect(screen.getByText('Categoria')).toBeInTheDocument();
     expect(screen.getByText('Tipo')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Data De')).toBeInTheDocument();
-    expect(screen.getByText('Data Até')).toBeInTheDocument();
+    expect(screen.getByText('Competência De')).toBeInTheDocument();
+    expect(screen.getByText('Competência Até')).toBeInTheDocument();
   });
 
   it('displays clear button when filters are applied', () => {
@@ -51,6 +54,7 @@ describe('TransactionFilters', () => {
         accountId="acc-1"
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -62,6 +66,7 @@ describe('TransactionFilters', () => {
       <TransactionFilters
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -78,6 +83,7 @@ describe('TransactionFilters', () => {
         categoryId="cat-1"
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -93,6 +99,7 @@ describe('TransactionFilters', () => {
         accountId="acc-1"
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -106,6 +113,7 @@ describe('TransactionFilters', () => {
         categoryId="cat-1"
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -120,6 +128,7 @@ describe('TransactionFilters', () => {
         dateTo="2026-02-28"
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -134,6 +143,7 @@ describe('TransactionFilters', () => {
       <TransactionFilters
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -152,6 +162,7 @@ describe('TransactionFilters', () => {
       <TransactionFilters
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 
@@ -168,6 +179,7 @@ describe('TransactionFilters', () => {
         status={0}
         onFilterChange={mockOnFilterChange}
         onClearFilters={mockOnClearFilters}
+        onSearch={mockOnSearch}
       />
     );
 

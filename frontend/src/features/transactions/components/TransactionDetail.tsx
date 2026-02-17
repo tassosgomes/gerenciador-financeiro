@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Ban, TrendingUp, RepeatIcon, ArrowLeftRight } from 'lucide-react';
+import { ArrowLeft, Ban, TrendingUp, RepeatIcon, ArrowLeftRight, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -12,6 +12,7 @@ import {
 } from '@/features/transactions/types/transaction';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { useMarkTransactionAsPaid } from '@/features/transactions/hooks/useTransactions';
 import { CancelModal } from './CancelModal';
 import { AdjustModal } from './AdjustModal';
 
@@ -23,6 +24,7 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
   const navigate = useNavigate();
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
+  const markAsPaid = useMarkTransactionAsPaid();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
 
@@ -30,6 +32,7 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
   const category = categories?.find((cat) => cat.id === transaction.categoryId);
 
   const isCancelled = transaction.status === TransactionStatus.Cancelled;
+  const isPending = transaction.status === TransactionStatus.Pending;
   const canCancel = !isCancelled;
   const canAdjust = !isCancelled && !transaction.hasAdjustment;
 
@@ -198,6 +201,14 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
           <div className="flex gap-2 pt-4 border-t">
             <Button
               variant="outline"
+              onClick={() => markAsPaid.mutate({ id: transaction.id })}
+              disabled={!isPending || markAsPaid.isPending}
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Marcar como Pago
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => setShowCancelModal(true)}
               disabled={!canCancel}
             >
@@ -219,6 +230,7 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
       {/* Modais */}
       <CancelModal
         transactionId={transaction.id}
+        recurrenceTemplateId={transaction.recurrenceTemplateId}
         open={showCancelModal}
         onClose={() => setShowCancelModal(false)}
       />

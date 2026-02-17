@@ -90,7 +90,32 @@ public class TransactionsController : ControllerBase
             request.OperationId);
 
         var response = await _dispatcher.DispatchCommandAsync<CreateRecurrenceCommand, RecurrenceTemplateResponse>(command, cancellationToken);
+
+        var generateCommand = new GenerateRecurrenceCommand(
+            response.Id,
+            request.StartDate,
+            userId.ToString());
+
+        await _dispatcher.DispatchCommandAsync<GenerateRecurrenceCommand, Unit>(generateCommand, cancellationToken);
+
         return Created($"/api/v1/transactions/recurrences/{response.Id}", response);
+    }
+
+    [HttpPost("recurrences/{id:guid}/deactivate")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeactivateRecurrenceAsync(
+        Guid id,
+        [FromBody] DeactivateRecurrenceRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var command = new DeactivateRecurrenceCommand(id, userId.ToString(), request?.OperationId);
+        await _dispatcher.DispatchCommandAsync<DeactivateRecurrenceCommand, Unit>(command, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpPost("transfers")]
@@ -198,6 +223,23 @@ public class TransactionsController : ControllerBase
         var userId = User.GetUserId();
         var command = new CancelTransactionCommand(id, userId.ToString(), request?.Reason, request?.OperationId);
         var response = await _dispatcher.DispatchCommandAsync<CancelTransactionCommand, TransactionResponse>(command, cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpPost("{id:guid}/pay")]
+    [ProducesResponseType<TransactionResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TransactionResponse>> MarkAsPaidAsync(
+        Guid id,
+        [FromBody] MarkTransactionAsPaidRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var command = new MarkTransactionAsPaidCommand(id, userId.ToString(), request?.OperationId);
+        var response = await _dispatcher.DispatchCommandAsync<MarkTransactionAsPaidCommand, TransactionResponse>(command, cancellationToken);
 
         return Ok(response);
     }

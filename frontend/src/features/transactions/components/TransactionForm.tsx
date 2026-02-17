@@ -26,6 +26,7 @@ import {
 import { Switch } from '@/shared/components/ui/switch';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { AccountType } from '@/features/accounts/types/account';
 import {
   useCreateTransaction,
   useCreateInstallment,
@@ -67,6 +68,8 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   const createTransfer = useCreateTransfer();
 
   const activeAccounts = accounts?.filter((acc) => acc.isActive) ?? [];
+  const cardAccounts = activeAccounts.filter((acc) => acc.type === AccountType.Cartao);
+  const transferAccounts = activeAccounts.filter((acc) => acc.type !== AccountType.Cartao);
 
   // Form para transação simples
   // Note: TypeScript can't properly infer react-hook-form types with Zod optional fields
@@ -495,7 +498,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {activeAccounts.map((acc) => (
+                      {cardAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id}>
                           {acc.name}
                         </SelectItem>
@@ -772,7 +775,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {activeAccounts.map((acc) => (
+                      {transferAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id}>
                           {acc.name}
                         </SelectItem>
@@ -796,7 +799,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {activeAccounts.map((acc) => (
+                      {transferAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id}>
                           {acc.name}
                         </SelectItem>

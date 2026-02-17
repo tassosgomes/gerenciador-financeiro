@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
@@ -9,11 +9,53 @@ import { TransactionFilters } from '@/features/transactions/components/Transacti
 import { TransactionTable } from '@/features/transactions/components/TransactionTable';
 import { Pagination } from '@/features/transactions/components/Pagination';
 import { TransactionForm } from '@/features/transactions/components/TransactionForm';
+import type { TransactionFilters as TransactionFiltersType } from '@/features/transactions/types/transaction';
 
 export default function TransactionsPage(): JSX.Element {
   const [showForm, setShowForm] = useState(false);
-  const { filters, setFilter, clearFilters } = useTransactionFilters();
+  const { filters, setFilters, setFilter, clearFilters } = useTransactionFilters();
+  const [draftFilters, setDraftFilters] = useState<TransactionFiltersType>(filters);
   const { data, isLoading } = useTransactions(filters);
+
+  useEffect(() => {
+    setDraftFilters(filters);
+  }, [filters]);
+
+  const handleFilterChange = (key: string, value: string | number | undefined) => {
+    setDraftFilters((prev) => {
+      const next = { ...prev, [key]: value } as TransactionFiltersType;
+
+      if (key !== 'page' && key !== 'size') {
+        next.page = 1;
+      }
+
+      return next;
+    });
+  };
+
+  const handleSearch = () => {
+    setFilters(draftFilters);
+  };
+
+  const handleClearFilters = () => {
+    setDraftFilters({});
+    clearFilters();
+  };
+
+  const hasPendingFilterChanges = useMemo(() => {
+    const keys: Array<keyof TransactionFiltersType> = [
+      'accountId',
+      'categoryId',
+      'type',
+      'status',
+      'dateFrom',
+      'dateTo',
+      'page',
+      'size',
+    ];
+
+    return keys.some((key) => draftFilters[key] !== filters[key]);
+  }, [draftFilters, filters]);
 
   const transactions = data?.data ?? [];
   const pagination = data?.pagination ?? { page: 1, size: 20, total: 0, totalPages: 1 };
@@ -38,14 +80,16 @@ export default function TransactionsPage(): JSX.Element {
       <Card>
         <CardContent className="pt-6">
           <TransactionFilters
-            accountId={filters.accountId}
-            categoryId={filters.categoryId}
-            type={filters.type}
-            status={filters.status}
-            dateFrom={filters.dateFrom}
-            dateTo={filters.dateTo}
-            onFilterChange={setFilter}
-            onClearFilters={clearFilters}
+            accountId={draftFilters.accountId}
+            categoryId={draftFilters.categoryId}
+            type={draftFilters.type}
+            status={draftFilters.status}
+            dateFrom={draftFilters.dateFrom}
+            dateTo={draftFilters.dateTo}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            onSearch={handleSearch}
+            isSearchDisabled={!hasPendingFilterChanges}
           />
         </CardContent>
       </Card>

@@ -1,5 +1,6 @@
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
+using GestorFinanceiro.Financeiro.Domain.Exception;
 
 namespace GestorFinanceiro.Financeiro.Domain.Service;
 
@@ -22,6 +23,11 @@ public class TransferDomainService
         string userId,
         string? operationId = null)
     {
+        if (sourceAccount.Type == AccountType.Cartao || destinationAccount.Type == AccountType.Cartao)
+        {
+            throw new TransferOnlyBetweenNonCardAccountsException();
+        }
+
         var transferGroupId = Guid.NewGuid();
 
         var debit = _transactionService.CreateTransaction(

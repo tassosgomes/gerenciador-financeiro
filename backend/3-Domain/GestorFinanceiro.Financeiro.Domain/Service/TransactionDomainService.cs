@@ -99,6 +99,17 @@ public class TransactionDomainService
         }
     }
 
+    public void MarkTransactionAsPaid(
+        Account account,
+        Transaction transaction,
+        string userId)
+    {
+        account.ValidateCanReceiveTransaction();
+
+        ApplyBalanceImpact(account, transaction.Type, transaction.Amount, userId);
+        transaction.MarkAsPaid(userId);
+    }
+
     private static void ApplyBalanceImpact(
         Account account,
         TransactionType type,

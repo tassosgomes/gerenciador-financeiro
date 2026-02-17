@@ -335,6 +335,60 @@ describe('TransactionForm', () => {
         expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument();
       });
     });
+
+    it('simple tab shows accounts and cards in account selector', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+      );
+
+      const accountSelect = screen.getByRole('combobox', { name: /^conta$/i });
+      await user.click(accountSelect);
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /banco itaú/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /nubank/i })).toBeInTheDocument();
+      });
+    });
+
+    it('installment tab shows only card accounts in account selector', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+      );
+
+      const installmentTab = screen.getByRole('tab', { name: /parcelada/i });
+      await user.click(installmentTab);
+
+      const accountSelect = screen.getByRole('combobox', { name: /^conta$/i });
+      await user.click(accountSelect);
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /nubank/i })).toBeInTheDocument();
+        expect(screen.queryByRole('option', { name: /banco itaú/i })).not.toBeInTheDocument();
+      });
+    });
+
+    it('does not list card accounts in transfer account selectors', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+      );
+
+      const transferTab = screen.getByRole('tab', { name: /transferência/i });
+      await user.click(transferTab);
+
+      const sourceSelect = screen.getByRole('combobox', { name: /conta origem/i });
+      await user.click(sourceSelect);
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /banco itaú/i })).toBeInTheDocument();
+        expect(screen.queryByRole('option', { name: /nubank/i })).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('Form Actions', () => {

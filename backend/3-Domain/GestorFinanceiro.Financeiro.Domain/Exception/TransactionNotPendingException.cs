@@ -3,7 +3,7 @@ namespace GestorFinanceiro.Financeiro.Domain.Exception;
 public class TransactionNotPendingException : DomainException
 {
     public TransactionNotPendingException(Guid transactionId)
-        : base($"Transaction '{transactionId}' is not pending.")
+        : base("Apenas transações pendentes podem ser marcadas como pagas.")
     {
     }
 }

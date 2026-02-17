@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.API.Controllers;
 using GestorFinanceiro.Financeiro.API.Controllers.Requests;
+using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
@@ -132,6 +133,85 @@ public class TransactionsControllerTests
         var okResult = (OkObjectResult)result.Result!;
         okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
         okResult.Value.Should().BeEquivalentTo(response);
+    }
+
+    [Fact]
+    public async Task CreateRecurrenceAsync_ShouldCreateTemplateAndGenerateFirstOccurrence()
+    {
+        var request = new CreateRecurrenceRequest
+        {
+            AccountId = Guid.NewGuid(),
+            CategoryId = Guid.NewGuid(),
+            Type = TransactionType.Debit,
+            Amount = 100m,
+            Description = "Mensalidade",
+            StartDate = new DateTime(2026, 2, 10),
+            DayOfMonth = 10,
+            DefaultStatus = TransactionStatus.Pending
+        };
+
+        var recurrenceResponse = new RecurrenceTemplateResponse(
+            Guid.NewGuid(),
+            request.AccountId,
+            request.CategoryId,
+            request.Type.Value,
+            request.Amount,
+            request.Description,
+            request.DayOfMonth.Value,
+            true,
+            null,
+            request.DefaultStatus.Value,
+            DateTime.UtcNow,
+            null);
+
+        _dispatcherMock
+            .Setup(dispatcher => dispatcher.DispatchCommandAsync<CreateRecurrenceCommand, RecurrenceTemplateResponse>(
+                It.IsAny<CreateRecurrenceCommand>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(recurrenceResponse);
+
+        _dispatcherMock
+            .Setup(dispatcher => dispatcher.DispatchCommandAsync<GenerateRecurrenceCommand, Unit>(
+                It.IsAny<GenerateRecurrenceCommand>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Unit.Value);
+
+        var result = await _controller.CreateRecurrenceAsync(request, CancellationToken.None);
+
+        result.Result.Should().BeOfType<CreatedResult>();
+
+        _dispatcherMock.Verify(dispatcher => dispatcher.DispatchCommandAsync<CreateRecurrenceCommand, RecurrenceTemplateResponse>(
+            It.IsAny<CreateRecurrenceCommand>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        _dispatcherMock.Verify(dispatcher => dispatcher.DispatchCommandAsync<GenerateRecurrenceCommand, Unit>(
+            It.Is<GenerateRecurrenceCommand>(command =>
+                command.RecurrenceId == recurrenceResponse.Id &&
+                command.ReferenceDate == request.StartDate),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeactivateRecurrenceAsync_ShouldReturnNoContent()
+    {
+        var recurrenceId = Guid.NewGuid();
+        var request = new DeactivateRecurrenceRequest { OperationId = "op-deactivate-1" };
+
+        _dispatcherMock
+            .Setup(dispatcher => dispatcher.DispatchCommandAsync<DeactivateRecurrenceCommand, Unit>(
+                It.IsAny<DeactivateRecurrenceCommand>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Unit.Value);
+
+        var result = await _controller.DeactivateRecurrenceAsync(recurrenceId, request, CancellationToken.None);
+
+        result.Should().BeOfType<NoContentResult>();
+
+        _dispatcherMock.Verify(dispatcher => dispatcher.DispatchCommandAsync<DeactivateRecurrenceCommand, Unit>(
+            It.Is<DeactivateRecurrenceCommand>(command =>
+                command.RecurrenceId == recurrenceId
+                && command.OperationId == request.OperationId),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private void ConfigureAuthenticatedUser(Guid userId)

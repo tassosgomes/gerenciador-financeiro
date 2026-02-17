@@ -52,6 +52,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<CreateTransactionCommand, TransactionResponse>, CreateTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustTransactionCommand, TransactionResponse>, AdjustTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<CancelTransactionCommand, TransactionResponse>, CancelTransactionCommandHandler>();
+        services.AddScoped<ICommandHandler<MarkTransactionAsPaidCommand, TransactionResponse>, MarkTransactionAsPaidCommandHandler>();
         services.AddScoped<ICommandHandler<CreateInstallmentCommand, IReadOnlyList<TransactionResponse>>, CreateInstallmentCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustInstallmentGroupCommand, IReadOnlyList<TransactionResponse>>, AdjustInstallmentGroupCommandHandler>();
         services.AddScoped<ICommandHandler<CancelInstallmentCommand, Unit>, CancelInstallmentCommandHandler>();

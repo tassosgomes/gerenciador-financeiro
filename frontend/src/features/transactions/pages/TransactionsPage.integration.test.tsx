@@ -148,7 +148,7 @@ describe('TransactionsPage Integration Tests', () => {
   });
 
   describe('Filter Flow', () => {
-    it('applies account filter and updates URL', async () => {
+    it('applies account filter only after clicking Buscar', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(<TransactionsPage />);
@@ -169,6 +169,13 @@ describe('TransactionsPage Integration Tests', () => {
       const accountOption = screen.getByRole('option', { name: /banco itaú/i });
       await user.click(accountOption);
 
+      // URL should not update before searching
+      const beforeSearchUrl = new URL(window.location.href);
+      expect(beforeSearchUrl.searchParams.get('accountId')).toBeNull();
+
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
+
       // Verify URL updated
       await waitFor(() => {
         const url = new URL(window.location.href);
@@ -176,7 +183,7 @@ describe('TransactionsPage Integration Tests', () => {
       });
     });
 
-    it('filters by transaction type', async () => {
+    it('filters by transaction type only after clicking Buscar', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(<TransactionsPage />);
@@ -193,6 +200,12 @@ describe('TransactionsPage Integration Tests', () => {
       const debitOption = await screen.findByRole('option', { name: 'Débito' });
       await user.click(debitOption);
 
+      const beforeSearchUrl = new URL(window.location.href);
+      expect(beforeSearchUrl.searchParams.get('type')).toBeNull();
+
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
+
       // Verify URL updated with Debit type (1, not 0)
       await waitFor(() => {
         const url = new URL(window.location.href);
@@ -200,7 +213,7 @@ describe('TransactionsPage Integration Tests', () => {
       });
     });
 
-    it('filters by status', async () => {
+    it('filters by status only after clicking Buscar', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(<TransactionsPage />);
@@ -220,6 +233,12 @@ describe('TransactionsPage Integration Tests', () => {
       // Select paid status
       const paidOption = screen.getByRole('option', { name: /pago/i });
       await user.click(paidOption);
+
+      const beforeSearchUrl = new URL(window.location.href);
+      expect(beforeSearchUrl.searchParams.get('status')).toBeNull();
+
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
 
       // Verify URL updated
       await waitFor(() => {
@@ -243,6 +262,9 @@ describe('TransactionsPage Integration Tests', () => {
       const accountOption = await screen.findByRole('option', { name: /banco itaú/i });
       await user.click(accountOption);
 
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /limpar filtros/i })).toBeInTheDocument();
       });
@@ -258,7 +280,7 @@ describe('TransactionsPage Integration Tests', () => {
       });
     });
 
-    it('combines multiple filters', async () => {
+    it('combines multiple filters after clicking Buscar', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(<TransactionsPage />);
@@ -273,12 +295,6 @@ describe('TransactionsPage Integration Tests', () => {
       const accountOption = await screen.findByRole('option', { name: /banco itaú/i });
       await user.click(accountOption);
 
-      // Wait for filter to be applied
-      await waitFor(() => {
-        const url = new URL(window.location.href);
-        expect(url.searchParams.get('accountId')).toBe('1');
-      });
-
       // Apply status filter
       const statusSelect = screen.getByRole('combobox', { name: /status/i });
       await user.click(statusSelect);
@@ -286,6 +302,13 @@ describe('TransactionsPage Integration Tests', () => {
       // Wait for options to render and select Pending
       const pendingOption = await screen.findByRole('option', { name: 'Pendente' });
       await user.click(pendingOption);
+
+      const beforeSearchUrl = new URL(window.location.href);
+      expect(beforeSearchUrl.searchParams.get('accountId')).toBeNull();
+      expect(beforeSearchUrl.searchParams.get('status')).toBeNull();
+
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
 
       // Verify both filters in URL (Pending status = 2, not 0)
       await waitFor(

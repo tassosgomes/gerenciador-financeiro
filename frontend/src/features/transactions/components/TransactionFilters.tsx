@@ -21,6 +21,8 @@ interface TransactionFiltersProps {
   dateTo?: string;
   onFilterChange: (key: string, value: string | number | undefined) => void;
   onClearFilters: () => void;
+  onSearch: () => void;
+  isSearchDisabled?: boolean;
 }
 
 export function TransactionFilters({
@@ -32,6 +34,8 @@ export function TransactionFilters({
   dateTo,
   onFilterChange,
   onClearFilters,
+  onSearch,
+  isSearchDisabled,
 }: TransactionFiltersProps) {
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
@@ -127,9 +131,9 @@ export function TransactionFilters({
           </Select>
         </div>
 
-        {/* Data De */}
+        {/* Competência De */}
         <div>
-          <label className="mb-2 block text-sm font-medium">Data De</label>
+          <label className="mb-2 block text-sm font-medium">Competência De</label>
           <Input
             type="date"
             value={dateFrom ?? ''}
@@ -137,9 +141,9 @@ export function TransactionFilters({
           />
         </div>
 
-        {/* Data Até */}
+        {/* Competência Até */}
         <div>
-          <label className="mb-2 block text-sm font-medium">Data Até</label>
+          <label className="mb-2 block text-sm font-medium">Competência Até</label>
           <Input
             type="date"
             value={dateTo ?? ''}
@@ -162,7 +166,8 @@ export function TransactionFilters({
         <Button 
           variant="default" 
           size="sm"
-          disabled={!hasActiveFilters}
+          onClick={onSearch}
+          disabled={isSearchDisabled}
         >
           <Search className="mr-2 h-4 w-4" />
           Buscar

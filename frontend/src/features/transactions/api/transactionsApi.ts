@@ -7,6 +7,8 @@ import type {
   CreateTransferRequest,
   AdjustTransactionRequest,
   CancelTransactionRequest,
+  MarkTransactionPaidRequest,
+  DeactivateRecurrenceRequest,
   TransactionHistoryEntry,
   TransactionHistoryResponse,
   TransactionFilters,
@@ -174,8 +176,8 @@ export async function getTransactions(
   if (filters?.categoryId) params.append('categoryId', filters.categoryId);
   if (filters?.type !== undefined) params.append('type', String(filters.type));
   if (filters?.status !== undefined) params.append('status', String(filters.status));
-  if (filters?.dateFrom) params.append('dateFrom', filters.dateFrom);
-  if (filters?.dateTo) params.append('dateTo', filters.dateTo);
+  if (filters?.dateFrom) params.append('competenceDateFrom', filters.dateFrom);
+  if (filters?.dateTo) params.append('competenceDateTo', filters.dateTo);
   if (filters?.page !== undefined) params.append('_page', String(filters.page));
   if (filters?.size !== undefined) params.append('_size', String(filters.size));
 
@@ -251,6 +253,21 @@ export async function cancelTransaction(
   data: CancelTransactionRequest
 ): Promise<void> {
   await apiClient.post(`/api/v1/transactions/${id}/cancel`, data);
+}
+
+export async function markTransactionAsPaid(
+  id: string,
+  data?: MarkTransactionPaidRequest
+): Promise<TransactionResponse> {
+  const response = await apiClient.post<TransactionResponse>(`/api/v1/transactions/${id}/pay`, data ?? {});
+  return normalizeTransaction(response.data);
+}
+
+export async function deactivateRecurrence(
+  recurrenceTemplateId: string,
+  data?: DeactivateRecurrenceRequest
+): Promise<void> {
+  await apiClient.post(`/api/v1/transactions/recurrences/${recurrenceTemplateId}/deactivate`, data ?? {});
 }
 
 export async function getTransactionHistory(id: string): Promise<TransactionHistoryEntry[]> {

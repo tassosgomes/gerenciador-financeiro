@@ -69,4 +69,18 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
                 .ThenBy(transaction => transaction.CreatedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Transaction>> GetByRecurrenceTemplateIdAsync(Guid recurrenceTemplateId, CancellationToken cancellationToken)
+    {
+        return await _context.Transactions
+            .Where(transaction => transaction.RecurrenceTemplateId == recurrenceTemplateId)
+            .OrderBy(transaction => transaction.CompetenceDate)
+            .ThenBy(transaction => transaction.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public void RemoveRange(IEnumerable<Transaction> transactions)
+    {
+        _context.Transactions.RemoveRange(transactions);
+    }
 }

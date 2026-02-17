@@ -178,6 +178,22 @@ public class Transaction : BaseEntity
         SetAuditOnUpdate(userId);
     }
 
+    public void MarkAsPaid(string userId)
+    {
+        if (Status == TransactionStatus.Cancelled)
+        {
+            throw new TransactionAlreadyCancelledException(Id);
+        }
+
+        if (Status != TransactionStatus.Pending)
+        {
+            throw new TransactionNotPendingException(Id);
+        }
+
+        Status = TransactionStatus.Paid;
+        SetAuditOnUpdate(userId);
+    }
+
     public void SetInstallmentInfo(Guid groupId, int number, int total)
     {
         InstallmentGroupId = groupId;

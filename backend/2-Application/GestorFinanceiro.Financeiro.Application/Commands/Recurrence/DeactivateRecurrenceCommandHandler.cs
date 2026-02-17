@@ -1,6 +1,7 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using Microsoft.Extensions.Logging;
@@ -11,17 +12,20 @@ namespace GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
 public class DeactivateRecurrenceCommandHandler : ICommandHandler<DeactivateRecurrenceCommand, Unit>
 {
     private readonly IRecurrenceTemplateRepository _recurrenceTemplateRepository;
+    private readonly ITransactionRepository _transactionRepository;
     private readonly IOperationLogRepository _operationLogRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<DeactivateRecurrenceCommandHandler> _logger;
 
     public DeactivateRecurrenceCommandHandler(
         IRecurrenceTemplateRepository recurrenceTemplateRepository,
+        ITransactionRepository transactionRepository,
         IOperationLogRepository operationLogRepository,
         IUnitOfWork unitOfWork,
         ILogger<DeactivateRecurrenceCommandHandler> logger)
     {
         _recurrenceTemplateRepository = recurrenceTemplateRepository ?? throw new ArgumentNullException(nameof(recurrenceTemplateRepository));
+        _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
         _operationLogRepository = operationLogRepository ?? throw new ArgumentNullException(nameof(operationLogRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -51,6 +55,20 @@ public class DeactivateRecurrenceCommandHandler : ICommandHandler<DeactivateRecu
 
             // Deactivate
             template.Deactivate(command.UserId);
+
+            var today = DateTime.UtcNow.Date;
+            var recurrenceTransactions = await _transactionRepository
+                .GetByRecurrenceTemplateIdAsync(command.RecurrenceId, cancellationToken);
+
+            var futureUnpaidTransactions = recurrenceTransactions
+                .Where(transaction => transaction.CompetenceDate.Date > today && transaction.Status != TransactionStatus.Paid)
+                .ToList();
+
+            if (futureUnpaidTransactions.Count > 0)
+            {
+                _transactionRepository.RemoveRange(futureUnpaidTransactions);
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             // Log operation
@@ -61,7 +79,7 @@ public class DeactivateRecurrenceCommandHandler : ICommandHandler<DeactivateRecu
                     OperationId = command.OperationId,
                     OperationType = "DeactivateRecurrence",
                     ResultEntityId = command.RecurrenceId,
-                    ResultPayload = JsonSerializer.Serialize(new { Deactivated = true })
+                    ResultPayload = JsonSerializer.Serialize(new { Deactivated = true, RemovedFutureUnpaid = futureUnpaidTransactions.Count })
                 }, cancellationToken);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
             }

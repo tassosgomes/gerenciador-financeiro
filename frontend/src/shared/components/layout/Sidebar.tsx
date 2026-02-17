@@ -55,7 +55,7 @@ export function Sidebar(): JSX.Element {
         {isAdmin ? (
           <div className="mt-4 border-t border-slate-200 pt-4">
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Configuracoes
+              Configurações
             </p>
 
             {adminNavItems.map((item) => (
