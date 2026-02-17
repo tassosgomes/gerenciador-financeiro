@@ -6,19 +6,23 @@ using GestorFinanceiro.Financeiro.Domain.Interface;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using DomainTransaction = GestorFinanceiro.Financeiro.Domain.Entity.Transaction;
 
 namespace GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 
 public class GetTransactionHistoryQueryHandler : IQueryHandler<GetTransactionHistoryQuery, TransactionHistoryResponse>
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<GetTransactionHistoryQueryHandler> _logger;
 
     public GetTransactionHistoryQueryHandler(
         ITransactionRepository transactionRepository,
+        IUserRepository userRepository,
         ILogger<GetTransactionHistoryQueryHandler> logger)
     {
         _transactionRepository = transactionRepository;
+        _userRepository = userRepository;
         _logger = logger;
     }
 
@@ -47,11 +51,23 @@ public class GetTransactionHistoryQueryHandler : IQueryHandler<GetTransactionHis
             referenceTransactionId,
             transactions.Count);
 
+        var userDisplayNames = await LoadUserDisplayNamesAsync(transactions, cancellationToken);
+
         var entries = transactions
             .Select(item =>
             {
                 var actionType = GetActionType(item.Id == referenceTransactionId, item.Status);
-                return new TransactionHistoryEntry(item.Adapt<TransactionResponse>(), actionType);
+                var performerUserId = GetPerformerUserId(item, actionType);
+                var performedBy = ResolvePerformerDisplay(performerUserId, userDisplayNames);
+                var performedAt = GetPerformedAt(item, actionType);
+                var details = actionType == "Cancellation" ? item.CancellationReason : null;
+
+                return new TransactionHistoryEntry(
+                    item.Adapt<TransactionResponse>(),
+                    actionType,
+                    performedBy,
+                    performedAt,
+                    details);
             })
             .ToList();
 
@@ -66,5 +82,72 @@ public class GetTransactionHistoryQueryHandler : IQueryHandler<GetTransactionHis
         }
 
         return isReferenceTransaction ? "Original" : "Adjustment";
+    }
+
+    private async Task<Dictionary<string, string>> LoadUserDisplayNamesAsync(
+        IReadOnlyCollection<DomainTransaction> transactions,
+        CancellationToken cancellationToken)
+    {
+        var userIds = transactions
+            .SelectMany(item => new[] { item.CreatedBy, item.UpdatedBy, item.CancelledBy })
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .Distinct()
+            .ToList();
+
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var userId in userIds)
+        {
+            if (!Guid.TryParse(userId, out var parsedUserId))
+            {
+                continue;
+            }
+
+            var user = await _userRepository.GetByIdAsync(parsedUserId, cancellationToken);
+            if (user is null)
+            {
+                continue;
+            }
+
+            map[userId] = user.Email;
+        }
+
+        return map;
+    }
+
+    private static string GetPerformerUserId(DomainTransaction transaction, string actionType)
+    {
+        if (actionType == "Cancellation")
+        {
+            return transaction.CancelledBy ?? transaction.UpdatedBy ?? transaction.CreatedBy;
+        }
+
+        return transaction.CreatedBy;
+    }
+
+    private static string ResolvePerformerDisplay(string? userId, IReadOnlyDictionary<string, string> userDisplayNames)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return "Sistema";
+        }
+
+        if (userDisplayNames.TryGetValue(userId, out var login))
+        {
+            return login;
+        }
+
+        return userId;
+    }
+
+    private static DateTime GetPerformedAt(DomainTransaction transaction, string actionType)
+    {
+        if (actionType == "Cancellation")
+        {
+            return transaction.CancelledAt ?? transaction.UpdatedAt ?? transaction.CreatedAt;
+        }
+
+        return transaction.CreatedAt;
     }
 }

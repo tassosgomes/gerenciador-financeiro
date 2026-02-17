@@ -27,6 +27,44 @@ type RawTransactionHistoryEntry = {
   actionType?: string;
 };
 
+type AuthSnapshot = {
+  user?: {
+    id?: string;
+    email?: string;
+  };
+};
+
+function getAuthSnapshot(): AuthSnapshot | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem('gf.auth');
+    return raw ? (JSON.parse(raw) as AuthSnapshot) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getCurrentUserLogin(): string | null {
+  const auth = getAuthSnapshot();
+  return auth?.user?.email ?? null;
+}
+
+function resolveUserLoginFromId(userId?: string | null): string | null {
+  if (!userId) {
+    return null;
+  }
+
+  const auth = getAuthSnapshot();
+  if (!auth?.user?.id || !auth.user.email) {
+    return null;
+  }
+
+  return auth.user.id === userId ? auth.user.email : null;
+}
+
 function parseTransactionType(value: RawEnumValue): TransactionType {
   if (value === TransactionType.Credit || String(value).toLowerCase() === 'credit') {
     return TransactionType.Credit;
@@ -51,6 +89,22 @@ function parseTransactionStatus(value: RawEnumValue): TransactionStatus {
   }
 
   return TransactionStatus.Pending;
+}
+
+function toApiTransactionType(value: TransactionType): 'Debit' | 'Credit' {
+  return value === TransactionType.Credit ? 'Credit' : 'Debit';
+}
+
+function toApiTransactionStatus(value: TransactionStatus): 'Paid' | 'Pending' | 'Cancelled' {
+  if (value === TransactionStatus.Paid) {
+    return 'Paid';
+  }
+
+  if (value === TransactionStatus.Cancelled) {
+    return 'Cancelled';
+  }
+
+  return 'Pending';
 }
 
 function normalizeTransaction(transaction: TransactionResponse): TransactionResponse {
@@ -83,12 +137,21 @@ function mapHistoryEntry(entry: RawTransactionHistoryEntry, index: number): Tran
       id: `${transaction.id}-${action}-${index}`,
       transactionId: transaction.id,
       action,
-      performedBy: transaction.cancelledBy || 'Sistema',
+      performedBy:
+        entry.performedBy ??
+        resolveUserLoginFromId(transaction.cancelledBy) ??
+        getCurrentUserLogin() ??
+        transaction.cancelledBy ??
+        'Sistema',
       performedAt:
-        transaction.cancelledAt || transaction.updatedAt || transaction.createdAt,
+        entry.performedAt ??
+        transaction.cancelledAt ??
+        transaction.updatedAt ??
+        transaction.createdAt,
       details:
-        transaction.cancellationReason ||
-        (action === 'Cancelled' ? 'Transação cancelada' : null),
+        entry.details ??
+        (transaction.cancellationReason ||
+          (action === 'Cancelled' ? 'Transação cancelada' : null)),
     };
   }
 
@@ -134,7 +197,11 @@ export async function getTransaction(id: string): Promise<TransactionResponse> {
 export async function createTransaction(
   data: CreateTransactionRequest
 ): Promise<TransactionResponse> {
-  const response = await apiClient.post<TransactionResponse>('/api/v1/transactions', data);
+  const response = await apiClient.post<TransactionResponse>('/api/v1/transactions', {
+    ...data,
+    type: toApiTransactionType(data.type),
+    status: toApiTransactionStatus(data.status),
+  });
   return normalizeTransaction(response.data);
 }
 

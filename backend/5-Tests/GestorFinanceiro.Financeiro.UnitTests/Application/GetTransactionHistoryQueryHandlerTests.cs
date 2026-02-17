@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
+using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using GestorFinanceiro.Financeiro.Infra.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -89,8 +90,9 @@ public class GetTransactionHistoryQueryHandlerTests
     private static GetTransactionHistoryQueryHandler CreateHandler(FinanceiroDbContext context)
     {
         var repository = new TransactionRepository(context);
+        var userRepository = new Mock<IUserRepository>();
         var logger = new Mock<ILogger<GetTransactionHistoryQueryHandler>>();
-        return new GetTransactionHistoryQueryHandler(repository, logger.Object);
+        return new GetTransactionHistoryQueryHandler(repository, userRepository.Object, logger.Object);
     }
 
     private static FinanceiroDbContext CreateContext()
