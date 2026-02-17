@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace GestorFinanceiro.Financeiro.Infra.Repository;
 
@@ -27,5 +28,58 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
         return await _context.Categories
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> HasLinkedDataAsync(Guid categoryId, CancellationToken cancellationToken)
+    {
+        var hasTransactions = await _context.Transactions
+            .AsNoTracking()
+            .AnyAsync(transaction => transaction.CategoryId == categoryId, cancellationToken);
+
+        if (hasTransactions)
+        {
+            return true;
+        }
+
+        return await _context.RecurrenceTemplates
+            .AsNoTracking()
+            .AnyAsync(template => template.CategoryId == categoryId, cancellationToken);
+    }
+
+    public async Task MigrateLinkedDataAsync(
+        Guid sourceCategoryId,
+        Guid targetCategoryId,
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        var sourceCategoryParam = new NpgsqlParameter("sourceCategoryId", sourceCategoryId);
+        var targetCategoryParam = new NpgsqlParameter("targetCategoryId", targetCategoryId);
+        var userIdParam = new NpgsqlParameter("userId", userId);
+
+        const string sql = """
+            UPDATE transactions
+            SET category_id = @targetCategoryId,
+                updated_by = @userId,
+                updated_at = NOW()
+            WHERE category_id = @sourceCategoryId;
+
+            UPDATE recurrence_templates
+            SET category_id = @targetCategoryId,
+                updated_by = @userId,
+                updated_at = NOW()
+            WHERE category_id = @sourceCategoryId;
+            """;
+
+        await _context.Database.ExecuteSqlRawAsync(
+            sql,
+            [sourceCategoryParam, targetCategoryParam, userIdParam],
+            cancellationToken);
+    }
+
+    public void Remove(Category category)
+    {
+        ArgumentNullException.ThrowIfNull(category);
+
+        _context.Categories.Remove(category);
     }
 }

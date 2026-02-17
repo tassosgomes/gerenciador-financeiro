@@ -1,4 +1,4 @@
-import { Edit, FolderOpen, Lock } from 'lucide-react';
+import { Edit, FolderOpen, Lock, Trash2 } from 'lucide-react';
 
 import type { CategoryResponse } from '@/features/categories/types/category';
 import { CategoryType } from '@/features/categories/types/category';
@@ -7,9 +7,10 @@ import { Badge, Button, EmptyState, Table, TableBody, TableCell, TableHead, Tabl
 interface CategoryListProps {
   categories: CategoryResponse[];
   onEdit: (category: CategoryResponse) => void;
+  onDelete: (category: CategoryResponse) => void;
 }
 
-export function CategoryList({ categories, onEdit }: CategoryListProps): JSX.Element {
+export function CategoryList({ categories, onEdit, onDelete }: CategoryListProps): JSX.Element {
   if (categories.length === 0) {
     return (
       <EmptyState
@@ -53,20 +54,37 @@ export function CategoryList({ categories, onEdit }: CategoryListProps): JSX.Ele
                 )}
               </TableCell>
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(category)}
-                  disabled={category.isSystem}
-                  aria-label={
-                    category.isSystem
-                      ? `Categoria ${category.name} do sistema não pode ser editada`
-                      : `Editar categoria ${category.name}`
-                  }
-                  className={category.isSystem ? 'cursor-not-allowed opacity-40' : ''}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(category)}
+                    disabled={category.isSystem}
+                    aria-label={
+                      category.isSystem
+                        ? `Categoria ${category.name} do sistema não pode ser editada`
+                        : `Editar categoria ${category.name}`
+                    }
+                    className={category.isSystem ? 'cursor-not-allowed opacity-40' : ''}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(category)}
+                    disabled={category.isSystem}
+                    aria-label={
+                      category.isSystem
+                        ? `Categoria ${category.name} do sistema não pode ser removida`
+                        : `Excluir categoria ${category.name}`
+                    }
+                    className={category.isSystem ? 'cursor-not-allowed opacity-40' : ''}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

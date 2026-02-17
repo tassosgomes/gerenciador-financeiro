@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createUserSchema } from '@/features/admin/schemas/userSchema';
 import { RoleType } from '@/features/admin/types/admin';
 import { useCreateUser } from '@/features/admin/hooks/useUsers';
@@ -57,6 +57,12 @@ export function UserForm({ open, onOpenChange }: UserFormProps): JSX.Element {
     setErrors({});
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open, resetForm]);
+
   function handleOpenChange(newOpen: boolean): void {
     if (newOpen) {
       // Reset form when opening dialog
@@ -100,6 +106,7 @@ export function UserForm({ open, onOpenChange }: UserFormProps): JSX.Element {
         password,
         role: selectedRole as RoleType,
       });
+      resetForm();
       onOpenChange(false);
     } catch {
       // Error already handled by mutation hook

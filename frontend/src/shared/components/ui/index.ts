@@ -2,6 +2,7 @@ export { Badge, badgeVariants } from './badge';
 export { Button, buttonVariants } from './button';
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card';
 export { ConfirmationModal } from './ConfirmationModal';
+export { CurrencyInput } from './currency-input';
 export {
   Dialog,
   DialogClose,
@@ -16,6 +17,7 @@ export {
 } from './dialog';
 export { EmptyState } from './EmptyState';
 export { ErrorBoundary } from './ErrorBoundary';
+export { AccountSelectOptionGroups, CategorySelectOptionGroups } from './grouped-select-options';
 export { Input } from './input';
 export {
   Select,

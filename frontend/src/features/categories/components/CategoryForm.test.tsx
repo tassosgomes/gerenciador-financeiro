@@ -122,6 +122,40 @@ describe('CategoryForm', () => {
     expect(nameInput.value).toBe('');
   });
 
+  it('clears previously typed values after closing and reopening in create mode', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    const { rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <CategoryForm open={true} onOpenChange={mockOnOpenChange} />
+      </QueryClientProvider>
+    );
+
+    const nameInput = screen.getByLabelText(/Nome/i);
+    await user.type(nameInput, 'Categoria Temporária');
+    expect((nameInput as HTMLInputElement).value).toBe('Categoria Temporária');
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <CategoryForm open={false} onOpenChange={mockOnOpenChange} />
+      </QueryClientProvider>
+    );
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <CategoryForm open={true} onOpenChange={mockOnOpenChange} />
+      </QueryClientProvider>
+    );
+
+    expect((screen.getByLabelText(/Nome/i) as HTMLInputElement).value).toBe('');
+  });
+
   it('displays warning message for system categories', () => {
     renderWithClient(
       <CategoryForm open={true} onOpenChange={mockOnOpenChange} category={mockSystemCategory} />

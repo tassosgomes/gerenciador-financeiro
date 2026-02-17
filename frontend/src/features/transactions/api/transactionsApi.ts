@@ -212,7 +212,17 @@ export async function createInstallment(
 ): Promise<TransactionResponse[]> {
   const response = await apiClient.post<TransactionResponse[]>(
     '/api/v1/transactions/installments',
-    data
+    {
+      accountId: data.accountId,
+      categoryId: data.categoryId,
+      type: toApiTransactionType(data.type),
+      amount: data.totalAmount,
+      numberOfInstallments: data.installmentCount,
+      description: data.description,
+      competenceDate: data.firstCompetenceDate,
+      dueDate: data.firstDueDate ?? data.firstCompetenceDate,
+      operationId: data.operationId,
+    }
   );
   return response.data.map(normalizeTransaction);
 }

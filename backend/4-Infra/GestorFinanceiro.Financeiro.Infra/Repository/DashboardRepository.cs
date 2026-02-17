@@ -138,7 +138,7 @@ public class DashboardRepository : IDashboardRepository
         var categoryExpenses = await _context.Transactions
             .AsNoTracking()
             .Where(t => t.Type == TransactionType.Debit
-                     && t.Status == TransactionStatus.Paid
+                     && (t.Status == TransactionStatus.Paid || t.Status == TransactionStatus.Pending)
                      && t.CompetenceDate >= startDate
                      && t.CompetenceDate < endDate)
             .GroupBy(t => new

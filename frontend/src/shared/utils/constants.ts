@@ -21,7 +21,7 @@ export const STATUS_COLORS = {
 
 export const ACCOUNT_TYPE_LABELS: Record<number, string> = {
   1: 'Corrente',
-  2: 'Cartao',
+  2: 'Cartão de Crédito',
   3: 'Investimento',
   4: 'Carteira',
 };

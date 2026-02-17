@@ -59,4 +59,18 @@ public class CategoriesController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAsync(Guid id, [FromQuery] Guid? migrateToCategoryId, CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var command = new DeleteCategoryCommand(id, migrateToCategoryId, userId.ToString());
+        await _dispatcher.DispatchCommandAsync<DeleteCategoryCommand, Unit>(command, cancellationToken);
+
+        return NoContent();
+    }
 }

@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { Input } from '@/shared/components/ui/input';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
 import { useTransactionFilters } from '@/features/transactions/hooks/useTransactionFilters';
 import { TransactionFilters } from '@/features/transactions/components/TransactionFilters';
@@ -10,9 +11,43 @@ import { TransactionTable } from '@/features/transactions/components/Transaction
 import { Pagination } from '@/features/transactions/components/Pagination';
 import { TransactionForm } from '@/features/transactions/components/TransactionForm';
 import type { TransactionFilters as TransactionFiltersType } from '@/features/transactions/types/transaction';
+import { MonthNavigator } from '@/features/dashboard/components/MonthNavigator';
+
+function buildMonthRange(month: number, year: number): { dateFrom: string; dateTo: string } {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0);
+
+  const toLocalIsoDate = (value: Date): string => {
+    const yyyy = value.getFullYear();
+    const mm = String(value.getMonth() + 1).padStart(2, '0');
+    const dd = String(value.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  return {
+    dateFrom: toLocalIsoDate(start),
+    dateTo: toLocalIsoDate(end),
+  };
+}
+
+function getMonthAndYearFromDate(date?: string): { month: number; year: number } {
+  if (!date) {
+    const now = new Date();
+    return { month: now.getMonth() + 1, year: now.getFullYear() };
+  }
+
+  const parsed = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    const now = new Date();
+    return { month: now.getMonth() + 1, year: now.getFullYear() };
+  }
+
+  return { month: parsed.getMonth() + 1, year: parsed.getFullYear() };
+}
 
 export default function TransactionsPage(): JSX.Element {
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const { filters, setFilters, setFilter, clearFilters } = useTransactionFilters();
   const [draftFilters, setDraftFilters] = useState<TransactionFiltersType>(filters);
   const { data, isLoading } = useTransactions(filters);
@@ -40,6 +75,21 @@ export default function TransactionsPage(): JSX.Element {
   const handleClearFilters = () => {
     setDraftFilters({});
     clearFilters();
+  };
+
+  const { month: selectedMonth, year: selectedYear } = getMonthAndYearFromDate(filters.dateFrom);
+
+  const handleMonthNavigate = (month: number, year: number) => {
+    const monthRange = buildMonthRange(month, year);
+    const nextFilters: TransactionFiltersType = {
+      ...filters,
+      dateFrom: monthRange.dateFrom,
+      dateTo: monthRange.dateTo,
+      page: 1,
+    };
+
+    setDraftFilters(nextFilters);
+    setFilters(nextFilters);
   };
 
   const hasPendingFilterChanges = useMemo(() => {
@@ -79,6 +129,10 @@ export default function TransactionsPage(): JSX.Element {
       {/* Filtros */}
       <Card>
         <CardContent className="pt-6">
+          <div className="mb-4">
+            <MonthNavigator month={selectedMonth} year={selectedYear} onNavigate={handleMonthNavigate} />
+          </div>
+
           <TransactionFilters
             accountId={draftFilters.accountId}
             categoryId={draftFilters.categoryId}
@@ -107,7 +161,15 @@ export default function TransactionsPage(): JSX.Element {
             </div>
           ) : (
             <>
-              <TransactionTable transactions={transactions} />
+              <div className="border-b p-4">
+                <Input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Buscar por descrição, categoria ou conta"
+                  aria-label="Busca livre"
+                />
+              </div>
+              <TransactionTable transactions={transactions} searchTerm={searchTerm} />
               {pagination.totalPages > 1 && (
                 <div className="border-t">
                   <Pagination

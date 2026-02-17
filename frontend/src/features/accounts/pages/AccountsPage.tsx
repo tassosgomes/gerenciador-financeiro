@@ -10,7 +10,7 @@ import { AccountSummaryFooter } from '@/features/accounts/components/AccountSumm
 import { Button, Card, CardContent, Skeleton, Tabs, TabsList, TabsTrigger } from '@/shared/components/ui';
 import { ConfirmationModal } from '@/shared/components/ui/ConfirmationModal';
 
-type FilterType = 'all' | 'banking' | 'cards';
+type FilterType = 'all' | 'banking' | 'cards' | 'investments';
 
 export default function AccountsPage(): JSX.Element {
   const [filterType, setFilterType] = useState<FilterType>('all');
@@ -28,12 +28,14 @@ export default function AccountsPage(): JSX.Element {
       return accounts.filter(
         (account) =>
           account.type === AccountType.Corrente ||
-          account.type === AccountType.Investimento ||
           account.type === AccountType.Carteira
       );
     }
     if (filterType === 'cards') {
       return accounts.filter((account) => account.type === AccountType.Cartao);
+    }
+    if (filterType === 'investments') {
+      return accounts.filter((account) => account.type === AccountType.Investimento);
     }
     return accounts;
   }, [accounts, filterType]);
@@ -92,6 +94,7 @@ export default function AccountsPage(): JSX.Element {
               <TabsTrigger value="all">Todas</TabsTrigger>
               <TabsTrigger value="banking">Bancárias</TabsTrigger>
               <TabsTrigger value="cards">Cartões</TabsTrigger>
+              <TabsTrigger value="investments">Investimentos</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardContent>

@@ -87,6 +87,12 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             SystemCategoryCannotBeChangedException systemCategoryCannotBeChangedException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Categoria do sistema não pode ser alterada", systemCategoryCannotBeChangedException.Message, "https://httpstatuses.com/400"), false),
 
+            CategoryMigrationRequiredException categoryMigrationRequiredException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Categoria em uso", categoryMigrationRequiredException.Message, "https://httpstatuses.com/409"), false),
+
+            InvalidCategoryMigrationTargetException invalidCategoryMigrationTargetException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Categoria de migração inválida", invalidCategoryMigrationTargetException.Message, "https://httpstatuses.com/400"), false),
+
             InsufficientBalanceException insufficientBalanceException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Saldo insuficiente", insufficientBalanceException.Message, "https://httpstatuses.com/400"), false),
 

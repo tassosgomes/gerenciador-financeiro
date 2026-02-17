@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { AccountResponse, CreateAccountRequest, UpdateAccountRequest } from '@/features/accounts/types/account';
 import { AccountType } from '@/features/accounts/types/account';
@@ -11,8 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  CurrencyInput,
   Input,
   Select,
+  AccountSelectOptionGroups,
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -20,6 +22,7 @@ import {
   Switch,
 } from '@/shared/components/ui';
 import { ACCOUNT_TYPE_LABELS } from '@/shared/utils/constants';
+import { formatCurrency } from '@/shared/utils';
 
 interface AccountFormProps {
   open: boolean;
@@ -90,6 +93,10 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
     );
   }, [allAccounts, isEditing, account?.id]);
 
+  const debitAccountGroups = useMemo(() => {
+    return debitAccounts;
+  }, [debitAccounts]);
+
   const resetForm = useCallback(() => {
     setName(initialValues.name);
     setSelectedType(initialValues.type);
@@ -102,6 +109,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
     setEnforceCreditLimit(initialValues.enforceCreditLimit);
     setErrors({});
   }, [initialValues]);
+
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open, resetForm]);
 
   function handleOpenChange(newOpen: boolean): void {
     if (newOpen) {
@@ -274,13 +287,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
                 <label htmlFor="initialBalance" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Saldo Inicial
                 </label>
-                <Input
+                <CurrencyInput
                   id="initialBalance"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  aria-label="Saldo Inicial"
+                  placeholder="R$ 0,00"
                   value={initialBalance}
-                  onChange={(e) => setInitialBalance(Number(e.target.value))}
+                  onChange={setInitialBalance}
                   className={errors.initialBalance ? 'border-danger' : ''}
                 />
                 {errors.initialBalance && (
@@ -328,13 +340,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
                 <label htmlFor="creditLimit" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Limite de Crédito
                 </label>
-                <Input
+                <CurrencyInput
                   id="creditLimit"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  aria-label="Limite de Crédito"
+                  placeholder="R$ 0,00"
                   value={creditLimit}
-                  onChange={(e) => setCreditLimit(Number(e.target.value))}
+                  onChange={setCreditLimit}
                   className={errors.creditLimit ? 'border-danger' : ''}
                 />
                 {errors.creditLimit && (
@@ -394,11 +405,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
                     <SelectValue placeholder="Selecione a conta" />
                   </SelectTrigger>
                   <SelectContent>
-                    {debitAccounts.map((acc) => (
-                      <SelectItem key={acc.id} value={acc.id}>
-                        {acc.name} ({ACCOUNT_TYPE_LABELS[acc.type]}) - R$ {acc.balance.toFixed(2)}
-                      </SelectItem>
-                    ))}
+                    <AccountSelectOptionGroups
+                      items={debitAccountGroups}
+                      typeLabels={ACCOUNT_TYPE_LABELS}
+                      orderedTypes={[AccountType.Corrente, AccountType.Carteira]}
+                      getItemLabel={(acc) => `${acc.name} - ${formatCurrency(acc.balance)}`}
+                    />
                   </SelectContent>
                 </Select>
                 {errors.debitAccountId && (
@@ -431,13 +443,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
                 <label htmlFor="creditLimit" className="block text-sm font-medium text-slate-700 mb-1.5">
                   Limite de Crédito
                 </label>
-                <Input
+                <CurrencyInput
                   id="creditLimit"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  aria-label="Limite de Crédito"
+                  placeholder="R$ 0,00"
                   value={creditLimit}
-                  onChange={(e) => setCreditLimit(Number(e.target.value))}
+                  onChange={setCreditLimit}
                   className={errors.creditLimit ? 'border-danger' : ''}
                 />
                 {errors.creditLimit && (
@@ -497,11 +508,12 @@ export function AccountForm({ open, onOpenChange, account }: AccountFormProps): 
                     <SelectValue placeholder="Selecione a conta" />
                   </SelectTrigger>
                   <SelectContent>
-                    {debitAccounts.map((acc) => (
-                      <SelectItem key={acc.id} value={acc.id}>
-                        {acc.name} ({ACCOUNT_TYPE_LABELS[acc.type]}) - R$ {acc.balance.toFixed(2)}
-                      </SelectItem>
-                    ))}
+                    <AccountSelectOptionGroups
+                      items={debitAccountGroups}
+                      typeLabels={ACCOUNT_TYPE_LABELS}
+                      orderedTypes={[AccountType.Corrente, AccountType.Carteira]}
+                      getItemLabel={(acc) => `${acc.name} - ${formatCurrency(acc.balance)}`}
+                    />
                   </SelectContent>
                 </Select>
                 {errors.debitAccountId && (

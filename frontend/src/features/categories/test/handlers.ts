@@ -127,4 +127,43 @@ export const categoriesHandlers = [
 
     return HttpResponse.json(mockCategories[categoryIndex]);
   }),
+
+  // DELETE /api/v1/categories/:id
+  http.delete(`${BASE_URL}/api/v1/categories/:id`, ({ params, request }) => {
+    const { id } = params;
+    const url = new URL(request.url);
+    const migrateToCategoryId = url.searchParams.get('migrateToCategoryId');
+    const categoryIndex = mockCategories.findIndex((cat) => cat.id === id);
+
+    if (categoryIndex === -1) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    if (mockCategories[categoryIndex].isSystem) {
+      return HttpResponse.json(
+        {
+          type: 'https://httpstatuses.com/400',
+          title: 'Categoria do sistema não pode ser alterada',
+          status: 400,
+          detail: 'Categorias do sistema não podem ser editadas ou removidas.',
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!migrateToCategoryId) {
+      return HttpResponse.json(
+        {
+          type: 'https://httpstatuses.com/409',
+          title: 'Categoria em uso',
+          status: 409,
+          detail: 'Category has linked records. Choose a target category to migrate before deletion.',
+        },
+        { status: 409 }
+      );
+    }
+
+    mockCategories.splice(categoryIndex, 1);
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];

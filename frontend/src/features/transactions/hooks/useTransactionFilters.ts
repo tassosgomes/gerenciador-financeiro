@@ -2,8 +2,27 @@ import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { TransactionFilters, TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
 
+function toIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getCurrentMonthRange(): { dateFrom: string; dateTo: string } {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  return {
+    dateFrom: toIsoDate(monthStart),
+    dateTo: toIsoDate(monthEnd),
+  };
+}
+
 export function useTransactionFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const currentMonthRange = getCurrentMonthRange();
 
   const filters = useMemo<TransactionFilters>(() => {
     return {
@@ -11,12 +30,12 @@ export function useTransactionFilters() {
       categoryId: searchParams.get('categoryId') ?? undefined,
       type: searchParams.get('type') ? (Number(searchParams.get('type')) as TransactionType) : undefined,
       status: searchParams.get('status') ? (Number(searchParams.get('status')) as TransactionStatus) : undefined,
-      dateFrom: searchParams.get('dateFrom') ?? undefined,
-      dateTo: searchParams.get('dateTo') ?? undefined,
+      dateFrom: searchParams.get('dateFrom') ?? currentMonthRange.dateFrom,
+      dateTo: searchParams.get('dateTo') ?? currentMonthRange.dateTo,
       page: Number(searchParams.get('page') ?? 1),
       size: Number(searchParams.get('size') ?? 20),
     };
-  }, [searchParams]);
+  }, [searchParams, currentMonthRange.dateFrom, currentMonthRange.dateTo]);
 
   const setFilters = (nextFilters: TransactionFilters) => {
     setSearchParams(() => {

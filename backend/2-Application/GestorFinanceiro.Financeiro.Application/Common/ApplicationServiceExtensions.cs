@@ -5,6 +5,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Application.Commands.Invoice;
 using GestorFinanceiro.Financeiro.Application.Commands.Recurrence;
+using GestorFinanceiro.Financeiro.Application.Commands.System;
 using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
 using GestorFinanceiro.Financeiro.Application.Commands.User;
@@ -49,6 +50,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<ActivateAccountCommand, Unit>, ActivateAccountCommandHandler>();
         services.AddScoped<ICommandHandler<CreateCategoryCommand, CategoryResponse>, CreateCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateCategoryCommand, CategoryResponse>, UpdateCategoryCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteCategoryCommand, Unit>, DeleteCategoryCommandHandler>();
         services.AddScoped<ICommandHandler<CreateTransactionCommand, TransactionResponse>, CreateTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustTransactionCommand, TransactionResponse>, AdjustTransactionCommandHandler>();
         services.AddScoped<ICommandHandler<CancelTransactionCommand, TransactionResponse>, CancelTransactionCommandHandler>();
@@ -70,6 +72,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<CreateUserCommand, UserResponse>, CreateUserCommandHandler>();
         services.AddScoped<ICommandHandler<ToggleUserStatusCommand, Unit>, ToggleUserStatusCommandHandler>();
         services.AddScoped<ICommandHandler<ImportBackupCommand, BackupImportSummaryDto>, ImportBackupCommandHandler>();
+        services.AddScoped<ICommandHandler<ResetSystemCommand, Unit>, ResetSystemCommandHandler>();
 
         services.AddScoped<CreateTransactionValidator>();
 

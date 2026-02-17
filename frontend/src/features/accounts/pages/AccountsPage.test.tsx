@@ -68,7 +68,17 @@ describe('AccountsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Banco Itaú')).toBeInTheDocument();
       expect(screen.getAllByText('Carteira').length).toBeGreaterThan(0);
+      expect(screen.queryByText('Nubank')).not.toBeInTheDocument();
+      expect(screen.queryByText('XP Investimentos')).not.toBeInTheDocument();
+    });
+
+    // Filter by investments
+    const investmentsTab = screen.getByRole('tab', { name: /investimentos/i });
+    await user.click(investmentsTab);
+
+    await waitFor(() => {
       expect(screen.getByText('XP Investimentos')).toBeInTheDocument();
+      expect(screen.queryByText('Banco Itaú')).not.toBeInTheDocument();
       expect(screen.queryByText('Nubank')).not.toBeInTheDocument();
     });
   });

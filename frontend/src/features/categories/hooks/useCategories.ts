@@ -9,6 +9,7 @@ import type {
 } from '@/features/categories/types/category';
 import {
   createCategory,
+  deleteCategory,
   getCategories,
   updateCategory,
 } from '@/features/categories/api/categoriesApi';
@@ -46,6 +47,22 @@ export function useUpdateCategory() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Categoria atualizada com sucesso!');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, migrateToCategoryId }: { id: string; migrateToCategoryId?: string }) =>
+      deleteCategory(id, migrateToCategoryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Categoria excluída com sucesso!');
     },
     onError: (error) => {
       toast.error(getErrorMessage(error));

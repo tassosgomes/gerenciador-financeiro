@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { CategoryResponse } from '@/features/categories/types/category';
 import { CategoryType } from '@/features/categories/types/category';
@@ -50,6 +50,12 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
     }
     setErrors({});
   }, [isEditing, category]);
+
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open, resetForm]);
 
   function handleOpenChange(newOpen: boolean): void {
     if (newOpen) {
@@ -103,6 +109,7 @@ export function CategoryForm({ open, onOpenChange, category }: CategoryFormProps
           type: selectedType,
         });
       }
+      resetForm();
       onOpenChange(false);
     } catch {
       // Error already handled by mutation hook

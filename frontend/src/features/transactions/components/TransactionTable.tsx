@@ -1,5 +1,6 @@
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RepeatIcon, ArrowLeftRight, Receipt } from 'lucide-react';
+import { RepeatIcon, ArrowLeftRight, Receipt, ArrowUpDown } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -18,12 +19,18 @@ import { useCategories } from '@/features/categories/hooks/useCategories';
 
 interface TransactionTableProps {
   transactions: TransactionResponse[];
+  searchTerm?: string;
 }
 
-export function TransactionTable({ transactions }: TransactionTableProps) {
+type SortKey = 'competenceDate' | 'description' | 'category' | 'account' | 'amount' | 'status';
+type SortDirection = 'asc' | 'desc';
+
+export function TransactionTable({ transactions, searchTerm = '' }: TransactionTableProps) {
   const navigate = useNavigate();
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
+  const [sortKey, setSortKey] = useState<SortKey>('competenceDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const getAccountName = (accountId: string) => {
     return accounts?.find((acc) => acc.id === accountId)?.name ?? 'N/A';
@@ -32,6 +39,78 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
   const getCategoryName = (categoryId: string) => {
     return categories?.find((cat) => cat.id === categoryId)?.name ?? 'N/A';
   };
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortKey(key);
+    setSortDirection('asc');
+  };
+
+  const visibleTransactions = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const filtered = normalizedSearch.length === 0
+      ? transactions
+      : transactions.filter((transaction) => {
+          const accountName = getAccountName(transaction.accountId).toLowerCase();
+          const categoryName = getCategoryName(transaction.categoryId).toLowerCase();
+          const description = transaction.description.toLowerCase();
+
+          return (
+            description.includes(normalizedSearch)
+            || accountName.includes(normalizedSearch)
+            || categoryName.includes(normalizedSearch)
+          );
+        });
+
+    const sorted = [...filtered].sort((left, right) => {
+      let leftValue: string | number;
+      let rightValue: string | number;
+
+      switch (sortKey) {
+        case 'competenceDate':
+          leftValue = new Date(left.competenceDate).getTime();
+          rightValue = new Date(right.competenceDate).getTime();
+          break;
+        case 'description':
+          leftValue = left.description.toLowerCase();
+          rightValue = right.description.toLowerCase();
+          break;
+        case 'category':
+          leftValue = getCategoryName(left.categoryId).toLowerCase();
+          rightValue = getCategoryName(right.categoryId).toLowerCase();
+          break;
+        case 'account':
+          leftValue = getAccountName(left.accountId).toLowerCase();
+          rightValue = getAccountName(right.accountId).toLowerCase();
+          break;
+        case 'amount':
+          leftValue = left.amount;
+          rightValue = right.amount;
+          break;
+        case 'status':
+          leftValue = left.status;
+          rightValue = right.status;
+          break;
+      }
+
+      if (leftValue < rightValue) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+
+      if (leftValue > rightValue) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
+
+      return 0;
+    });
+
+    return sorted;
+  }, [transactions, searchTerm, sortKey, sortDirection, accounts, categories]);
 
   const getStatusBadge = (status: TransactionStatus, isCancelled: boolean) => {
     if (isCancelled || status === TransactionStatus.Cancelled) {
@@ -99,7 +178,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     );
   };
 
-  if (transactions.length === 0) {
+  if (visibleTransactions.length === 0) {
     return (
       <EmptyState
         icon={Receipt}
@@ -114,16 +193,46 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
       <Table className="min-w-[640px]">
         <TableHeader>
           <TableRow>
-            <TableHead className="min-w-[100px]">Data</TableHead>
-            <TableHead className="min-w-[180px]">Descrição</TableHead>
-            <TableHead className="min-w-[120px]">Categoria</TableHead>
-            <TableHead className="min-w-[120px]">Conta</TableHead>
-            <TableHead className="min-w-[120px] text-right">Valor</TableHead>
-            <TableHead className="min-w-[100px]">Status</TableHead>
+            <TableHead className="min-w-[100px]">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('competenceDate')}>
+                Data
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
+            <TableHead className="min-w-[180px]">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('description')}>
+                Descrição
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
+            <TableHead className="min-w-[120px]">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('category')}>
+                Categoria
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
+            <TableHead className="min-w-[120px]">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('account')}>
+                Conta
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
+            <TableHead className="min-w-[120px] text-right">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('amount')}>
+                Valor
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
+            <TableHead className="min-w-[100px]">
+              <button type="button" className="inline-flex items-center gap-1" onClick={() => handleSort('status')}>
+                Status
+                <ArrowUpDown className="h-3 w-3" />
+              </button>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((transaction) => {
+          {visibleTransactions.map((transaction) => {
             const isCancelled = transaction.status === TransactionStatus.Cancelled;
 
             return (

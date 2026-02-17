@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { TransactionForm } from '@/features/transactions/components/TransactionForm';
+import { CategoryType } from '@/features/categories/types/category';
+import * as categoryHooks from '@/features/categories/hooks/useCategories';
 import type { TransactionResponse } from '@/features/transactions/types/transaction';
 import { TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
 
@@ -118,9 +120,14 @@ function renderWithProviders(ui: React.ReactElement): void {
 
 describe('TransactionForm', () => {
   const mockOnOpenChange = vi.fn();
+  type UseCategoriesResult = ReturnType<typeof categoryHooks.useCategories>;
 
   beforeEach(() => {
     mockOnOpenChange.mockClear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Tab Navigation', () => {
@@ -182,7 +189,7 @@ describe('TransactionForm', () => {
 
       expect(screen.getByLabelText(/descrição/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/valor da transação/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/conta/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/conta\/cartão/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/categoria/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/dt\. vencimento/i)).toBeInTheDocument();
     });
@@ -218,6 +225,38 @@ describe('TransactionForm', () => {
       const descriptionInput = screen.getByLabelText(/descrição/i) as HTMLInputElement;
       expect(descriptionInput.value).toBe('Compra Supermercado');
     });
+
+    it('shows fallback categories when filtered expense list is empty', async () => {
+      const user = userEvent.setup();
+
+      vi.spyOn(categoryHooks, 'useCategories').mockReturnValue({
+        data: [
+          {
+            id: 'income-only-1',
+            name: 'Receita Fallback',
+            type: CategoryType.Income,
+            isSystem: false,
+            createdAt: '2026-02-01T10:00:00Z',
+            updatedAt: null,
+          },
+        ],
+        isLoading: false,
+        isError: false,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as UseCategoriesResult);
+
+      renderWithProviders(
+        <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+      );
+
+      const categorySelect = screen.getByRole('combobox', { name: /categoria/i });
+      await user.click(categorySelect);
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /receita fallback/i })).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Installment Transaction Form', () => {
@@ -234,6 +273,7 @@ describe('TransactionForm', () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/número de parcelas/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/primeira dt\. competência/i)).toBeInTheDocument();
+        expect(screen.getByDisplayValue('Despesa')).toBeInTheDocument();
       });
     });
 
@@ -343,7 +383,7 @@ describe('TransactionForm', () => {
         <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
       );
 
-      const accountSelect = screen.getByRole('combobox', { name: /^conta$/i });
+      const accountSelect = screen.getByRole('combobox', { name: /conta\/cartão/i });
       await user.click(accountSelect);
 
       await waitFor(() => {
@@ -432,6 +472,48 @@ describe('TransactionForm', () => {
       
       // Form should show validation errors (not close)
       expect(mockOnOpenChange).not.toHaveBeenCalled();
+    });
+
+    it('resets typed values and active tab after closing and reopening in create mode', async () => {
+      const user = userEvent.setup();
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      });
+
+      const { rerender } = render(
+        <QueryClientProvider client={queryClient}>
+          <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+        </QueryClientProvider>
+      );
+
+      await user.type(screen.getByLabelText(/descrição/i), 'Transação temporária');
+      expect((screen.getByLabelText(/descrição/i) as HTMLInputElement).value).toBe('Transação temporária');
+
+      await user.click(screen.getByRole('tab', { name: /parcelada/i }));
+      await waitFor(() => {
+        expect(screen.getByLabelText(/número de parcelas/i)).toBeInTheDocument();
+      });
+
+      rerender(
+        <QueryClientProvider client={queryClient}>
+          <TransactionForm open={false} onOpenChange={mockOnOpenChange} transaction={null} />
+        </QueryClientProvider>
+      );
+
+      rerender(
+        <QueryClientProvider client={queryClient}>
+          <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+        </QueryClientProvider>
+      );
+
+      expect((screen.getByLabelText(/descrição/i) as HTMLInputElement).value).toBe('');
+      await waitFor(() => {
+        expect(screen.getByLabelText(/valor da transação/i)).toBeInTheDocument();
+      });
+      expect(screen.queryByLabelText(/número de parcelas/i)).not.toBeInTheDocument();
     });
   });
 });

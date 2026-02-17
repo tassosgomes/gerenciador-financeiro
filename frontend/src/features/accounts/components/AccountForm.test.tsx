@@ -171,7 +171,7 @@ describe('AccountForm', () => {
   });
 
   describe('Credit Card Fields', () => {
-    it('shows credit card fields and hides regular fields when type is Cartao', async () => {
+    it('shows credit card fields and hides regular fields when type is Cartão', async () => {
       renderWithProviders(
         <AccountForm open={true} onOpenChange={mockOnOpenChange} account={null} />
       );
@@ -188,7 +188,7 @@ describe('AccountForm', () => {
       expect(screen.queryByLabelText(/permitir saldo negativo/i)).not.toBeInTheDocument();
     });
 
-    it('shows regular account fields when type is not Cartao in create mode', async () => {
+    it('shows regular account fields when type is not Cartão in create mode', async () => {
       renderWithProviders(
         <AccountForm open={true} onOpenChange={mockOnOpenChange} account={null} />
       );
@@ -204,7 +204,7 @@ describe('AccountForm', () => {
       expect(screen.queryByLabelText(/limite rígido/i)).not.toBeInTheDocument();
     });
 
-    it('validates credit limit as positive when type is Cartao', async () => {
+    it('validates credit limit as positive when type is Cartão', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(
@@ -222,7 +222,7 @@ describe('AccountForm', () => {
       expect(mockCreateAccount).not.toHaveBeenCalled();
     });
 
-    it('validates closing day between 1 and 28 when type is Cartao', async () => {
+    it('validates closing day between 1 and 28 when type is Cartão', async () => {
       const user = userEvent.setup();
 
       renderWithProviders(

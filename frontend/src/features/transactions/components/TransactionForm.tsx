@@ -23,10 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import { AccountSelectOptionGroups, CategorySelectOptionGroups } from '@/shared/components/ui';
 import { Switch } from '@/shared/components/ui/switch';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { AccountType } from '@/features/accounts/types/account';
+import { CategoryType } from '@/features/categories/types/category';
+import { ACCOUNT_TYPE_LABELS } from '@/shared/utils/constants';
 import {
   useCreateTransaction,
   useCreateInstallment,
@@ -70,6 +73,8 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   const activeAccounts = accounts?.filter((acc) => acc.isActive) ?? [];
   const cardAccounts = activeAccounts.filter((acc) => acc.type === AccountType.Cartao);
   const transferAccounts = activeAccounts.filter((acc) => acc.type !== AccountType.Cartao);
+  const expenseCategories = categories?.filter((cat) => cat.type === CategoryType.Expense) ?? [];
+  const incomeCategories = categories?.filter((cat) => cat.type === CategoryType.Income) ?? [];
 
   // Form para transação simples
   // Note: TypeScript can't properly infer react-hook-form types with Zod optional fields
@@ -131,6 +136,28 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
     },
   }) as unknown as UseFormReturn<TransferFormValues>;
 
+  const simpleType = simpleForm.watch('type');
+  const recurrenceType = recurrenceForm.watch('type');
+  const simpleCategories = simpleType === TransactionType.Credit ? incomeCategories : expenseCategories;
+  const recurrenceCategories = recurrenceType === TransactionType.Credit ? incomeCategories : expenseCategories;
+  const simpleCategoriesToRender = simpleCategories.length > 0 ? simpleCategories : (categories ?? []);
+  const recurrenceCategoriesToRender = recurrenceCategories.length > 0 ? recurrenceCategories : (categories ?? []);
+  const installmentCategoriesToRender = expenseCategories.length > 0 ? expenseCategories : (categories ?? []);
+
+  const resetAllForms = () => {
+    simpleForm.reset();
+    installmentForm.reset();
+    recurrenceForm.reset();
+    transferForm.reset();
+    setActiveTab('simple');
+  };
+
+  useEffect(() => {
+    if (open && !transaction) {
+      resetAllForms();
+    }
+  }, [open, transaction]);
+
   // Populate forms when editing
   useEffect(() => {
     if (transaction) {
@@ -183,37 +210,57 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
     }
   }, [transaction, simpleForm, installmentForm, recurrenceForm, transferForm]);
 
+  useEffect(() => {
+    const selectedCategoryId = simpleForm.getValues('categoryId');
+    if (selectedCategoryId && !simpleCategoriesToRender.some((cat) => cat.id === selectedCategoryId)) {
+      simpleForm.setValue('categoryId', '');
+    }
+  }, [simpleCategoriesToRender, simpleForm, simpleType]);
+
+  useEffect(() => {
+    const selectedCategoryId = recurrenceForm.getValues('categoryId');
+    if (selectedCategoryId && !recurrenceCategoriesToRender.some((cat) => cat.id === selectedCategoryId)) {
+      recurrenceForm.setValue('categoryId', '');
+    }
+  }, [recurrenceCategoriesToRender, recurrenceForm, recurrenceType]);
+
+  useEffect(() => {
+    const selectedCategoryId = installmentForm.getValues('categoryId');
+    if (selectedCategoryId && !installmentCategoriesToRender.some((cat) => cat.id === selectedCategoryId)) {
+      installmentForm.setValue('categoryId', '');
+    }
+    if (installmentForm.getValues('type') !== TransactionType.Debit) {
+      installmentForm.setValue('type', TransactionType.Debit);
+    }
+  }, [installmentCategoriesToRender, installmentForm]);
+
   const handleSimpleSubmit = async (data: SimpleTransactionFormValues) => {
     await createTransaction.mutateAsync(data);
-    simpleForm.reset();
+    resetAllForms();
     onOpenChange(false);
   };
 
   const handleInstallmentSubmit = async (data: InstallmentFormValues) => {
     await createInstallment.mutateAsync(data);
-    installmentForm.reset();
+    resetAllForms();
     onOpenChange(false);
   };
 
   const handleRecurrenceSubmit = async (data: RecurrenceFormValues) => {
     await createRecurrence.mutateAsync(data);
-    recurrenceForm.reset();
+    resetAllForms();
     onOpenChange(false);
   };
 
   const handleTransferSubmit = async (data: TransferFormValues) => {
     await createTransfer.mutateAsync(data);
-    transferForm.reset();
+    resetAllForms();
     onOpenChange(false);
   };
 
   const handleClose = (open: boolean) => {
     if (!open) {
-      simpleForm.reset();
-      installmentForm.reset();
-      recurrenceForm.reset();
-      transferForm.reset();
-      setActiveTab('simple');
+      resetAllForms();
     }
     onOpenChange(open);
   };
@@ -290,11 +337,11 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {categories?.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
+                      <CategorySelectOptionGroups
+                        items={simpleCategoriesToRender}
+                        expenseType={CategoryType.Expense}
+                        incomeType={CategoryType.Income}
+                      />
                     </SelectContent>
                   </Select>
                   {simpleForm.formState.errors.categoryId && (
@@ -305,20 +352,16 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Conta</label>
+                  <label className="block text-sm font-medium mb-2">Conta/Cartão</label>
                    <Select
                      value={simpleForm.watch('accountId') ?? ''}
                      onValueChange={(value) => simpleForm.setValue('accountId', value)}
                    >
-                     <SelectTrigger aria-label="Conta">
+                     <SelectTrigger aria-label="Conta/Cartão">
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {activeAccounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
+                      <AccountSelectOptionGroups items={activeAccounts} typeLabels={ACCOUNT_TYPE_LABELS} />
                     </SelectContent>
                   </Select>
                   {simpleForm.formState.errors.accountId && (
@@ -341,8 +384,8 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue />
                      </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={String(TransactionType.Debit)}>Débito</SelectItem>
-                      <SelectItem value={String(TransactionType.Credit)}>Crédito</SelectItem>
+                      <SelectItem value={String(TransactionType.Debit)}>Despesa</SelectItem>
+                      <SelectItem value={String(TransactionType.Credit)}>Receita</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -474,11 +517,11 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {categories?.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
+                      <CategorySelectOptionGroups
+                        items={installmentCategoriesToRender}
+                        expenseType={CategoryType.Expense}
+                        incomeType={CategoryType.Income}
+                      />
                     </SelectContent>
                   </Select>
                   {installmentForm.formState.errors.categoryId && (
@@ -498,11 +541,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {cardAccounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
+                      <AccountSelectOptionGroups items={cardAccounts} typeLabels={ACCOUNT_TYPE_LABELS} />
                     </SelectContent>
                   </Select>
                   {installmentForm.formState.errors.accountId && (
@@ -516,18 +555,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               {/* Tipo */}
               <div>
                 <label className="block text-sm font-medium mb-2">Tipo</label>
-                 <Select
-                   value={String(installmentForm.watch('type'))}
-                   onValueChange={(value) => installmentForm.setValue('type', Number(value) as TransactionType)}
-                 >
-                   <SelectTrigger aria-label="Tipo">
-                     <SelectValue />
-                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={String(TransactionType.Debit)}>Débito</SelectItem>
-                    <SelectItem value={String(TransactionType.Credit)}>Crédito</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input value="Despesa" disabled aria-label="Tipo" />
               </div>
 
               {/* Datas */}
@@ -627,11 +655,11 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {categories?.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
+                      <CategorySelectOptionGroups
+                        items={recurrenceCategoriesToRender}
+                        expenseType={CategoryType.Expense}
+                        incomeType={CategoryType.Income}
+                      />
                     </SelectContent>
                   </Select>
                   {recurrenceForm.formState.errors.categoryId && (
@@ -642,20 +670,16 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Conta</label>
+                  <label className="block text-sm font-medium mb-2">Conta/Cartão</label>
                    <Select
                      value={recurrenceForm.watch('accountId') ?? ''}
                      onValueChange={(value) => recurrenceForm.setValue('accountId', value)}
                    >
-                     <SelectTrigger aria-label="Conta">
+                     <SelectTrigger aria-label="Conta/Cartão">
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {activeAccounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
+                      <AccountSelectOptionGroups items={activeAccounts} typeLabels={ACCOUNT_TYPE_LABELS} />
                     </SelectContent>
                   </Select>
                   {recurrenceForm.formState.errors.accountId && (
@@ -677,8 +701,8 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                      <SelectValue />
                    </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={String(TransactionType.Debit)}>Débito</SelectItem>
-                    <SelectItem value={String(TransactionType.Credit)}>Crédito</SelectItem>
+                    <SelectItem value={String(TransactionType.Debit)}>Despesa</SelectItem>
+                    <SelectItem value={String(TransactionType.Credit)}>Receita</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -775,11 +799,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {transferAccounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
+                      <AccountSelectOptionGroups items={transferAccounts} typeLabels={ACCOUNT_TYPE_LABELS} />
                     </SelectContent>
                   </Select>
                   {transferForm.formState.errors.sourceAccountId && (
@@ -799,11 +819,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                        <SelectValue placeholder="Selecione" />
                      </SelectTrigger>
                     <SelectContent>
-                      {transferAccounts.map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id}>
-                          {acc.name}
-                        </SelectItem>
-                      ))}
+                      <AccountSelectOptionGroups items={transferAccounts} typeLabels={ACCOUNT_TYPE_LABELS} />
                     </SelectContent>
                   </Select>
                   {transferForm.formState.errors.destinationAccountId && (
@@ -825,11 +841,11 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                      <SelectValue placeholder="Selecione" />
                    </SelectTrigger>
                   <SelectContent>
-                    {categories?.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    <CategorySelectOptionGroups
+                      items={categories ?? []}
+                      expenseType={CategoryType.Expense}
+                      incomeType={CategoryType.Income}
+                    />
                   </SelectContent>
                 </Select>
                 {transferForm.formState.errors.categoryId && (

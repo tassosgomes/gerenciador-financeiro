@@ -26,34 +26,36 @@ const mockCategories: CategoryResponse[] = [
 
 describe('CategoryList', () => {
   const mockOnEdit = vi.fn();
+  const mockOnDelete = vi.fn();
 
   beforeEach(() => {
     mockOnEdit.mockClear();
+    mockOnDelete.mockClear();
   });
 
   it('renders empty state when no categories', () => {
-    render(<CategoryList categories={[]} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={[]} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     expect(screen.getByText('Nenhuma categoria encontrada')).toBeInTheDocument();
     expect(screen.getByText('Crie sua primeira categoria para organizar suas transações')).toBeInTheDocument();
   });
 
   it('renders categories with correct information', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     expect(screen.getByText('Alimentação')).toBeInTheDocument();
     expect(screen.getByText('Salário')).toBeInTheDocument();
   });
 
   it('displays expense badge with red styling', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     const expenseBadges = screen.getAllByText('Despesa');
     expect(expenseBadges[0]).toHaveClass('bg-red-100', 'text-red-800');
   });
 
   it('displays income badge with green styling', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     const incomeBadges = screen.getAllByText('Receita');
     expect(incomeBadges[0]).toHaveClass('bg-green-100', 'text-green-800');
@@ -62,7 +64,7 @@ describe('CategoryList', () => {
   it('calls onEdit when edit button is clicked for non-system category', async () => {
     const user = userEvent.setup();
 
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     // Buscar um botão de edição que não está desabilitado (categoria não-sistema)
     const editButtons = screen.getAllByRole('button');
@@ -78,7 +80,7 @@ describe('CategoryList', () => {
   });
 
   it('renders table headers correctly', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     expect(screen.getByText('Nome')).toBeInTheDocument();
     expect(screen.getByText('Tipo')).toBeInTheDocument();
@@ -86,14 +88,14 @@ describe('CategoryList', () => {
   });
 
   it('displays lock icon for system categories', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     const lockIcon = screen.getByLabelText('Categoria do sistema');
     expect(lockIcon).toBeInTheDocument();
   });
 
   it('disables edit button for system categories', () => {
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     const editButtons = screen.getAllByRole('button', { name: /Categoria.*sistema/i });
     expect(editButtons[0]).toBeDisabled();
@@ -103,7 +105,7 @@ describe('CategoryList', () => {
   it('enables edit button for non-system categories', async () => {
     const user = userEvent.setup();
 
-    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} />);
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
 
     const editButtons = screen.getAllByRole('button');
     const nonSystemButton = editButtons.find(btn => !btn.hasAttribute('disabled'));
@@ -113,5 +115,16 @@ describe('CategoryList', () => {
       await user.click(nonSystemButton);
       expect(mockOnEdit).toHaveBeenCalled();
     }
+  });
+  
+  it('calls onDelete when delete button is clicked for non-system category', async () => {
+    const user = userEvent.setup();
+
+    render(<CategoryList categories={mockCategories} onEdit={mockOnEdit} onDelete={mockOnDelete} />);
+
+    const deleteButton = screen.getByRole('button', { name: /Excluir categoria Salário/i });
+    await user.click(deleteButton);
+
+    expect(mockOnDelete).toHaveBeenCalledWith(mockCategories[1]);
   });
 });

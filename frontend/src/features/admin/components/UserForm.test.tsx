@@ -96,4 +96,37 @@ describe('UserForm', () => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
   });
+
+  it('clears previously typed values after closing and reopening', async () => {
+    const user = userEvent.setup();
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+    });
+
+    const { rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <UserForm open={true} onOpenChange={() => {}} />
+      </QueryClientProvider>
+    );
+
+    await user.type(screen.getByLabelText(/Nome/i), 'Usuário Temporário');
+    await user.type(screen.getByLabelText(/E-mail/i), 'temp@example.com');
+
+    expect((screen.getByLabelText(/Nome/i) as HTMLInputElement).value).toBe('Usuário Temporário');
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <UserForm open={false} onOpenChange={() => {}} />
+      </QueryClientProvider>
+    );
+
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <UserForm open={true} onOpenChange={() => {}} />
+      </QueryClientProvider>
+    );
+
+    expect((screen.getByLabelText(/Nome/i) as HTMLInputElement).value).toBe('');
+    expect((screen.getByLabelText(/E-mail/i) as HTMLInputElement).value).toBe('');
+  });
 });

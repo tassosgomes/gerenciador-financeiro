@@ -7,10 +7,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
+import {
+  AccountSelectOptionGroups,
+  CategorySelectOptionGroups,
+} from '@/shared/components/ui';
 import { Input } from '@/shared/components/ui/input';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
+import { AccountType } from '@/features/accounts/types/account';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { CategoryType } from '@/features/categories/types/category';
 import { TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
+import { ACCOUNT_TYPE_LABELS } from '@/shared/utils/constants';
 
 interface TransactionFiltersProps {
   accountId?: string;
@@ -60,11 +67,12 @@ export function TransactionFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">Todas as contas</SelectItem>
-              {activeAccounts.map((account) => (
-                <SelectItem key={account.id} value={account.id}>
-                  {account.name}
-                </SelectItem>
-              ))}
+              <AccountSelectOptionGroups
+                items={activeAccounts}
+                typeLabels={ACCOUNT_TYPE_LABELS}
+                orderedTypes={[AccountType.Corrente, AccountType.Cartao, AccountType.Carteira, AccountType.Investimento]}
+                includeLeadingSeparator
+              />
             </SelectContent>
           </Select>
         </div>
@@ -81,11 +89,12 @@ export function TransactionFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">Todas as categorias</SelectItem>
-              {categories?.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
+              <CategorySelectOptionGroups
+                items={categories ?? []}
+                expenseType={CategoryType.Expense}
+                incomeType={CategoryType.Income}
+                includeLeadingSeparator
+              />
             </SelectContent>
           </Select>
         </div>

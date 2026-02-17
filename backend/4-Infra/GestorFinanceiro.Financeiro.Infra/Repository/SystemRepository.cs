@@ -21,6 +21,9 @@ public class SystemRepository : ISystemRepository
             
             -- Delete all recurrence templates
             DELETE FROM recurrence_templates;
+
+            -- Delete credit card details before accounts (debit_account_id FK)
+            DELETE FROM credit_card_details;
             
             -- Delete all accounts
             DELETE FROM accounts;

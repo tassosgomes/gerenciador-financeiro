@@ -21,6 +21,16 @@ function normalizeCategoryType(type: CategoryApiResponse['type']): CategoryRespo
 
   // Se é uma string, tenta converter pela chave
   if (typeof type === 'string') {
+    const normalizedString = type.trim().toLowerCase();
+
+    if (normalizedString === 'receita' || normalizedString === 'income') {
+      return CategoryType.Income;
+    }
+
+    if (normalizedString === 'despesa' || normalizedString === 'expense') {
+      return CategoryType.Expense;
+    }
+
     const normalized = CategoryType[type as keyof typeof CategoryType];
     if (normalized !== undefined) {
       return normalized;
@@ -57,4 +67,9 @@ export async function updateCategory(
 ): Promise<CategoryResponse> {
   const response = await apiClient.put<CategoryApiResponse>(`/api/v1/categories/${id}`, data);
   return normalizeCategory(response.data);
+}
+
+export async function deleteCategory(id: string, migrateToCategoryId?: string): Promise<void> {
+  const params = migrateToCategoryId ? { migrateToCategoryId } : undefined;
+  await apiClient.delete(`/api/v1/categories/${id}`, { params });
 }
