@@ -1,6 +1,7 @@
 using GestorFinanceiro.Financeiro.Application.Commands.Account;
 using GestorFinanceiro.Financeiro.Application.Commands.Auth;
 using GestorFinanceiro.Financeiro.Application.Commands.Backup;
+using GestorFinanceiro.Financeiro.Application.Commands.Budget;
 using GestorFinanceiro.Financeiro.Application.Commands.Category;
 using GestorFinanceiro.Financeiro.Application.Commands.Installment;
 using GestorFinanceiro.Financeiro.Application.Commands.Invoice;
@@ -39,6 +40,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<InstallmentDomainService>();
         services.AddScoped<RecurrenceDomainService>();
         services.AddScoped<TransferDomainService>();
+        services.AddScoped<BudgetDomainService>();
 
         // Configure mappings
         MappingConfig.ConfigureMappings();
@@ -73,6 +75,9 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICommandHandler<ToggleUserStatusCommand, Unit>, ToggleUserStatusCommandHandler>();
         services.AddScoped<ICommandHandler<ImportBackupCommand, BackupImportSummaryDto>, ImportBackupCommandHandler>();
         services.AddScoped<ICommandHandler<ResetSystemCommand, Unit>, ResetSystemCommandHandler>();
+        services.AddScoped<ICommandHandler<CreateBudgetCommand, BudgetResponse>, CreateBudgetCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateBudgetCommand, BudgetResponse>, UpdateBudgetCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteBudgetCommand, Unit>, DeleteBudgetCommandHandler>();
 
         services.AddScoped<CreateTransactionValidator>();
 
@@ -101,6 +106,8 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IValidator<ImportBackupCommand>, ImportBackupValidator>();
         services.AddScoped<IValidator<ListTransactionsQuery>, ListTransactionsQueryValidator>();
         services.AddScoped<IValidator<GetInvoiceQuery>, GetInvoiceQueryValidator>();
+        services.AddScoped<CreateBudgetValidator>();
+        services.AddScoped<UpdateBudgetValidator>();
 
         return services;
     }

@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: true
 blocked_by: ["1.0"]
 ---
@@ -39,11 +39,11 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
 
 ### CreateBudgetCommand
 
-- [ ] 3.1 Criar `CreateBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetCommand.cs`:
+- [x] 3.1 Criar `CreateBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetCommand.cs`:
   - Implementar `ICommand<BudgetResponse>`
   - Propriedades: `Name`, `Percentage`, `ReferenceYear`, `ReferenceMonth`, `CategoryIds` (List<Guid>), `IsRecurrent`
 
-- [ ] 3.2 Criar `CreateBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetCommandHandler.cs`:
+- [x] 3.2 Criar `CreateBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetCommandHandler.cs`:
   - Implementar `ICommandHandler<CreateBudgetCommand, BudgetResponse>`
   - Dependências via DI: `IBudgetRepository`, `ICategoryRepository`, `IUnitOfWork`, `IAuditService`, `BudgetDomainService`
   - Fluxo:
@@ -58,7 +58,7 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
     9. Buscar renda e consumido para montar response
     10. Retornar `BudgetResponse` completo
 
-- [ ] 3.3 Criar `CreateBudgetValidator` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetValidator.cs`:
+- [x] 3.3 Criar `CreateBudgetValidator` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/CreateBudgetValidator.cs`:
   - Implementar `AbstractValidator<CreateBudgetCommand>` (FluentValidation)
   - Regras:
     - `Name`: NotEmpty, MinLength(2), MaxLength(150)
@@ -69,11 +69,11 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
 
 ### UpdateBudgetCommand
 
-- [ ] 3.4 Criar `UpdateBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetCommand.cs`:
+- [x] 3.4 Criar `UpdateBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetCommand.cs`:
   - Implementar `ICommand<BudgetResponse>`
   - Propriedades: `Id` (Guid), `Name`, `Percentage`, `CategoryIds` (List<Guid>), `IsRecurrent`
 
-- [ ] 3.5 Criar `UpdateBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetCommandHandler.cs`:
+- [x] 3.5 Criar `UpdateBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetCommandHandler.cs`:
   - Implementar `ICommandHandler<UpdateBudgetCommand, BudgetResponse>`
   - Fluxo:
     1. Buscar budget via `IBudgetRepository.GetByIdWithCategoriesAsync()` → `BudgetNotFoundException`
@@ -86,17 +86,17 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
     8. Persistir + auditoria
     9. Retornar `BudgetResponse` atualizado
 
-- [ ] 3.6 Criar `UpdateBudgetValidator` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetValidator.cs`:
+- [x] 3.6 Criar `UpdateBudgetValidator` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/UpdateBudgetValidator.cs`:
   - Mesmas regras do `CreateBudgetValidator`
   - Adicionar: `Id` NotEmpty
 
 ### DeleteBudgetCommand
 
-- [ ] 3.7 Criar `DeleteBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/DeleteBudgetCommand.cs`:
+- [x] 3.7 Criar `DeleteBudgetCommand` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/DeleteBudgetCommand.cs`:
   - Implementar `ICommand<Unit>` (ou void equivalent)
   - Propriedade: `Id` (Guid)
 
-- [ ] 3.8 Criar `DeleteBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/DeleteBudgetCommandHandler.cs`:
+- [x] 3.8 Criar `DeleteBudgetCommandHandler` em `2-Application/GestorFinanceiro.Financeiro.Application/Commands/Budget/DeleteBudgetCommandHandler.cs`:
   - Fluxo:
     1. Buscar budget → `BudgetNotFoundException`
     2. Validar período (mês corrente ou futuro) → `BudgetPeriodLockedException`
@@ -106,14 +106,14 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
 
 ### Registro DI
 
-- [ ] 3.9 Registrar handlers e validators em `ApplicationServiceExtensions`:
+- [x] 3.9 Registrar handlers e validators em `ApplicationServiceExtensions`:
   - `CreateBudgetCommandHandler`, `UpdateBudgetCommandHandler`, `DeleteBudgetCommandHandler`
   - `CreateBudgetValidator`, `UpdateBudgetValidator`
   - `BudgetDomainService`
 
 ### Testes Unitários
 
-- [ ] 3.10 Criar testes para `CreateBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/CreateBudgetCommandHandlerTests.cs`:
+- [x] 3.10 Criar testes para `CreateBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/CreateBudgetCommandHandlerTests.cs`:
   - `Handle_WithValidCommand_ShouldCreateBudgetAndReturnResponse`
   - `Handle_WhenNameAlreadyExists_ShouldThrowBudgetNameAlreadyExistsException`
   - `Handle_WhenCategoryNotExpense_ShouldThrowInvalidBudgetCategoryTypeException`
@@ -122,20 +122,20 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
   - `Handle_WhenPastMonth_ShouldThrowBudgetPeriodLockedException`
   - `Handle_ShouldCallAuditService`
 
-- [ ] 3.11 Criar testes para `UpdateBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/UpdateBudgetCommandHandlerTests.cs`:
+- [x] 3.11 Criar testes para `UpdateBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/UpdateBudgetCommandHandlerTests.cs`:
   - `Handle_WithValidCommand_ShouldUpdateBudgetAndReturnResponse`
   - `Handle_WhenBudgetNotFound_ShouldThrowBudgetNotFoundException`
   - `Handle_WhenPastMonth_ShouldThrowBudgetPeriodLockedException`
   - `Handle_WhenNewNameAlreadyExists_ShouldThrowBudgetNameAlreadyExistsException`
   - `Handle_WhenPercentageExceeds100_ShouldExcludeCurrentBudgetFromSum`
 
-- [ ] 3.12 Criar testes para `DeleteBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/DeleteBudgetCommandHandlerTests.cs`:
+- [x] 3.12 Criar testes para `DeleteBudgetCommandHandler` em `5-Tests/.../UnitTests/Application/Commands/Budget/DeleteBudgetCommandHandlerTests.cs`:
   - `Handle_WithValidId_ShouldDeleteBudget`
   - `Handle_WhenBudgetNotFound_ShouldThrowBudgetNotFoundException`
   - `Handle_WhenPastMonth_ShouldThrowBudgetPeriodLockedException`
   - `Handle_ShouldCallAuditService`
 
-- [ ] 3.13 Criar testes para validators em `5-Tests/.../UnitTests/Application/Commands/Budget/`:
+- [x] 3.13 Criar testes para validators em `5-Tests/.../UnitTests/Application/Commands/Budget/`:
   - `CreateBudgetValidatorTests`:
     - `Validate_WithValidCommand_ShouldPass`
     - `Validate_WithEmptyName_ShouldFail`
@@ -148,7 +148,7 @@ Implementar os 3 commands da feature de Orçamentos seguindo o padrão CQRS simp
 
 ### Validação
 
-- [ ] 3.14 Validar build com `dotnet build` e rodar testes unitários
+- [x] 3.14 Validar build com `dotnet build` e rodar testes unitários
 
 ## Sequenciamento
 
