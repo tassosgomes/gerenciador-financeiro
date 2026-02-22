@@ -9,6 +9,7 @@ import {
   Button,
 } from '@/shared/components/ui';
 import { useInvoice } from '@/features/accounts/hooks/useInvoice';
+import { useMonthNavigation } from '@/features/accounts/hooks/useMonthNavigation';
 import { formatCurrency, formatDate } from '@/shared/utils/formatters';
 import { cn } from '@/shared/utils';
 import { PaymentDialog } from './PaymentDialog';
@@ -20,21 +21,6 @@ interface InvoiceDrawerProps {
   onClose: () => void;
 }
 
-const MONTH_LABELS = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-];
-
 const TransactionType = {
   Debit: 1,
   Credit: 2,
@@ -43,32 +29,10 @@ const TransactionType = {
 } as const;
 
 export function InvoiceDrawer({ accountId, accountName, isOpen, onClose }: InvoiceDrawerProps): JSX.Element {
-  const today = new Date();
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1); // 1-12
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const { currentMonth, currentYear, monthLabel, handlePrevMonth, handleNextMonth } = useMonthNavigation();
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   const { data: invoice, isLoading, error } = useInvoice(accountId, currentMonth, currentYear, isOpen);
-
-  const monthLabel = MONTH_LABELS[currentMonth - 1];
-
-  const handlePrevMonth = (): void => {
-    if (currentMonth === 1) {
-      setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
-  };
-
-  const handleNextMonth = (): void => {
-    if (currentMonth === 12) {
-      setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
-  };
 
   const handleOpenPayment = (): void => {
     setIsPaymentDialogOpen(true);

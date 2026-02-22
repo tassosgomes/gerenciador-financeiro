@@ -7,7 +7,6 @@ import { registerAuthSessionManager } from '@/shared/services/apiClient';
 export const AUTH_STORAGE_KEY = 'gf.auth';
 
 interface PersistedAuthState {
-  accessToken: string;
   refreshToken: string;
   user: UserResponse;
 }
@@ -39,7 +38,7 @@ function readPersistedAuthState(): PersistedAuthState | null {
   try {
     const parsedState = JSON.parse(rawState) as PersistedAuthState;
 
-    if (!parsedState.accessToken || !parsedState.refreshToken || !parsedState.user) {
+    if (!parsedState.refreshToken || !parsedState.user) {
       return null;
     }
 
@@ -83,7 +82,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
 
   setTokens: (accessToken, refreshToken, user) => {
-    persistAuthState({ accessToken, refreshToken, user });
+    persistAuthState({ refreshToken, user });
     set({
       accessToken,
       refreshToken,
@@ -145,7 +144,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     set({
-      accessToken: persistedAuthState.accessToken,
+      accessToken: null,
       refreshToken: persistedAuthState.refreshToken,
       user: persistedAuthState.user,
       isAuthenticated: true,

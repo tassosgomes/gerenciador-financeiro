@@ -1,9 +1,51 @@
-import { http, HttpResponse } from 'msw';
 import { waitFor } from '@testing-library/react';
 
-import { server } from '@/shared/test/mocks/server';
+import type { UserResponse } from '@/features/auth/types/auth';
+import * as authApi from '@/features/auth/api/authApi';
 
 import { AUTH_STORAGE_KEY, useAuthStore } from './authStore';
+
+vi.mock('@/features/auth/api/authApi', () => ({
+  loginApi: vi.fn(),
+  logoutApi: vi.fn(),
+  refreshTokenApi: vi.fn(),
+}));
+
+const mockUser: UserResponse = {
+  id: '4abcbabe-e8da-41cf-bbb4-8f2c0058d8f2',
+  name: 'Carlos Silva',
+  email: 'carlos@gestorfinanceiro.com',
+  role: 'Member',
+  isActive: true,
+  mustChangePassword: false,
+  createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+const memoryStorage = new Map<string, string>();
+
+const localStorageMock = {
+  getItem: (key: string) => memoryStorage.get(key) ?? null,
+  setItem: (key: string, value: string) => {
+    memoryStorage.set(key, value);
+  },
+  removeItem: (key: string) => {
+    memoryStorage.delete(key);
+  },
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  configurable: true,
+});
+
+function clearPersistedAuthStateForTest(): void {
+  window.localStorage.removeItem(AUTH_STORAGE_KEY);
+}
+
+function getPersistedAuthStateForTest(): string | null {
+  const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
+  return raw && raw.trim().length > 0 ? raw : null;
+}
 
 function resetAuthState(): void {
   useAuthStore.setState({
@@ -13,12 +55,37 @@ function resetAuthState(): void {
     isAuthenticated: false,
     isLoading: false,
   });
-  window.localStorage.clear();
+  clearPersistedAuthStateForTest();
 }
 
 describe('authStore', () => {
+  const loginApiMock = vi.mocked(authApi.loginApi);
+  const logoutApiMock = vi.mocked(authApi.logoutApi);
+  const refreshTokenApiMock = vi.mocked(authApi.refreshTokenApi);
+
   beforeEach(() => {
     resetAuthState();
+    memoryStorage.clear();
+
+    loginApiMock.mockResolvedValue({
+      accessToken: 'access-token-1',
+      refreshToken: 'refresh-token-1',
+      expiresIn: 3600,
+      user: mockUser,
+    });
+
+    refreshTokenApiMock.mockResolvedValue({
+      accessToken: 'access-token-2',
+      refreshToken: 'refresh-token-2',
+      expiresIn: 3600,
+      user: mockUser,
+    });
+
+    logoutApiMock.mockResolvedValue();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it('logs in and persists tokens', async () => {
@@ -30,7 +97,7 @@ describe('authStore', () => {
     expect(state.accessToken).toBe('access-token-1');
     expect(state.refreshToken).toBe('refresh-token-1');
     expect(state.user?.name).toBe('Carlos Silva');
-    expect(window.localStorage.getItem(AUTH_STORAGE_KEY)).toContain('refresh-token-1');
+    expect(getPersistedAuthStateForTest()).toContain('refresh-token-1');
   });
 
   it('clears session on logout', async () => {
@@ -42,7 +109,7 @@ describe('authStore', () => {
     expect(state.isAuthenticated).toBe(false);
     expect(state.accessToken).toBeNull();
     expect(state.refreshToken).toBeNull();
-    expect(window.localStorage.getItem(AUTH_STORAGE_KEY)).toBeNull();
+    expect(getPersistedAuthStateForTest()).toBeNull();
   });
 
   it('refreshes session and rotates tokens', async () => {
@@ -59,17 +126,8 @@ describe('authStore', () => {
     window.localStorage.setItem(
       AUTH_STORAGE_KEY,
       JSON.stringify({
-        accessToken: 'old-access-token',
         refreshToken: 'refresh-token-1',
-        user: {
-          id: '4abcbabe-e8da-41cf-bbb4-8f2c0058d8f2',
-          name: 'Carlos Silva',
-          email: 'carlos@gestorfinanceiro.com',
-          role: 'Member',
-          isActive: true,
-          mustChangePassword: false,
-          createdAt: '2026-01-01T00:00:00.000Z',
-        },
+        user: mockUser,
       }),
     );
 
@@ -83,17 +141,13 @@ describe('authStore', () => {
   });
 
   it('clears session when refresh fails', async () => {
-    server.use(
-      http.post('*/api/v1/auth/refresh', () => {
-        return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
-      }),
-    );
+    refreshTokenApiMock.mockRejectedValueOnce(new Error('Unauthorized'));
 
     await useAuthStore.getState().login('carlos@gestorfinanceiro.com', '123456');
     const refreshed = await useAuthStore.getState().refreshSession();
 
     expect(refreshed).toBe(false);
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
-    expect(window.localStorage.getItem(AUTH_STORAGE_KEY)).toBeNull();
+    expect(getPersistedAuthStateForTest()).toBeNull();
   });
 });

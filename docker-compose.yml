@@ -40,6 +40,8 @@ services:
       timeout: 3s
       retries: 20
       start_period: 30s
+    ports:
+      - "${API_PORT:-8081}:8080"
     networks:
       - gestor-network
 
@@ -48,7 +50,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      API_URL: /api
+      API_URL: http://localhost:${API_PORT:-8081}
       OTEL_ENDPOINT: ${OTEL_ENDPOINT:-}
     ports:
       - "${WEB_PORT:-8080}:80"

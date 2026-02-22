@@ -149,6 +149,7 @@ Você pode ajustar no `.env`:
 | Variável | Descrição | Padrão | Obrigatório |
 |----------|-----------|--------|-------------|
 | `WEB_PORT` | Porta do host para acesso à aplicação web | `8080` | Não |
+| `API_PORT` | Porta do host para acesso direto à API | `5156` | Não |
 | `POSTGRES_DB` | Nome do banco de dados PostgreSQL | `gestorfinanceiro` | Não |
 | `POSTGRES_USER` | Usuário do banco de dados | `postgres` | Não |
 | `POSTGRES_PASSWORD` | Senha do banco de dados | `postgres` | ⚠️ Sim (altere!) |
@@ -166,8 +167,8 @@ Você pode ajustar no `.env`:
 ### Portas e Serviços
 
 - **Frontend (Web)**: `http://localhost:${WEB_PORT}` (padrão: 8080)
-- **API**: Acessível via proxy reverso em `/api` (não exposta diretamente)
-- **Health Check**: `http://localhost:${WEB_PORT}/api/health`
+- **API**: `http://localhost:${API_PORT}` (padrão: 5156)
+- **Health Check API**: `http://localhost:${API_PORT}/health`
 - **PostgreSQL**: Não exposto externamente (apenas dentro da rede Docker)
 
 ## 🗄️ Backup e Restore
