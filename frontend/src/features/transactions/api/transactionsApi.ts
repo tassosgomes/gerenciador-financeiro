@@ -232,7 +232,14 @@ export async function createRecurrence(
 ): Promise<TransactionResponse> {
   const response = await apiClient.post<TransactionResponse>(
     '/api/v1/transactions/recurrences',
-    data
+    {
+      ...data,
+      type: toApiTransactionType(data.type),
+      defaultStatus:
+        data.defaultStatus !== undefined
+          ? toApiTransactionStatus(data.defaultStatus)
+          : undefined,
+    }
   );
   return normalizeTransaction(response.data);
 }

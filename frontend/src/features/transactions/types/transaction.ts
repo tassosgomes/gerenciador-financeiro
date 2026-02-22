@@ -72,6 +72,7 @@ export interface CreateRecurrenceRequest {
   description: string;
   startDate: string;
   dueDate?: string;
+  defaultStatus?: TransactionStatus;
   operationId?: string;
 }
 

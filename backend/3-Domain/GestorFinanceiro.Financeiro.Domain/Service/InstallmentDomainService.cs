@@ -31,6 +31,9 @@ public class InstallmentDomainService
         var installmentAmount = Math.Round(totalAmount / installmentCount, 2);
         var remainder = totalAmount - (installmentAmount * installmentCount);
         var transactions = new List<Transaction>();
+        var transactionStatus = account.Type == AccountType.Cartao
+            ? TransactionStatus.Paid
+            : TransactionStatus.Pending;
 
         for (var i = 0; i < installmentCount; i++)
         {
@@ -51,7 +54,7 @@ public class InstallmentDomainService
                 $"{description} ({i + 1}/{installmentCount})",
                 competenceDate,
                 dueDate,
-                TransactionStatus.Pending,
+                transactionStatus,
                 userId,
                 i == 0 ? operationId : null);
 

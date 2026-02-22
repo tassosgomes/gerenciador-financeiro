@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { TransactionForm } from '@/features/transactions/components/TransactionForm';
+import { AccountType } from '@/features/accounts/types/account';
 import { CategoryType } from '@/features/categories/types/category';
+import * as accountHooks from '@/features/accounts/hooks/useAccounts';
 import * as categoryHooks from '@/features/categories/hooks/useCategories';
 import type { TransactionResponse } from '@/features/transactions/types/transaction';
 import { TransactionType, TransactionStatus } from '@/features/transactions/types/transaction';
@@ -120,10 +122,74 @@ function renderWithProviders(ui: React.ReactElement): void {
 
 describe('TransactionForm', () => {
   const mockOnOpenChange = vi.fn();
+  type UseAccountsResult = ReturnType<typeof accountHooks.useAccounts>;
   type UseCategoriesResult = ReturnType<typeof categoryHooks.useCategories>;
 
   beforeEach(() => {
     mockOnOpenChange.mockClear();
+
+    vi.spyOn(accountHooks, 'useAccounts').mockReturnValue({
+      data: [
+        {
+          id: 'acc-1',
+          name: 'Banco Itaú',
+          type: AccountType.Corrente,
+          balance: 1000,
+          allowNegativeBalance: true,
+          isActive: true,
+          createdAt: '2026-02-01T10:00:00Z',
+          updatedAt: null,
+          creditCard: null,
+        },
+        {
+          id: 'acc-2',
+          name: 'Nubank',
+          type: AccountType.Cartao,
+          balance: 0,
+          allowNegativeBalance: false,
+          isActive: true,
+          createdAt: '2026-02-01T10:00:00Z',
+          updatedAt: null,
+          creditCard: {
+            creditLimit: 5000,
+            closingDay: 10,
+            dueDay: 20,
+            debitAccountId: 'acc-1',
+            enforceCreditLimit: true,
+            availableLimit: 4000,
+          },
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    } as unknown as UseAccountsResult);
+
+    vi.spyOn(categoryHooks, 'useCategories').mockReturnValue({
+      data: [
+        {
+          id: 'cat-1',
+          name: 'Alimentação',
+          type: CategoryType.Expense,
+          isSystem: false,
+          createdAt: '2026-02-01T10:00:00Z',
+          updatedAt: null,
+        },
+        {
+          id: 'cat-2',
+          name: 'Salário',
+          type: CategoryType.Income,
+          isSystem: false,
+          createdAt: '2026-02-01T10:00:00Z',
+          updatedAt: null,
+        },
+      ],
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    } as unknown as UseCategoriesResult);
   });
 
   afterEach(() => {
@@ -255,6 +321,29 @@ describe('TransactionForm', () => {
 
       await waitFor(() => {
         expect(screen.getByRole('option', { name: /receita fallback/i })).toBeInTheDocument();
+      });
+    });
+
+    it('forces paid status when selecting a credit card account', async () => {
+      const user = userEvent.setup();
+
+      renderWithProviders(
+        <TransactionForm open={true} onOpenChange={mockOnOpenChange} transaction={null} />
+      );
+
+      const accountSelect = screen.getByRole('combobox', { name: /conta\/cartão/i });
+      await user.click(accountSelect);
+
+      await waitFor(() => {
+        expect(screen.getByRole('option', { name: /nubank/i })).toBeInTheDocument();
+      });
+
+      await user.click(screen.getByRole('option', { name: /nubank/i }));
+
+      await waitFor(() => {
+        const paymentSwitch = screen.getByRole('switch');
+        expect(paymentSwitch).toHaveAttribute('aria-checked', 'true');
+        expect(paymentSwitch).toBeDisabled();
       });
     });
   });

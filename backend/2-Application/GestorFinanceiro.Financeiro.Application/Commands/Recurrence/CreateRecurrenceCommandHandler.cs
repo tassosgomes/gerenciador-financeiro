@@ -2,6 +2,7 @@ using FluentValidation;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using Mapster;
@@ -70,6 +71,10 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
                 throw new CategoryNotFoundException(command.CategoryId);
             }
 
+            var defaultStatus = account.Type == AccountType.Cartao
+                ? TransactionStatus.Paid
+                : command.DefaultStatus;
+
             var recurrenceTemplate = RecurrenceTemplate.Create(
                 command.AccountId,
                 command.CategoryId,
@@ -77,7 +82,7 @@ public class CreateRecurrenceCommandHandler : ICommandHandler<CreateRecurrenceCo
                 command.Amount,
                 command.Description,
                 command.DayOfMonth,
-                command.DefaultStatus,
+                defaultStatus,
                 command.UserId);
 
             await _recurrenceTemplateRepository.AddAsync(recurrenceTemplate, cancellationToken);

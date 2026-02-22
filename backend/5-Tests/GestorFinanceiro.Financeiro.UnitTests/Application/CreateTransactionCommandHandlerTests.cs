@@ -149,4 +149,31 @@ public class CreateTransactionCommandHandlerTests
         await action.Should().ThrowAsync<InsufficientBalanceException>();
         _unitOfWork.Verify(mock => mock.RollbackAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task HandleAsync_ContaCartao_ComStatusPendente_ForcaStatusPago()
+    {
+        var account = Account.Create("Cartao", AccountType.Cartao, 0m, true, "user-1");
+        var category = Category.Create("Alimentacao", CategoryType.Despesa, "user-1");
+        var command = new CreateTransactionCommand(
+            account.Id,
+            category.Id,
+            TransactionType.Debit,
+            40m,
+            "Mercado",
+            DateTime.UtcNow,
+            null,
+            TransactionStatus.Pending,
+            "user-1");
+
+        _accountRepository.Setup(mock => mock.GetByIdWithLockAsync(account.Id, It.IsAny<CancellationToken>())).ReturnsAsync(account);
+        _categoryRepository.Setup(mock => mock.GetByIdAsync(category.Id, It.IsAny<CancellationToken>())).ReturnsAsync(category);
+        _transactionRepository
+            .Setup(mock => mock.AddAsync(It.IsAny<Transaction>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Transaction transaction, CancellationToken _) => transaction);
+
+        var response = await _sut.HandleAsync(command, CancellationToken.None);
+
+        response.Status.Should().Be(TransactionStatus.Paid);
+    }
 }

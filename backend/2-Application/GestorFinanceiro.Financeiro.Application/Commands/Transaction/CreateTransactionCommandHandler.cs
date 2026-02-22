@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Domain.Entity;
+using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Exception;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Domain.Service;
@@ -71,6 +72,10 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
             if (account == null)
                 throw new AccountNotFoundException(command.AccountId);
 
+            var status = account.Type == AccountType.Cartao
+                ? TransactionStatus.Paid
+                : command.Status;
+
             // Validate category exists
             var category = await _categoryRepository.GetByIdAsync(command.CategoryId, cancellationToken);
             if (category == null)
@@ -85,7 +90,7 @@ public class CreateTransactionCommandHandler : ICommandHandler<CreateTransaction
                 command.Description,
                 command.CompetenceDate,
                 command.DueDate,
-                command.Status,
+                status,
                 command.UserId,
                 command.OperationId);
 

@@ -94,6 +94,10 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
                     continue;
                 }
 
+                var status = account.Type == AccountType.Cartao
+                    ? TransactionStatus.Paid
+                    : template.DefaultStatus;
+
                 var futureTransaction = _transactionDomainService.CreateTransaction(
                     account,
                     template.CategoryId,
@@ -102,7 +106,7 @@ public class GenerateRecurrenceCommandHandler : ICommandHandler<GenerateRecurren
                     template.Description,
                     competenceDate,
                     competenceDate,
-                    TransactionStatus.Pending,
+                    status,
                     command.UserId);
 
                 futureTransaction.SetRecurrenceInfo(template.Id);

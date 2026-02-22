@@ -138,11 +138,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
 
   const simpleType = simpleForm.watch('type');
   const recurrenceType = recurrenceForm.watch('type');
+  const simpleAccountId = simpleForm.watch('accountId') ?? '';
+  const recurrenceAccountId = recurrenceForm.watch('accountId') ?? '';
   const simpleCategories = simpleType === TransactionType.Credit ? incomeCategories : expenseCategories;
   const recurrenceCategories = recurrenceType === TransactionType.Credit ? incomeCategories : expenseCategories;
   const simpleCategoriesToRender = simpleCategories.length > 0 ? simpleCategories : (categories ?? []);
   const recurrenceCategoriesToRender = recurrenceCategories.length > 0 ? recurrenceCategories : (categories ?? []);
   const installmentCategoriesToRender = expenseCategories.length > 0 ? expenseCategories : (categories ?? []);
+  const isCreditCardAccount = (accountId: string) => activeAccounts.some(
+    (account) => account.id === accountId && account.type === AccountType.Cartao
+  );
+  const isSimpleCreditCardAccount = isCreditCardAccount(simpleAccountId);
+  const isRecurrenceCreditCardAccount = isCreditCardAccount(recurrenceAccountId);
 
   const resetAllForms = () => {
     simpleForm.reset();
@@ -218,6 +225,12 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   }, [simpleCategoriesToRender, simpleForm, simpleType]);
 
   useEffect(() => {
+    if (isSimpleCreditCardAccount && simpleForm.getValues('status') !== TransactionStatus.Paid) {
+      simpleForm.setValue('status', TransactionStatus.Paid);
+    }
+  }, [isSimpleCreditCardAccount, simpleForm]);
+
+  useEffect(() => {
     const selectedCategoryId = recurrenceForm.getValues('categoryId');
     if (selectedCategoryId && !recurrenceCategoriesToRender.some((cat) => cat.id === selectedCategoryId)) {
       recurrenceForm.setValue('categoryId', '');
@@ -235,7 +248,12 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   }, [installmentCategoriesToRender, installmentForm]);
 
   const handleSimpleSubmit = async (data: SimpleTransactionFormValues) => {
-    await createTransaction.mutateAsync(data);
+    const payload: SimpleTransactionFormValues = {
+      ...data,
+      status: isCreditCardAccount(data.accountId) ? TransactionStatus.Paid : data.status,
+    };
+
+    await createTransaction.mutateAsync(payload);
     resetAllForms();
     onOpenChange(false);
   };
@@ -247,7 +265,12 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   };
 
   const handleRecurrenceSubmit = async (data: RecurrenceFormValues) => {
-    await createRecurrence.mutateAsync(data);
+    await createRecurrence.mutateAsync({
+      ...data,
+      defaultStatus: isCreditCardAccount(data.accountId)
+        ? TransactionStatus.Paid
+        : TransactionStatus.Pending,
+    });
     resetAllForms();
     onOpenChange(false);
   };
@@ -415,17 +438,25 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                   <div>
                     <p className="font-medium">Status do Pagamento</p>
                     <p className="text-sm text-muted-foreground">
-                      Marque se a transação já foi realizada
+                      {isSimpleCreditCardAccount
+                        ? 'Lançamentos em cartão de crédito são sempre registrados como pagos'
+                        : 'Marque se a transação já foi realizada'}
                     </p>
                   </div>
                   <Switch
-                    checked={simpleForm.watch('status') === TransactionStatus.Paid}
-                    onCheckedChange={(checked) =>
+                    checked={isSimpleCreditCardAccount || simpleForm.watch('status') === TransactionStatus.Paid}
+                    onCheckedChange={(checked) => {
+                      if (isSimpleCreditCardAccount) {
+                        simpleForm.setValue('status', TransactionStatus.Paid);
+                        return;
+                      }
+
                       simpleForm.setValue(
                         'status',
                         checked ? TransactionStatus.Paid : TransactionStatus.Pending
-                      )
-                    }
+                      );
+                    }}
+                    disabled={isSimpleCreditCardAccount}
                   />
                 </div>
               </div>
