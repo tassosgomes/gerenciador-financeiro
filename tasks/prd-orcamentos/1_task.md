@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: []
 ---
@@ -41,7 +41,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
 
 ### Entidade Budget
 
-- [ ] 1.1 Criar `Budget` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Entity/Budget.cs`:
+- [x] 1.1 Criar `Budget` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Entity/Budget.cs`:
   - Herdar de `BaseEntity`
   - Propriedades: `Name` (string), `Percentage` (decimal), `ReferenceYear` (int), `ReferenceMonth` (int), `IsRecurrent` (bool)
   - Campo privado `_categoryIds` (List<Guid>) com propriedade pública `CategoryIds` (IReadOnlyList<Guid>)
@@ -61,7 +61,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
 
 ### Domain Exceptions
 
-- [ ] 1.2 Criar 7 exceptions em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/`:
+- [x] 1.2 Criar 7 exceptions em `3-Domain/GestorFinanceiro.Financeiro.Domain/Exception/`:
   - `BudgetNotFoundException` — orçamento não encontrado (recebe budgetId)
   - `BudgetPercentageExceededException` — percentual excede 100% no mês (recebe percentage, available, month/year)
   - `CategoryAlreadyBudgetedException` — categoria já vinculada a outro orçamento no mês (recebe categoryId, budgetName, month/year)
@@ -74,7 +74,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
 
 ### Interface IBudgetRepository
 
-- [ ] 1.3 Criar `IBudgetRepository` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Interface/IBudgetRepository.cs`:
+- [x] 1.3 Criar `IBudgetRepository` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Interface/IBudgetRepository.cs`:
   - Herdar de `IRepository<Budget>`
   - `GetByMonthAsync(int year, int month, CancellationToken)` → `IReadOnlyList<Budget>`
   - `GetByIdWithCategoriesAsync(Guid id, CancellationToken)` → `Budget?`
@@ -91,7 +91,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
 
 ### BudgetDomainService
 
-- [ ] 1.4 Criar `BudgetDomainService` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Service/BudgetDomainService.cs`:
+- [x] 1.4 Criar `BudgetDomainService` em `3-Domain/GestorFinanceiro.Financeiro.Domain/Service/BudgetDomainService.cs`:
   - `ValidatePercentageCapAsync(IBudgetRepository repo, int year, int month, decimal newPercentage, Guid? excludeBudgetId, CancellationToken)`:
     - Buscar soma de percentuais do mês via repo
     - Se soma + newPercentage > 100 → lançar `BudgetPercentageExceededException`
@@ -104,7 +104,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
 
 ### Testes Unitários
 
-- [ ] 1.5 Criar testes para `Budget` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/BudgetTests.cs`:
+- [x] 1.5 Criar testes para `Budget` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Entity/BudgetTests.cs`:
   - `Create_WithValidParameters_ShouldReturnInstance`
   - `Create_WithEmptyName_ShouldThrow`
   - `Create_WithNameTooShort_ShouldThrow`
@@ -120,7 +120,7 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
   - `CalculateLimit_ShouldReturnCorrectValue`
   - `CalculateLimit_WithZeroIncome_ShouldReturnZero`
 
-- [ ] 1.6 Criar testes para `BudgetDomainService` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/BudgetDomainServiceTests.cs`:
+- [x] 1.6 Criar testes para `BudgetDomainService` em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Service/BudgetDomainServiceTests.cs`:
   - `ValidatePercentageCap_WhenWithinLimit_ShouldNotThrow`
   - `ValidatePercentageCap_WhenExactly100_ShouldNotThrow`
   - `ValidatePercentageCap_WhenExceeds100_ShouldThrowBudgetPercentageExceededException`
@@ -132,13 +132,13 @@ Criar toda a camada de domínio da feature de Orçamentos: entidade `Budget` com
   - `ValidateReferenceMonth_WithPastMonth_ShouldThrowBudgetPeriodLockedException`
   - Usar NSubstitute para mockar `IBudgetRepository`
 
-- [ ] 1.7 Criar testes para domain exceptions em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/`:
+- [x] 1.7 Criar testes para domain exceptions em `5-Tests/GestorFinanceiro.Financeiro.UnitTests/Domain/Exception/`:
   - Verificar que cada exception herda de `DomainException`
   - Verificar que mensagens contêm dados relevantes
 
 ### Validação
 
-- [ ] 1.8 Validar build com `dotnet build` a partir de `backend/`
+- [x] 1.8 Validar build com `dotnet build` a partir de `backend/`
 
 ## Sequenciamento
 
