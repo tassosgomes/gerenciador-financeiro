@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["1.0"]
 ---
@@ -37,13 +37,13 @@ Implementar toda a camada de infraestrutura de persistência para a feature de O
 
 ### FinanceiroDbContext
 
-- [ ] 2.1 Adicionar `DbSet<Budget> Budgets` no `FinanceiroDbContext`:
+- [x] 2.1 Adicionar `DbSet<Budget> Budgets` no `FinanceiroDbContext`:
   - Em `4-Infra/GestorFinanceiro.Financeiro.Infra/Context/FinanceiroDbContext.cs`
   - Registrar configuração no `OnModelCreating`
 
 ### BudgetConfiguration (Fluent API)
 
-- [ ] 2.2 Criar `BudgetConfiguration` em `4-Infra/GestorFinanceiro.Financeiro.Infra/Config/BudgetConfiguration.cs`:
+- [x] 2.2 Criar `BudgetConfiguration` em `4-Infra/GestorFinanceiro.Financeiro.Infra/Config/BudgetConfiguration.cs`:
   - Implementar `IEntityTypeConfiguration<Budget>`
   - Tabela `budgets`:
     - PK: `id` (uuid)
@@ -69,7 +69,7 @@ Implementar toda a camada de infraestrutura de persistência para a feature de O
 
 ### BudgetRepository
 
-- [ ] 2.3 Criar `BudgetRepository` em `4-Infra/GestorFinanceiro.Financeiro.Infra/Repository/BudgetRepository.cs`:
+- [x] 2.3 Criar `BudgetRepository` em `4-Infra/GestorFinanceiro.Financeiro.Infra/Repository/BudgetRepository.cs`:
   - Herdar de `Repository<Budget>` (base existente)
   - Implementar `IBudgetRepository` com todos os 12 métodos:
 
@@ -95,24 +95,24 @@ Implementar toda a camada de infraestrutura de persistência para a feature de O
 
 ### Migration EF Core
 
-- [ ] 2.4 Gerar migration EF Core:
+- [x] 2.4 Gerar migration EF Core:
   - Executar `dotnet ef migrations add AddBudgets` no projeto Infra
   - Verificar que a migration cria ambas as tabelas com constraints corretas
   - Verificar índices e foreign keys
 
 ### Registro no DI
 
-- [ ] 2.5 Registrar `IBudgetRepository` → `BudgetRepository` em `ServiceCollectionExtensions.AddInfrastructure()`:
+- [x] 2.5 Registrar `IBudgetRepository` → `BudgetRepository` em `ServiceCollectionExtensions.AddInfrastructure()`:
   - Em `4-Infra/GestorFinanceiro.Financeiro.Infra/DependencyInjection/ServiceCollectionExtensions.cs`
   - Adicionar `services.AddScoped<IBudgetRepository, BudgetRepository>()`
 
 ### Validação
 
-- [ ] 2.6 Validar migration aplicando em banco de dev local:
+- [x] 2.6 Validar migration aplicando em banco de dev local:
   - `dotnet ef database update` deve aplicar sem erros
   - Verificar schema das tabelas no PostgreSQL
 
-- [ ] 2.7 Validar build com `dotnet build` a partir de `backend/`
+- [x] 2.7 Validar build com `dotnet build` a partir de `backend/`
 
 ## Sequenciamento
 

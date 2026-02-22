@@ -28,7 +28,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 ## Tarefas
 
 - [x] 1.0 Domain Layer — Entidade Budget, Interfaces, Domain Service e Exceptions
-- [ ] 2.0 Infra Layer — Migration EF Core, BudgetConfiguration e BudgetRepository
+- [x] 2.0 Infra Layer — Migration EF Core, BudgetConfiguration e BudgetRepository
 - [ ] 3.0 Application Layer — Commands (Create, Update, Delete) e Validators
 - [ ] 4.0 Application Layer — Queries e DTOs de Response
 - [ ] 5.0 API Layer — BudgetsController, Request DTOs e Registro DI

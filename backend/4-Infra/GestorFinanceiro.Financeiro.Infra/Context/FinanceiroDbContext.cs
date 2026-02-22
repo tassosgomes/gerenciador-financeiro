@@ -13,6 +13,7 @@ public class FinanceiroDbContext : DbContext
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<Budget> Budgets => Set<Budget>();
     public DbSet<RecurrenceTemplate> RecurrenceTemplates => Set<RecurrenceTemplate>();
     public DbSet<OperationLog> OperationLogs => Set<OperationLog>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
