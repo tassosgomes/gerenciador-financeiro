@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: completed
 parallelizable: true
 blocked_by: ["1.0"]
 ---
@@ -36,7 +36,7 @@ Implementar as 4 queries da feature de Orçamentos e os DTOs de response: `ListB
 
 ### DTOs de Response
 
-- [ ] 4.1 Criar DTOs em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/`:
+- [x] 4.1 Criar DTOs em `2-Application/GestorFinanceiro.Financeiro.Application/Dtos/`:
   - `BudgetResponse.cs`:
     ```csharp
     public record BudgetResponse(
@@ -87,11 +87,11 @@ Implementar as 4 queries da feature de Orçamentos e os DTOs de response: `ListB
 
 ### ListBudgetsQuery
 
-- [ ] 4.2 Criar `ListBudgetsQuery` em `2-Application/.../Queries/Budget/ListBudgetsQuery.cs`:
+- [x] 4.2 Criar `ListBudgetsQuery` em `2-Application/.../Queries/Budget/ListBudgetsQuery.cs`:
   - Implementar `IQuery<IReadOnlyList<BudgetResponse>>`
   - Propriedades: `Year` (int), `Month` (int)
 
-- [ ] 4.3 Criar `ListBudgetsQueryHandler` em `2-Application/.../Queries/Budget/ListBudgetsQueryHandler.cs`:
+- [x] 4.3 Criar `ListBudgetsQueryHandler` em `2-Application/.../Queries/Budget/ListBudgetsQueryHandler.cs`:
   - Implementar `IQueryHandler<ListBudgetsQuery, IReadOnlyList<BudgetResponse>>`
   - Fluxo:
     1. Buscar budgets do mês via `IBudgetRepository.GetByMonthAsync()`
@@ -105,21 +105,21 @@ Implementar as 4 queries da feature de Orçamentos e os DTOs de response: `ListB
 
 ### GetBudgetByIdQuery
 
-- [ ] 4.4 Criar `GetBudgetByIdQuery` em `2-Application/.../Queries/Budget/GetBudgetByIdQuery.cs`:
+- [x] 4.4 Criar `GetBudgetByIdQuery` em `2-Application/.../Queries/Budget/GetBudgetByIdQuery.cs`:
   - Implementar `IQuery<BudgetResponse>`
   - Propriedade: `Id` (Guid)
 
-- [ ] 4.5 Criar `GetBudgetByIdQueryHandler`:
+- [x] 4.5 Criar `GetBudgetByIdQueryHandler`:
   - Buscar budget via `GetByIdWithCategoriesAsync()` → `BudgetNotFoundException`
   - Calcular renda, consumido e montar response (mesmo padrão do List)
 
 ### GetBudgetSummaryQuery
 
-- [ ] 4.6 Criar `GetBudgetSummaryQuery` em `2-Application/.../Queries/Budget/GetBudgetSummaryQuery.cs`:
+- [x] 4.6 Criar `GetBudgetSummaryQuery` em `2-Application/.../Queries/Budget/GetBudgetSummaryQuery.cs`:
   - Implementar `IQuery<BudgetSummaryResponse>`
   - Propriedades: `Year` (int), `Month` (int)
 
-- [ ] 4.7 Criar `GetBudgetSummaryQueryHandler`:
+- [x] 4.7 Criar `GetBudgetSummaryQueryHandler`:
   - Fluxo otimizado com `Task.WhenAll`:
     1. Em paralelo: buscar budgets, renda mensal, gastos fora de orçamento
     2. Para cada budget: calcular consumido (pode usar múltiplas queries paralelas)
@@ -135,11 +135,11 @@ Implementar as 4 queries da feature de Orçamentos e os DTOs de response: `ListB
 
 ### GetAvailablePercentageQuery
 
-- [ ] 4.8 Criar `GetAvailablePercentageQuery` em `2-Application/.../Queries/Budget/GetAvailablePercentageQuery.cs`:
+- [x] 4.8 Criar `GetAvailablePercentageQuery` em `2-Application/.../Queries/Budget/GetAvailablePercentageQuery.cs`:
   - Implementar `IQuery<AvailablePercentageResponse>`
   - Propriedades: `Year` (int), `Month` (int), `ExcludeBudgetId` (Guid?, optional)
 
-- [ ] 4.9 Criar `GetAvailablePercentageQueryHandler`:
+- [x] 4.9 Criar `GetAvailablePercentageQueryHandler`:
   - Buscar percentual usado via `GetTotalPercentageForMonthAsync(excludeBudgetId)`
   - Buscar categoryIds em uso via `GetUsedCategoryIdsForMonthAsync(excludeBudgetId)`
   - Calcular `AvailablePercentage = 100 - UsedPercentage`
@@ -147,37 +147,37 @@ Implementar as 4 queries da feature de Orçamentos e os DTOs de response: `ListB
 
 ### Registro DI
 
-- [ ] 4.10 Registrar query handlers em `ApplicationServiceExtensions`:
+- [x] 4.10 Registrar query handlers em `ApplicationServiceExtensions`:
   - `ListBudgetsQueryHandler`, `GetBudgetByIdQueryHandler`, `GetBudgetSummaryQueryHandler`, `GetAvailablePercentageQueryHandler`
 
 ### Testes Unitários
 
-- [ ] 4.11 Criar testes para `ListBudgetsQueryHandler` em `5-Tests/.../UnitTests/Application/Queries/Budget/ListBudgetsQueryHandlerTests.cs`:
+- [x] 4.11 Criar testes para `ListBudgetsQueryHandler` em `5-Tests/.../UnitTests/Application/Queries/Budget/ListBudgetsQueryHandlerTests.cs`:
   - `Handle_WithBudgetsInMonth_ShouldReturnListWithCalculatedFields`
   - `Handle_WithNoBudgets_ShouldReturnEmptyList`
   - `Handle_ShouldCalculateLimitCorrectly`
   - `Handle_ShouldCalculateConsumedPercentageCorrectly`
   - `Handle_WithZeroIncome_ShouldReturnZeroLimits`
 
-- [ ] 4.12 Criar testes para `GetBudgetByIdQueryHandler`:
+- [x] 4.12 Criar testes para `GetBudgetByIdQueryHandler`:
   - `Handle_WithExistingBudget_ShouldReturnResponse`
   - `Handle_WithNonExistingBudget_ShouldThrowBudgetNotFoundException`
 
-- [ ] 4.13 Criar testes para `GetBudgetSummaryQueryHandler`:
+- [x] 4.13 Criar testes para `GetBudgetSummaryQueryHandler`:
   - `Handle_ShouldReturnConsolidatedSummary`
   - `Handle_ShouldCalculateTotalsCorrectly`
   - `Handle_ShouldIncludeUnbudgetedExpenses`
   - `Handle_WithNoBudgets_ShouldReturnEmptySummary`
   - `Handle_WithZeroIncome_ShouldReturnZeroAmounts`
 
-- [ ] 4.14 Criar testes para `GetAvailablePercentageQueryHandler`:
+- [x] 4.14 Criar testes para `GetAvailablePercentageQueryHandler`:
   - `Handle_WithSomeBudgets_ShouldReturnCorrectAvailable`
   - `Handle_WithNoBudgets_ShouldReturn100Available`
   - `Handle_WithExcludeBudgetId_ShouldExcludeFromCalculation`
 
 ### Validação
 
-- [ ] 4.15 Validar build e rodar testes unitários
+- [x] 4.15 Validar build e rodar testes unitários
 
 ## Sequenciamento
 

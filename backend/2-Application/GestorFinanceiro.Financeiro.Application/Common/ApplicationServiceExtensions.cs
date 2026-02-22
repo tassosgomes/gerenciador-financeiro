@@ -17,6 +17,7 @@ using GestorFinanceiro.Financeiro.Application.Mapping;
 using GestorFinanceiro.Financeiro.Application.Queries.Account;
 using GestorFinanceiro.Financeiro.Application.Queries.Audit;
 using GestorFinanceiro.Financeiro.Application.Queries.Backup;
+using GestorFinanceiro.Financeiro.Application.Queries.Budget;
 using GestorFinanceiro.Financeiro.Application.Queries.Category;
 using GestorFinanceiro.Financeiro.Application.Queries.Dashboard;
 using GestorFinanceiro.Financeiro.Application.Queries.Invoice;
@@ -96,6 +97,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IQueryHandler<GetAllUsersQuery, IEnumerable<UserResponse>>, GetAllUsersQueryHandler>();
         services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResponse>, GetUserByIdQueryHandler>();
         services.AddScoped<IQueryHandler<ExportBackupQuery, BackupExportDto>, ExportBackupQueryHandler>();
+        services.AddScoped<IQueryHandler<ListBudgetsQuery, IReadOnlyList<BudgetResponse>>, ListBudgetsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetBudgetByIdQuery, BudgetResponse>, GetBudgetByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetBudgetSummaryQuery, BudgetSummaryResponse>, GetBudgetSummaryQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAvailablePercentageQuery, AvailablePercentageResponse>, GetAvailablePercentageQueryHandler>();
 
         // Register validators
         services.AddScoped<LoginCommandValidator>();

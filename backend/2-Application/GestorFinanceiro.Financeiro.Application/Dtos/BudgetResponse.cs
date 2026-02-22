@@ -1,10 +1,5 @@
 namespace GestorFinanceiro.Financeiro.Application.Dtos;
 
-public record BudgetCategoryDto(
-    Guid Id,
-    string Name
-);
-
 public record BudgetResponse(
     Guid Id,
     string Name,
