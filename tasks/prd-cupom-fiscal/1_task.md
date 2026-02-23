@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: []
 ---
@@ -30,34 +30,34 @@ Criar toda a fundação da camada de domínio para o recurso de Importação de 
 
 ## Subtarefas
 
-- [ ] 1.1 Criar entidade `ReceiptItem` em `Domain/Entity/ReceiptItem.cs`
+- [x] 1.1 Criar entidade `ReceiptItem` em `Domain/Entity/ReceiptItem.cs`
   - Herdar de `BaseEntity`
   - Propriedades: `TransactionId` (Guid), `Description` (string), `ProductCode` (string?), `Quantity` (decimal), `UnitOfMeasure` (string), `UnitPrice` (decimal), `TotalPrice` (decimal), `ItemOrder` (int)
   - Navigation property: `Transaction`
   - Factory method estático `Create(...)` que chama `SetAuditOnCreate(userId)`
   - Private setters em todas as propriedades
 
-- [ ] 1.2 Criar entidade `Establishment` em `Domain/Entity/Establishment.cs`
+- [x] 1.2 Criar entidade `Establishment` em `Domain/Entity/Establishment.cs`
   - Herdar de `BaseEntity`
   - Propriedades: `TransactionId` (Guid), `Name` (string), `Cnpj` (string), `AccessKey` (string)
   - Navigation property: `Transaction`
   - Factory method estático `Create(...)` que chama `SetAuditOnCreate(userId)`
   - Private setters em todas as propriedades
 
-- [ ] 1.3 Criar DTOs de domínio em `Domain/Dto/NfceData.cs`
+- [x] 1.3 Criar DTOs de domínio em `Domain/Dto/NfceData.cs`
   - `NfceData` — record com: `AccessKey`, `EstablishmentName`, `EstablishmentCnpj`, `IssuedAt` (DateTime), `TotalAmount`, `DiscountAmount`, `PaidAmount`, `Items` (IReadOnlyList<NfceItemData>)
   - `NfceItemData` — record com: `Description`, `ProductCode` (string?), `Quantity`, `UnitOfMeasure`, `UnitPrice`, `TotalPrice`
 
-- [ ] 1.4 Criar interface `ISefazNfceService` em `Domain/Interface/ISefazNfceService.cs`
+- [x] 1.4 Criar interface `ISefazNfceService` em `Domain/Interface/ISefazNfceService.cs`
   - Método: `Task<NfceData> LookupAsync(string accessKey, CancellationToken cancellationToken)`
 
-- [ ] 1.5 Criar interface `IReceiptItemRepository` em `Domain/Interface/IReceiptItemRepository.cs`
+- [x] 1.5 Criar interface `IReceiptItemRepository` em `Domain/Interface/IReceiptItemRepository.cs`
   - Métodos: `AddRangeAsync(IEnumerable<ReceiptItem>, CancellationToken)`, `GetByTransactionIdAsync(Guid, CancellationToken)`, `RemoveRange(IEnumerable<ReceiptItem>)`
 
-- [ ] 1.6 Criar interface `IEstablishmentRepository` em `Domain/Interface/IEstablishmentRepository.cs`
+- [x] 1.6 Criar interface `IEstablishmentRepository` em `Domain/Interface/IEstablishmentRepository.cs`
   - Métodos: `AddAsync(Establishment, CancellationToken)`, `GetByTransactionIdAsync(Guid, CancellationToken)`, `Remove(Establishment)`, `ExistsByAccessKeyAsync(string, CancellationToken)`
 
-- [ ] 1.7 Criar domain exceptions em `Domain/Exception/`
+- [x] 1.7 Criar domain exceptions em `Domain/Exception/`
   - `InvalidAccessKeyException` — chave de acesso com formato inválido (não são 44 dígitos numéricos)
   - `NfceNotFoundException` — NFC-e não encontrada na SEFAZ (nota expirada, inválida)
   - `SefazUnavailableException` — SEFAZ indisponível (timeout, erro de conexão, 5xx)
@@ -65,7 +65,7 @@ Criar toda a fundação da camada de domínio para o recurso de Importação de 
   - `DuplicateReceiptException` — tentativa de importar cupom com chave de acesso já existente
   - Todas devem herdar de `DomainException` (padrão existente do projeto)
 
-- [ ] 1.8 Testes unitários das entidades e validações
+- [x] 1.8 Testes unitários das entidades e validações
   - Testar `ReceiptItem.Create()` com todos os campos preenchidos
   - Testar `Establishment.Create()` com todos os campos preenchidos
   - Verificar que `SetAuditOnCreate` é chamado corretamente (CreatedBy, CreatedAt)
