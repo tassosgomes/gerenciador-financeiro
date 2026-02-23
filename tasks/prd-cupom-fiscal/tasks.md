@@ -22,7 +22,7 @@ Criação dos tipos TypeScript, funções de API, hooks React Query, e implement
 - [x] 3.0 Serviço SEFAZ PB — Scraping e Parsing
 - [x] 4.0 Commands, Queries e Handlers (Application Layer)
 - [x] 5.0 API — Controller, Requests e Exception Handling
-- [ ] 6.0 Frontend — Tipos, API Client e Hooks
+- [x] 6.0 Frontend — Tipos, API Client e Hooks
 - [ ] 7.0 Frontend — Página de Importação e Integração UI
 
 ## Análise de Paralelização

@@ -49,6 +49,7 @@ describe('Transaction hooks cache invalidation', () => {
         cancelledBy: null,
         cancelledAt: null,
         isOverdue: false,
+        hasReceipt: false,
         createdAt: '2026-02-01T00:00:00Z',
         updatedAt: null,
       });

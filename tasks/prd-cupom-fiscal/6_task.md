@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["5.0"]
 ---
@@ -30,7 +30,7 @@ Criar a camada de dados do frontend para o recurso de Importação de Cupom Fisc
 
 ## Subtarefas
 
-- [ ] 6.1 Criar tipos TypeScript em `features/transactions/types/`
+- [x] 6.1 Criar tipos TypeScript em `features/transactions/types/`
   - `ReceiptItemResponse` — id, description, productCode, quantity, unitOfMeasure, unitPrice, totalPrice, itemOrder
   - `EstablishmentResponse` — id, name, cnpj, accessKey
   - `ReceiptLookupResponse` — accessKey, establishmentName, establishmentCnpj, issuedAt, totalAmount, discountAmount, paidAmount, items (ReceiptItemResponse[]), alreadyImported
@@ -39,11 +39,11 @@ Criar a camada de dados do frontend para o recurso de Importação de Cupom Fisc
   - `LookupReceiptRequest` — input (string)
   - `ImportReceiptRequest` — accessKey, accountId, categoryId, description, competenceDate, operationId?
 
-- [ ] 6.2 Atualizar tipo `TransactionResponse` existente
+- [x] 6.2 Atualizar tipo `TransactionResponse` existente
   - Adicionar campo `hasReceipt: boolean`
   - Localizar o tipo em `features/transactions/types/` e adicionar o campo
 
-- [ ] 6.3 Criar funções de API em `features/transactions/api/`
+- [x] 6.3 Criar funções de API em `features/transactions/api/`
   - `lookupReceipt(request: LookupReceiptRequest): Promise<ReceiptLookupResponse>`
     - `POST /api/v1/receipts/lookup`
   - `importReceipt(request: ImportReceiptRequest): Promise<ImportReceiptResponse>`
@@ -51,7 +51,7 @@ Criar a camada de dados do frontend para o recurso de Importação de Cupom Fisc
   - `getTransactionReceipt(transactionId: string): Promise<TransactionReceiptResponse>`
     - `GET /api/v1/transactions/${transactionId}/receipt`
 
-- [ ] 6.4 Criar hooks React Query em `features/transactions/hooks/`
+- [x] 6.4 Criar hooks React Query em `features/transactions/hooks/`
   - **`useReceiptLookup`** (mutation):
     - Usa `useMutation` com `lookupReceipt`
     - Retorna `mutate`, `data`, `isPending`, `error`
@@ -65,7 +65,7 @@ Criar a camada de dados do frontend para o recurso de Importação de Cupom Fisc
     - Query key: `['transactions', transactionId, 'receipt']`
     - Enabled: só quando `transactionId` é válido e `hasReceipt` é true
 
-- [ ] 6.5 Criar schema Zod para formulário de importação em `features/transactions/schemas/`
+- [x] 6.5 Criar schema Zod para formulário de importação em `features/transactions/schemas/`
   - `importReceiptSchema`:
     - `input`: string, obrigatório, mínimo 1 caractere
     - `accountId`: string (uuid), obrigatório
@@ -74,7 +74,7 @@ Criar a camada de dados do frontend para o recurso de Importação de Cupom Fisc
     - `competenceDate`: date, obrigatório
   - Mensagens de erro em português (padrão do projeto)
 
-- [ ] 6.6 Testes dos hooks e funções de API
+- [x] 6.6 Testes dos hooks e funções de API
   - Mock dos endpoints via MSW
   - Testar `useReceiptLookup`: chamada bem-sucedida retorna dados
   - Testar `useReceiptImport`: chamada bem-sucedida invalida cache de transactions

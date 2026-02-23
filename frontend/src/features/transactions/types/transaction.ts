@@ -36,6 +36,7 @@ export interface TransactionResponse {
   cancelledBy: string | null;
   cancelledAt: string | null;
   isOverdue: boolean;
+  hasReceipt: boolean;
   createdAt: string;
   updatedAt: string | null;
 }

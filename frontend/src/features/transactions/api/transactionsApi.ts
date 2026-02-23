@@ -114,6 +114,7 @@ function normalizeTransaction(transaction: TransactionResponse): TransactionResp
     ...transaction,
     type: parseTransactionType(transaction.type as RawEnumValue),
     status: parseTransactionStatus(transaction.status as RawEnumValue),
+    hasReceipt: Boolean(transaction.hasReceipt),
   };
 }
 

@@ -77,6 +77,7 @@ const mockSimpleTransaction: TransactionResponse = {
   cancelledBy: null,
   cancelledAt: null,
   isOverdue: false,
+  hasReceipt: false,
   createdAt: '2026-02-15T10:00:00Z',
   updatedAt: null,
 };
@@ -104,6 +105,7 @@ const mockInstallmentTransaction: TransactionResponse = {
   cancelledBy: null,
   cancelledAt: null,
   isOverdue: false,
+  hasReceipt: false,
   createdAt: '2026-02-15T10:00:00Z',
   updatedAt: null,
 };

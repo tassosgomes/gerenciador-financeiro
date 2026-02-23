@@ -57,6 +57,7 @@ function createTransaction(overrides: Partial<TransactionResponse> = {}): Transa
     createdAt: '2026-02-17T10:00:00Z',
     updatedAt: null,
     ...overrides,
+    hasReceipt: overrides.hasReceipt ?? false,
   };
 }
 

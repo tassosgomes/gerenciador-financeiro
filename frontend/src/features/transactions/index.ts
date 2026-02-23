@@ -1,12 +1,17 @@
 // Types
 export * from './types/transaction';
+export * from './types/receipt';
 
 // API
 export * from './api/transactionsApi';
+export * from './api/receiptApi';
 
 // Hooks
 export * from './hooks/useTransactions';
 export * from './hooks/useTransactionFilters';
+export * from './hooks/useReceiptLookup';
+export * from './hooks/useReceiptImport';
+export * from './hooks/useTransactionReceipt';
 
 // Components
 export { TransactionFilters } from './components/TransactionFilters';
