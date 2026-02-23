@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: true
 blocked_by: ["1.0"]
 ---
@@ -34,16 +34,16 @@ Esta tarefa pode ser executada em paralelo com a Task 2.0 (Infraestrutura), pois
 
 ## Subtarefas
 
-- [ ] 3.1 Instalar pacotes NuGet no projeto `Infra`
+- [x] 3.1 Instalar pacotes NuGet no projeto `Infra`
   - `AngleSharp` (parsing HTML, licença MIT)
   - `Microsoft.Extensions.Http.Resilience` (retry/timeout, pacote oficial Microsoft)
 
-- [ ] 3.2 Criar classe de configuração `SefazSettings`
+- [x] 3.2 Criar classe de configuração `SefazSettings`
   - Propriedades: `BaseUrl` (string), `TimeoutSeconds` (int, default 15), `UserAgent` (string)
   - Carregar de `appsettings.json` na seção `Sefaz`
   - Adicionar configuração padrão no `appsettings.Development.json`
 
-- [ ] 3.3 Implementar `SefazPbNfceService` em `Infra/Services/SefazPbNfceService.cs`
+- [x] 3.3 Implementar `SefazPbNfceService` em `Infra/Services/SefazPbNfceService.cs`
   - Construtor: recebe `HttpClient` (via DI/named client), `ILogger<SefazPbNfceService>`
   - Método `LookupAsync(string accessKey, CancellationToken)`:
     1. Validar formato da chave de acesso (44 dígitos numéricos). Se inválido, lançar `InvalidAccessKeyException`
@@ -55,12 +55,12 @@ Esta tarefa pode ser executada em paralelo com a Task 2.0 (Infraestrutura), pois
     7. Extrair e retornar `NfceData` com todos os campos
     8. Em caso de erro de parsing (campos faltantes, formato inesperado), lançar `SefazParsingException`
 
-- [ ] 3.4 Implementar método auxiliar para extração de chave de acesso de URL
+- [x] 3.4 Implementar método auxiliar para extração de chave de acesso de URL
   - Detectar se o input é uma URL (contém `http` ou `sefaz`)
   - Extrair a chave de acesso (44 dígitos) da URL usando regex
   - Se não encontrar chave válida na URL, lançar `InvalidAccessKeyException`
 
-- [ ] 3.5 Implementar parsing detalhado do HTML da SEFAZ PB
+- [x] 3.5 Implementar parsing detalhado do HTML da SEFAZ PB
   - Isolar seletores CSS em constantes privadas (facilita manutenção quando layout mudar)
   - Extrair dados do estabelecimento: razão social, CNPJ
   - Extrair data/hora de emissão
@@ -69,7 +69,7 @@ Esta tarefa pode ser executada em paralelo com a Task 2.0 (Infraestrutura), pois
   - Log de `Debug` com HTML truncado para diagnóstico
   - Log de `Warning` quando parsing retorna dados incompletos
 
-- [ ] 3.6 Configurar `HttpClientFactory` e retry policy no DI
+- [x] 3.6 Configurar `HttpClientFactory` e retry policy no DI
   - Registrar named HttpClient `"SefazPb"` via `IHttpClientFactory`
   - Configurar `BaseAddress` a partir de `SefazSettings.BaseUrl`
   - Configurar `Timeout` a partir de `SefazSettings.TimeoutSeconds`
@@ -77,14 +77,14 @@ Esta tarefa pode ser executada em paralelo com a Task 2.0 (Infraestrutura), pois
   - Adicionar retry policy: 2 tentativas, backoff exponencial (1s, 3s) para erros transientes (5xx, timeout)
   - Registrar `ISefazNfceService` → `SefazPbNfceService` no DI como Scoped
 
-- [ ] 3.7 Criar HTML fixtures para testes
+- [x] 3.7 Criar HTML fixtures para testes
   - Fixture de NFC-e válida com múltiplos itens (caso feliz)
   - Fixture de NFC-e com descontos
   - Fixture de NFC-e com item sem código de produto
   - Fixture de página "NFC-e não encontrada"
   - Fixture de HTML inesperado/malformado (simular mudança de layout)
 
-- [ ] 3.8 Testes unitários do `SefazPbNfceService`
+- [x] 3.8 Testes unitários do `SefazPbNfceService`
   - Teste de parsing bem-sucedido com fixture de NFC-e válida
   - Teste de extração de todos os campos de cada item (descrição, código, qty, unidade, preço unitário, total)
   - Teste de NFC-e com descontos: verificar `TotalAmount`, `DiscountAmount`, `PaidAmount`

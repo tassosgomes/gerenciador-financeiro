@@ -32,6 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Fixtures/**/*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\1-Services\GestorFinanceiro.Financeiro.API\GestorFinanceiro.Financeiro.API.csproj" />
     <ProjectReference Include="..\..\3-Domain\GestorFinanceiro.Financeiro.Domain\GestorFinanceiro.Financeiro.Domain.csproj" />
     <ProjectReference Include="..\..\2-Application\GestorFinanceiro.Financeiro.Application\GestorFinanceiro.Financeiro.Application.csproj" />

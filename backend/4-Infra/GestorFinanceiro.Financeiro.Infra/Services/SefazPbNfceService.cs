@@ -1,0 +1,357 @@
+using System.Globalization;
+using System.Net;
+using System.Text.RegularExpressions;
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
+using GestorFinanceiro.Financeiro.Domain.Dto;
+using GestorFinanceiro.Financeiro.Domain.Exception;
+using GestorFinanceiro.Financeiro.Domain.Interface;
+using Microsoft.Extensions.Logging;
+
+namespace GestorFinanceiro.Financeiro.Infra.Services;
+
+public sealed class SefazPbNfceService : ISefazNfceService
+{
+    private static readonly Regex AccessKeyRegex = new(@"(?<!\d)(\d{44})(?!\d)", RegexOptions.Compiled);
+    private static readonly Regex CnpjRegex = new(@"\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}", RegexOptions.Compiled);
+    private static readonly Regex DateTimeRegex = new(@"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}(?::\d{2})?", RegexOptions.Compiled);
+    private static readonly Regex NumericRegex = new(@"-?\d{1,3}(?:\.\d{3})*(?:,\d{1,4})|-?\d+(?:[\.,]\d{1,4})?", RegexOptions.Compiled);
+    private static readonly string[] EstablishmentNameSelectors = ["#establishment-name", ".establishment-name", "#u20", ".txtTopo"];
+    private static readonly string[] EstablishmentCnpjSelectors = ["#establishment-cnpj", ".establishment-cnpj", "#u21", ".text", ".conteudo"];
+    private static readonly string[] IssuedAtSelectors = ["#issued-at", ".issued-at", "#u23", ".txtCenter"];
+    private static readonly string[] TotalAmountSelectors = ["#total-amount", ".total-amount", "#valorTotal", ".totalNumb"];
+    private static readonly string[] DiscountAmountSelectors = ["#discount-amount", ".discount-amount", "#valorDesconto", ".valorDesconto"];
+    private static readonly string[] PaidAmountSelectors = ["#paid-amount", ".paid-amount", "#valorPago", ".valorPago"];
+    private static readonly string[] ItemRowSelectors = ["#receipt-items tbody tr", "table.receipt-items tbody tr", ".receipt-items tbody tr", "#tabResult tbody tr"];
+    private static readonly string[] NotFoundSelectors = ["#nota-nao-encontrada", ".nfce-not-found", ".mensagem-erro"];
+    private static readonly string[] NotFoundKeywords = ["não encontrada", "nao encontrada", "não foi encontrada", "nao foi encontrada", "inexistente", "não disponível", "nao disponivel"];
+    private static readonly CultureInfo PtBrCulture = new("pt-BR");
+    private const int HtmlPreviewMaxLength = 1200;
+
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<SefazPbNfceService> _logger;
+
+    public SefazPbNfceService(HttpClient httpClient, ILogger<SefazPbNfceService> logger)
+    {
+        _httpClient = httpClient;
+        _logger = logger;
+    }
+
+    public async Task<NfceData> LookupAsync(string accessKey, CancellationToken cancellationToken)
+    {
+        var normalizedAccessKey = ExtractAccessKey(accessKey);
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.GetAsync(normalizedAccessKey, cancellationToken);
+        }
+        catch (TaskCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new SefazUnavailableException(exception);
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new SefazUnavailableException(exception);
+        }
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new NfceNotFoundException(normalizedAccessKey);
+        }
+
+        if ((int)response.StatusCode >= 500)
+        {
+            throw new SefazUnavailableException();
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new SefazParsingException();
+        }
+
+        var html = await response.Content.ReadAsStringAsync(cancellationToken);
+        var htmlPreview = html.Length > HtmlPreviewMaxLength ? html[..HtmlPreviewMaxLength] : html;
+        _logger.LogDebug("SEFAZ HTML preview: {HtmlPreview}", htmlPreview);
+
+        try
+        {
+            return ParseNfceData(html, normalizedAccessKey);
+        }
+        catch (DomainException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            throw new SefazParsingException(exception);
+        }
+    }
+
+    private static string ExtractAccessKey(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            throw new InvalidAccessKeyException(input);
+        }
+
+        var trimmedInput = input.Trim();
+
+        if (IsUrlInput(trimmedInput))
+        {
+            var urlMatch = AccessKeyRegex.Match(trimmedInput);
+            if (!urlMatch.Success)
+            {
+                throw new InvalidAccessKeyException(trimmedInput);
+            }
+
+            return urlMatch.Groups[1].Value;
+        }
+
+        if (trimmedInput.Length == 44 && trimmedInput.All(char.IsDigit))
+        {
+            return trimmedInput;
+        }
+
+        throw new InvalidAccessKeyException(trimmedInput);
+    }
+
+    private static bool IsUrlInput(string input)
+    {
+        return input.Contains("http", StringComparison.OrdinalIgnoreCase)
+            || input.Contains("sefaz", StringComparison.OrdinalIgnoreCase)
+            || input.Contains('/', StringComparison.Ordinal);
+    }
+
+    private NfceData ParseNfceData(string html, string accessKey)
+    {
+        var parser = new HtmlParser();
+        var document = parser.ParseDocument(html);
+
+        if (IsNfceNotFound(document))
+        {
+            throw new NfceNotFoundException(accessKey);
+        }
+
+        var establishmentName = ParseRequiredText(document, EstablishmentNameSelectors, "establishment name");
+        var establishmentCnpjRaw = ParseRequiredText(document, EstablishmentCnpjSelectors, "establishment CNPJ");
+        var establishmentCnpj = ParseCnpj(establishmentCnpjRaw);
+
+        var issuedAtRaw = ParseRequiredText(document, IssuedAtSelectors, "issued at");
+        var issuedAt = ParseDateTime(issuedAtRaw);
+
+        var items = ParseItems(document);
+        if (items.Count == 0)
+        {
+            throw new SefazParsingException();
+        }
+
+        var totalAmount = ParseRequiredDecimal(document, TotalAmountSelectors, "total amount");
+        var discountAmount = ParseOptionalDecimal(document, DiscountAmountSelectors);
+        var paidAmount = ParseOptionalDecimal(document, PaidAmountSelectors);
+
+        if (paidAmount <= 0)
+        {
+            paidAmount = totalAmount - discountAmount;
+        }
+
+        if (paidAmount <= 0)
+        {
+            throw new SefazParsingException();
+        }
+
+        if (items.Any(item => string.IsNullOrWhiteSpace(item.Description) || string.IsNullOrWhiteSpace(item.UnitOfMeasure)))
+        {
+            _logger.LogWarning("SEFAZ parsing returned incomplete item data for access key {AccessKey}", accessKey);
+        }
+
+        return new NfceData(
+            accessKey,
+            establishmentName,
+            establishmentCnpj,
+            issuedAt,
+            totalAmount,
+            discountAmount,
+            paidAmount,
+            items);
+    }
+
+    private static bool IsNfceNotFound(IDocument document)
+    {
+        foreach (var selector in NotFoundSelectors)
+        {
+            if (!string.IsNullOrWhiteSpace(document.QuerySelector(selector)?.TextContent))
+            {
+                return true;
+            }
+        }
+
+        var bodyText = NormalizeWhiteSpace(document.Body?.TextContent ?? string.Empty).ToLowerInvariant();
+        return NotFoundKeywords.Any(keyword => bodyText.Contains(keyword, StringComparison.Ordinal));
+    }
+
+    private static string ParseRequiredText(IDocument document, IReadOnlyList<string> selectors, string fieldName)
+    {
+        foreach (var selector in selectors)
+        {
+            var value = NormalizeWhiteSpace(document.QuerySelector(selector)?.TextContent ?? string.Empty);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        if (fieldName == "establishment CNPJ")
+        {
+            var body = NormalizeWhiteSpace(document.Body?.TextContent ?? string.Empty);
+            var cnpjMatch = CnpjRegex.Match(body);
+            if (cnpjMatch.Success)
+            {
+                return cnpjMatch.Value;
+            }
+        }
+
+        if (fieldName == "issued at")
+        {
+            var body = NormalizeWhiteSpace(document.Body?.TextContent ?? string.Empty);
+            var dateTimeMatch = DateTimeRegex.Match(body);
+            if (dateTimeMatch.Success)
+            {
+                return dateTimeMatch.Value;
+            }
+        }
+
+        throw new SefazParsingException();
+    }
+
+    private static decimal ParseRequiredDecimal(IDocument document, IReadOnlyList<string> selectors, string fieldName)
+    {
+        var value = ParseOptionalDecimal(document, selectors);
+        if (value <= 0)
+        {
+            throw new SefazParsingException();
+        }
+
+        return value;
+    }
+
+    private static decimal ParseOptionalDecimal(IDocument document, IReadOnlyList<string> selectors)
+    {
+        foreach (var selector in selectors)
+        {
+            var value = NormalizeWhiteSpace(document.QuerySelector(selector)?.TextContent ?? string.Empty);
+            if (TryParseDecimal(value, out var parsed))
+            {
+                return parsed;
+            }
+        }
+
+        return 0m;
+    }
+
+    private static IReadOnlyList<NfceItemData> ParseItems(IDocument document)
+    {
+        foreach (var itemRowSelector in ItemRowSelectors)
+        {
+            var rows = document.QuerySelectorAll(itemRowSelector);
+            if (rows.Length == 0)
+            {
+                continue;
+            }
+
+            var parsedItems = new List<NfceItemData>();
+            foreach (var row in rows)
+            {
+                var columns = row.QuerySelectorAll("td");
+                if (columns.Length < 6)
+                {
+                    continue;
+                }
+
+                var description = NormalizeWhiteSpace(columns[0].TextContent);
+                var productCodeText = NormalizeWhiteSpace(columns[1].TextContent);
+                var productCode = string.IsNullOrWhiteSpace(productCodeText) || productCodeText == "-"
+                    ? null
+                    : productCodeText;
+
+                if (!TryParseDecimal(columns[2].TextContent, out var quantity)
+                    || !TryParseDecimal(columns[4].TextContent, out var unitPrice)
+                    || !TryParseDecimal(columns[5].TextContent, out var totalPrice)
+                    || string.IsNullOrWhiteSpace(description))
+                {
+                    throw new SefazParsingException();
+                }
+
+                parsedItems.Add(new NfceItemData(
+                    description,
+                    productCode,
+                    quantity,
+                    NormalizeWhiteSpace(columns[3].TextContent),
+                    unitPrice,
+                    totalPrice));
+            }
+
+            if (parsedItems.Count > 0)
+            {
+                return parsedItems;
+            }
+        }
+
+        return [];
+    }
+
+    private static DateTime ParseDateTime(string value)
+    {
+        if (DateTime.TryParseExact(
+            value,
+            ["dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm"],
+            PtBrCulture,
+            DateTimeStyles.AssumeLocal,
+            out var issuedAt))
+        {
+            return issuedAt;
+        }
+
+        throw new SefazParsingException();
+    }
+
+    private static bool TryParseDecimal(string? rawValue, out decimal parsedValue)
+    {
+        parsedValue = default;
+        if (string.IsNullOrWhiteSpace(rawValue))
+        {
+            return false;
+        }
+
+        var normalized = NormalizeWhiteSpace(rawValue)
+            .Replace("R$", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Trim();
+
+        var matches = NumericRegex.Matches(normalized);
+        if (matches.Count == 0)
+        {
+            return false;
+        }
+
+        var numericToken = matches[^1].Value;
+
+        return decimal.TryParse(numericToken, NumberStyles.Number, PtBrCulture, out parsedValue)
+            || decimal.TryParse(numericToken.Replace('.', ',').Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out parsedValue);
+    }
+
+    private static string ParseCnpj(string rawCnpj)
+    {
+        var digitsOnly = new string(rawCnpj.Where(char.IsDigit).ToArray());
+        if (digitsOnly.Length != 14)
+        {
+            throw new SefazParsingException();
+        }
+
+        return digitsOnly;
+    }
+
+    private static string NormalizeWhiteSpace(string value)
+    {
+        return string.Join(' ', value.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+    }
+}
