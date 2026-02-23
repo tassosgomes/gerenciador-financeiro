@@ -30,6 +30,12 @@ import {
 } from '@/features/transactions/api/transactionsApi';
 import { getErrorMessage } from '@/shared/utils/errorMessages';
 
+function invalidateFinancialQueries(queryClient: ReturnType<typeof useQueryClient>): void {
+  queryClient.invalidateQueries({ queryKey: ['transactions'] });
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+  queryClient.invalidateQueries({ queryKey: ['budgets'] });
+}
+
 export function useTransactions(filters?: TransactionFilters) {
   return useQuery<PagedResponse<TransactionResponse>>({
     queryKey: ['transactions', filters],
@@ -60,7 +66,7 @@ export function useCreateTransaction() {
   return useMutation({
     mutationFn: (data: CreateTransactionRequest) => createTransaction(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       toast.success('Transação criada com sucesso!');
     },
     onError: (error) => {
@@ -75,7 +81,7 @@ export function useCreateInstallment() {
   return useMutation({
     mutationFn: (data: CreateInstallmentRequest) => createInstallment(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       toast.success('Parcelamento criado com sucesso!');
     },
     onError: (error) => {
@@ -90,7 +96,7 @@ export function useCreateRecurrence() {
   return useMutation({
     mutationFn: (data: CreateRecurrenceRequest) => createRecurrence(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       toast.success('Recorrência criada com sucesso!');
     },
     onError: (error) => {
@@ -105,7 +111,7 @@ export function useCreateTransfer() {
   return useMutation({
     mutationFn: (data: CreateTransferRequest) => createTransfer(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Transferência criada com sucesso!');
     },
@@ -122,7 +128,7 @@ export function useAdjustTransaction() {
     mutationFn: ({ id, data }: { id: string; data: AdjustTransactionRequest }) =>
       adjustTransaction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       toast.success('Transação ajustada com sucesso!');
     },
     onError: (error) => {
@@ -138,7 +144,7 @@ export function useCancelTransaction() {
     mutationFn: ({ id, data }: { id: string; data: CancelTransactionRequest }) =>
       cancelTransaction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       toast.success('Transação cancelada com sucesso!');
     },
     onError: (error) => {
@@ -154,7 +160,7 @@ export function useMarkTransactionAsPaid() {
     mutationFn: ({ id, data }: { id: string; data?: MarkTransactionPaidRequest }) =>
       markTransactionAsPaid(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Transação marcada como paga com sucesso!');
     },
@@ -176,7 +182,7 @@ export function useDeactivateRecurrence() {
       data?: DeactivateRecurrenceRequest;
     }) => deactivateRecurrence(recurrenceTemplateId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateFinancialQueries(queryClient);
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast.success('Recorrência desativada com sucesso!');
     },

@@ -22,6 +22,7 @@ const mockUser: UserResponse = {
 };
 
 const memoryStorage = new Map<string, string>();
+const originalLocalStorage = window.localStorage;
 
 const localStorageMock = {
   getItem: (key: string) => memoryStorage.get(key) ?? null,
@@ -30,6 +31,9 @@ const localStorageMock = {
   },
   removeItem: (key: string) => {
     memoryStorage.delete(key);
+  },
+  clear: () => {
+    memoryStorage.clear();
   },
 };
 
@@ -86,6 +90,13 @@ describe('authStore', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      configurable: true,
+    });
   });
 
   it('logs in and persists tokens', async () => {

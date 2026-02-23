@@ -11,7 +11,9 @@ export const budgetSchema = z.object({
     .lte(100, 'Percentual deve ser no máximo 100%'),
   referenceYear: z.number().int().min(2020),
   referenceMonth: z.number().int().min(1).max(12),
-  categoryIds: z.array(z.string().uuid()).min(1, 'Selecione ao menos uma categoria'),
+  categoryIds: z
+    .array(z.string().trim().min(1, 'Selecione ao menos uma categoria'))
+    .min(1, 'Selecione ao menos uma categoria'),
   isRecurrent: z.boolean().default(false),
 });
 

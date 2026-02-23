@@ -486,6 +486,9 @@ describe('TransactionsPage Integration Tests', () => {
       const carteiraOption = await screen.findByRole('option', { name: /carteira/i });
       await user.click(carteiraOption);
 
+      const searchButton = screen.getByRole('button', { name: /buscar/i });
+      await user.click(searchButton);
+
       await waitFor(
         () => {
           expect(screen.getByText(/nenhuma transação encontrada/i)).toBeInTheDocument();

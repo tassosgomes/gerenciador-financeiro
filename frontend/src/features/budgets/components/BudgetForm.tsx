@@ -170,7 +170,7 @@ export function BudgetForm({ budget, month, year, onSuccess, onCancel }: BudgetF
   }
 
   return (
-    <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)}>
+    <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
       <div className="space-y-2">
         <label htmlFor="budget-name" className="text-sm font-medium text-slate-700">Nome</label>
         <Input id="budget-name" placeholder="Ex: Moradia" {...form.register('name')} />
@@ -317,7 +317,13 @@ export function BudgetForm({ budget, month, year, onSuccess, onCancel }: BudgetF
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={() => {
+            void form.handleSubmit(handleSubmit)();
+          }}
+        >
           {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {isEditing ? 'Salvar Alterações' : 'Criar Orçamento'}
         </Button>

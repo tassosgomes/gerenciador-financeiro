@@ -13,7 +13,6 @@ function resetAuthState(): void {
     isAuthenticated: false,
     isLoading: false,
   });
-  window.localStorage.clear();
 }
 
 describe('LoginForm', () => {

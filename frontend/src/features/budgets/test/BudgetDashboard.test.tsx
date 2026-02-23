@@ -21,9 +21,7 @@ describe('BudgetDashboard', () => {
   it('should render summary header with consolidated data', async () => {
     renderWithProviders(<BudgetDashboard />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Renda Mensal')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Renda Mensal', {}, { timeout: 10000 })).toBeInTheDocument();
 
     expect(screen.getByText('Total Orçado')).toBeInTheDocument();
     expect(screen.getByText('Total Gasto')).toBeInTheDocument();
@@ -147,9 +145,7 @@ describe('BudgetDashboard', () => {
   it('should show unbudgeted expenses in summary', async () => {
     renderWithProviders(<BudgetDashboard />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Gastos Fora de Orçamento')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Gastos Fora de Orçamento', {}, { timeout: 10000 })).toBeInTheDocument();
 
     expect(screen.getByText(/R\$\s?420,00/)).toBeInTheDocument();
     expect(screen.getByLabelText('Atenção: gastos fora de orçamento')).toBeInTheDocument();

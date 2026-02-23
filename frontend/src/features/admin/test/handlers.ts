@@ -33,7 +33,7 @@ const mockUsers: UserResponse[] = [
   },
 ];
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = '*';
 
 export const adminHandlers = [
   // GET /api/v1/users

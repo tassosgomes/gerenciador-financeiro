@@ -182,7 +182,7 @@ const mockHistory: TransactionHistoryEntry[] = [
   },
 ];
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = '*';
 
 export const transactionsHandlers = [
   // GET /api/v1/transactions (com filtros e paginação)

@@ -5,7 +5,7 @@ import type {
   DashboardChartsResponse,
 } from '@/features/dashboard/types/dashboard';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = '*';
 
 export const dashboardHandlers = [
   http.get(`${BASE_URL}/api/v1/dashboard/summary`, () => {

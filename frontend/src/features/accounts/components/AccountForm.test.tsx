@@ -335,7 +335,7 @@ describe('AccountForm', () => {
       expect(nameInput.value).toBe('Nubank');
 
       const limitInput = screen.getByLabelText(/limite de crédito/i) as HTMLInputElement;
-      expect(limitInput.value).toBe('5000');
+      expect(limitInput.value).toBe('R$\u00a05.000,00');
 
       const closingDayInput = screen.getByLabelText(/dia de fechamento/i) as HTMLInputElement;
       expect(closingDayInput.value).toBe('15');
@@ -428,7 +428,7 @@ describe('AccountForm', () => {
       await user.type(limitInput, '8000');
 
       // Verify the value was updated
-      expect((limitInput as HTMLInputElement).value).toBe('8000');
+      expect((limitInput as HTMLInputElement).value).toBe('R$\u00a080,00');
     });
   });
 });

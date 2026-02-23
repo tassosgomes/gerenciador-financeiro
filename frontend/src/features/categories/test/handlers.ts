@@ -62,7 +62,7 @@ const mockCategories: CategoryResponse[] = [
   },
 ];
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = '*';
 
 export const categoriesHandlers = [
   // GET /api/v1/categories

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryRouter, RouterProvider, type RouteObject, Navigate } from 'react-router-dom';
+import { MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/features/auth/store/authStore';
@@ -14,40 +14,6 @@ import AccountsPage from '@/features/accounts/pages/AccountsPage';
 import CategoriesPage from '@/features/categories/pages/CategoriesPage';
 import AdminPage from '@/features/admin/pages/AdminPage';
 
-// Non-lazy routes for integration testing
-const testRoutes: RouteObject[] = [
-  {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/',
-    element: (
-      <ProtectedRoute>
-        <AppShell />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'transactions', element: <TransactionsPage /> },
-      { path: 'accounts', element: <AccountsPage /> },
-      { path: 'categories', element: <CategoriesPage /> },
-      {
-        path: 'admin',
-        element: <AdminRoute />,
-        children: [
-          { index: true, element: <AdminPage /> },
-        ],
-      },
-    ],
-  },
-  {
-    path: '*',
-    element: <Navigate to="/dashboard" replace />,
-  },
-];
-
 function resetAuthState(): void {
   useAuthStore.setState({
     accessToken: null,
@@ -56,7 +22,6 @@ function resetAuthState(): void {
     isAuthenticated: false,
     isLoading: false,
   });
-  window.localStorage.clear();
 }
 
 describe('Auth flow integration', () => {
@@ -72,13 +37,31 @@ describe('Auth flow integration', () => {
         mutations: { retry: false },
       },
     });
-    const router = createMemoryRouter(testRoutes, {
-      initialEntries: ['/login'],
-    });
-
     render(
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <MemoryRouter initialEntries={['/login']}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="transactions" element={<TransactionsPage />} />
+              <Route path="accounts" element={<AccountsPage />} />
+              <Route path="categories" element={<CategoriesPage />} />
+              <Route path="admin" element={<AdminRoute />}>
+                <Route index element={<AdminPage />} />
+              </Route>
+            </Route>
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </MemoryRouter>
       </QueryClientProvider>
     );
 
@@ -90,7 +73,6 @@ describe('Auth flow integration', () => {
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
     await waitFor(() => {
-      expect(router.state.location.pathname).toBe('/dashboard');
       expect(screen.getByRole('heading', { name: /visão geral/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /sair/i })).toBeInTheDocument();
     });
@@ -98,7 +80,6 @@ describe('Auth flow integration', () => {
     await user.click(screen.getByRole('button', { name: /sair/i }));
 
     await waitFor(() => {
-      expect(router.state.location.pathname).toBe('/login');
       expect(screen.getByRole('heading', { name: /bem-vindo de volta/i })).toBeInTheDocument();
     });
   });

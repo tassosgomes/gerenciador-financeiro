@@ -194,6 +194,55 @@ describe('BudgetForm', () => {
     });
   });
 
+  it('should create budget when selecting system category Moradia with non-UUID id', async () => {
+    const onSuccess = vi.fn();
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('*/api/v1/categories', ({ request }) => {
+        const url = new URL(request.url);
+        const type = Number(url.searchParams.get('type'));
+
+        if (type === 2) {
+          return HttpResponse.json([
+            {
+              id: '5',
+              name: 'Moradia',
+              type: 2,
+              isSystem: true,
+              createdAt: '2026-01-01T00:00:00Z',
+              updatedAt: null,
+            },
+            {
+              id: '8',
+              name: 'Viagem',
+              type: 2,
+              isSystem: false,
+              createdAt: '2026-01-01T00:00:00Z',
+              updatedAt: null,
+            },
+          ]);
+        }
+
+        return HttpResponse.json([]);
+      })
+    );
+
+    renderWithProviders(
+      <BudgetForm month={2} year={2026} onSuccess={onSuccess} onCancel={vi.fn()} />
+    );
+
+    await user.type(screen.getByLabelText('Nome'), 'Orçamento Moradia');
+    await user.clear(screen.getByLabelText('Percentual da Renda'));
+    await user.type(screen.getByLabelText('Percentual da Renda'), '5');
+    await user.click(await screen.findByRole('button', { name: 'Moradia' }));
+    await user.click(screen.getByRole('button', { name: /criar orçamento/i }));
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('should call onCancel when cancel button is clicked', async () => {
     const onCancel = vi.fn();
     const user = userEvent.setup();

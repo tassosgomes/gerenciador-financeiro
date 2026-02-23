@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import type { AuthResponse, LoginRequest } from '@/features/auth/types/auth';
 
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = '*';
 
 const defaultUser = {
   id: '4abcbabe-e8da-41cf-bbb4-8f2c0058d8f2',
