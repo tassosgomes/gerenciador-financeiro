@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: true
 blocked_by: ["2.0"]
 ---
@@ -36,14 +36,14 @@ Implementar o `BudgetRecurrenceWorker`, um `BackgroundService` que replica orça
 
 ### BudgetRecurrenceWorker
 
-- [ ] 7.1 Criar `BudgetRecurrenceWorker` em `4-Infra/GestorFinanceiro.Financeiro.Infra/StartupTasks/BudgetRecurrenceWorker.cs`:
+- [x] 7.1 Criar `BudgetRecurrenceWorker` em `4-Infra/GestorFinanceiro.Financeiro.Infra/StartupTasks/BudgetRecurrenceWorker.cs`:
   - Herdar de `BackgroundService`
   - Dependências: `IServiceScopeFactory`, `ILogger<BudgetRecurrenceWorker>`
   - Ciclo de execução: uma vez por dia (mesma estratégia do `RecurrenceMaintenanceWorker`)
   - Usar `PeriodicTimer` ou `Task.Delay` com intervalo de 24h
   - Execução resiliente: try/catch com log de erro, continua no próximo ciclo
 
-- [ ] 7.2 Implementar lógica principal `ProcessRecurrenceAsync`:
+- [x] 7.2 Implementar lógica principal `ProcessRecurrenceAsync`:
   - Obter mês corrente (`DateTime.UtcNow` → year, month)
   - Calcular mês anterior (month-1, ajustar para dezembro do ano anterior se janeiro)
   - Buscar orçamentos recorrentes do mês anterior via `IBudgetRepository.GetRecurrentBudgetsForMonthAsync(prevYear, prevMonth)`
@@ -62,12 +62,12 @@ Implementar o `BudgetRecurrenceWorker`, um `BackgroundService` que replica orça
 
 ### Registro no DI
 
-- [ ] 7.3 Registrar `BudgetRecurrenceWorker` como `HostedService` em `ServiceCollectionExtensions`:
+- [x] 7.3 Registrar `BudgetRecurrenceWorker` como `HostedService` em `ServiceCollectionExtensions`:
   - `services.AddHostedService<BudgetRecurrenceWorker>()`
 
 ### Testes Unitários
 
-- [ ] 7.4 Criar testes para `BudgetRecurrenceWorker` em `5-Tests/.../UnitTests/Infra/StartupTasks/BudgetRecurrenceWorkerTests.cs`:
+- [x] 7.4 Criar testes para `BudgetRecurrenceWorker` em `5-Tests/.../UnitTests/Infra/StartupTasks/BudgetRecurrenceWorkerTests.cs`:
   - `ProcessRecurrence_WithRecurrentBudgets_ShouldCreateForCurrentMonth`
   - `ProcessRecurrence_WhenBudgetAlreadyExists_ShouldSkip`
   - `ProcessRecurrence_WhenCategoryInactive_ShouldExcludeFromCopy`
@@ -79,7 +79,7 @@ Implementar o `BudgetRecurrenceWorker`, um `BackgroundService` que replica orça
 
 ### Validação
 
-- [ ] 7.5 Validar build e rodar testes unitários
+- [x] 7.5 Validar build e rodar testes unitários
 
 ## Sequenciamento
 

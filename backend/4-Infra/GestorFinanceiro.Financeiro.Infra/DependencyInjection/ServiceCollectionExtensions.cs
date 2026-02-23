@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStartupTask, SeedInvoicePaymentCategoryStartupTask>();
         services.AddHostedService<StartupTasksHostedService>();
         services.AddHostedService<RecurrenceMaintenanceWorker>();
+        services.AddHostedService<BudgetRecurrenceWorker>();
 
         return services;
     }
