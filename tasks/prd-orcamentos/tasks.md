@@ -37,7 +37,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 - [x] 8.0 Testes de Integração Backend (Repository + HTTP)
 - [x] 9.0 Frontend — Tipos, API Client, Hooks e Schemas
 - [x] 10.0 Frontend — Componentes, Páginas e Navegação
-- [ ] 11.0 Testes Frontend
+- [x] 11.0 Testes Frontend
 
 ## Análise de Paralelização
 

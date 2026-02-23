@@ -6,6 +6,7 @@ import { accountsHandlers } from '@/features/accounts/test/handlers';
 import { categoriesHandlers } from '@/features/categories/test/handlers';
 import { transactionsHandlers } from '@/features/transactions/test/handlers';
 import { adminHandlers } from '@/features/admin/test/handlers';
+import { budgetsHandlers } from '@/features/budgets/test/handlers';
 
 export const handlers = [
   http.get('/api/health', () => {
@@ -17,4 +18,5 @@ export const handlers = [
   ...categoriesHandlers,
   ...transactionsHandlers,
   ...adminHandlers,
+  ...budgetsHandlers,
 ];
