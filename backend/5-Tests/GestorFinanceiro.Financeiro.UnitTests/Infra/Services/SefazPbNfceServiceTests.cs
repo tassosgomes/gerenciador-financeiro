@@ -118,22 +118,23 @@ public class SefazPbNfceServiceTests
     public async Task LookupAsync_ComUrlValida_DeveExtrairChaveEConsultarComSucesso()
     {
         var html = LoadFixture("nfce-valid.html");
-        HttpRequestMessage? capturedRequest = null;
+        var capturedRequests = new List<HttpRequestMessage>();
 
         var handler = new TestHttpMessageHandler((request, _) =>
         {
-            capturedRequest = request;
+            capturedRequests.Add(request);
             return Task.FromResult(CreateHtmlResponse(html));
         });
 
         var service = CreateService(handler);
-        var urlInput = $"https://www.sefaz.pb.gov.br/nfce/consulta?p={ValidAccessKey}|2|1|1";
+        var urlInput = $"https://www4.sefaz.pb.gov.br/atf/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1410&p={ValidAccessKey}|2|1|1|ABC123";
 
         var result = await service.LookupAsync(urlInput, CancellationToken.None);
 
         result.AccessKey.Should().Be(ValidAccessKey);
-        capturedRequest.Should().NotBeNull();
-        capturedRequest!.RequestUri!.ToString().Should().Contain(ValidAccessKey);
+        capturedRequests.Should().NotBeEmpty();
+        capturedRequests.Should().Contain(request => request.RequestUri!.ToString().Contains(ValidAccessKey, StringComparison.Ordinal));
+        capturedRequests.Should().Contain(request => request.RequestUri!.ToString().Contains("FISf_ExibirNFCE.do", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -157,7 +158,7 @@ public class SefazPbNfceServiceTests
     {
         var httpClient = new HttpClient(handler)
         {
-            BaseAddress = new Uri("https://www.sefaz.pb.gov.br/nfce/consulta/")
+            BaseAddress = new Uri("https://www4.sefaz.pb.gov.br/atf/")
         };
 
         var logger = new Mock<ILogger<SefazPbNfceService>>();

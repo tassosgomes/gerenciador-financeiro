@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
             {
                 var settings = serviceProvider.GetRequiredService<IOptions<SefazSettings>>().Value;
                 var baseUrl = string.IsNullOrWhiteSpace(settings.BaseUrl)
-                    ? "https://www.sefaz.pb.gov.br/nfce/consulta"
+                    ? "https://www4.sefaz.pb.gov.br/atf/"
                     : settings.BaseUrl;
 
                 client.BaseAddress = new Uri(baseUrl.EndsWith('/') ? baseUrl : $"{baseUrl}/");
