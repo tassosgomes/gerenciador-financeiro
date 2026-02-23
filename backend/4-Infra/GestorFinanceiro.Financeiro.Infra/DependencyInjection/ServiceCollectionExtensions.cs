@@ -39,6 +39,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
         services.AddScoped<ISystemRepository, SystemRepository>();
+        services.AddScoped<IReceiptItemRepository, ReceiptItemRepository>();
+        services.AddScoped<IEstablishmentRepository, EstablishmentRepository>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<ITokenService, TokenService>();

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: true
 blocked_by: ["1.0"]
 ---
@@ -31,45 +31,45 @@ Implementar a camada de infraestrutura de persistência para as novas entidades 
 
 ## Subtarefas
 
-- [ ] 2.1 Criar `ReceiptItemConfiguration` em `Infra/Config/ReceiptItemConfiguration.cs`
+- [x] 2.1 Criar `ReceiptItemConfiguration` em `Infra/Config/ReceiptItemConfiguration.cs`
   - Tabela: `receipt_items` (snake_case)
   - Colunas: `id` (PK), `transaction_id` (FK → transactions, ON DELETE CASCADE), `description` (varchar 500), `product_code` (varchar 100, nullable), `quantity` (numeric 18,4), `unit_of_measure` (varchar 20), `unit_price` (numeric 18,4), `total_price` (numeric 18,2), `item_order` (smallint)
   - Campos de auditoria: `created_by` (varchar 100), `created_at` (timestamptz), `updated_by` (varchar 100, nullable), `updated_at` (timestamptz, nullable)
   - Índice: `ix_receipt_items_transaction_id` em `transaction_id`
 
-- [ ] 2.2 Criar `EstablishmentConfiguration` em `Infra/Config/EstablishmentConfiguration.cs`
+- [x] 2.2 Criar `EstablishmentConfiguration` em `Infra/Config/EstablishmentConfiguration.cs`
   - Tabela: `establishments` (snake_case)
   - Colunas: `id` (PK), `transaction_id` (FK → transactions, ON DELETE CASCADE, UNIQUE), `name` (varchar 300), `cnpj` (varchar 14), `access_key` (varchar 44, UNIQUE)
   - Campos de auditoria: `created_by` (varchar 100), `created_at` (timestamptz), `updated_by` (varchar 100, nullable), `updated_at` (timestamptz, nullable)
   - Índices: `ix_establishments_transaction_id` UNIQUE, `ix_establishments_access_key` UNIQUE
 
-- [ ] 2.3 Adicionar DbSets ao `FinanceiroDbContext`
+- [x] 2.3 Adicionar DbSets ao `FinanceiroDbContext`
   - `public DbSet<ReceiptItem> ReceiptItems { get; set; }`
   - `public DbSet<Establishment> Establishments { get; set; }`
   - Aplicar configs no `OnModelCreating` (se não detectadas automaticamente)
 
-- [ ] 2.4 Implementar `ReceiptItemRepository` em `Infra/Repository/ReceiptItemRepository.cs`
+- [x] 2.4 Implementar `ReceiptItemRepository` em `Infra/Repository/ReceiptItemRepository.cs`
   - `AddRangeAsync(IEnumerable<ReceiptItem>, CancellationToken)` — usa `DbSet.AddRangeAsync`
   - `GetByTransactionIdAsync(Guid, CancellationToken)` — filtra por `TransactionId`, ordena por `ItemOrder`
   - `RemoveRange(IEnumerable<ReceiptItem>)` — usa `DbSet.RemoveRange`
 
-- [ ] 2.5 Implementar `EstablishmentRepository` em `Infra/Repository/EstablishmentRepository.cs`
+- [x] 2.5 Implementar `EstablishmentRepository` em `Infra/Repository/EstablishmentRepository.cs`
   - `AddAsync(Establishment, CancellationToken)` — usa `DbSet.AddAsync`
   - `GetByTransactionIdAsync(Guid, CancellationToken)` — filtra por `TransactionId`
   - `Remove(Establishment)` — usa `DbSet.Remove`
   - `ExistsByAccessKeyAsync(string, CancellationToken)` — usa `AnyAsync` com filtro de `AccessKey`
 
-- [ ] 2.6 Gerar migration EF Core
+- [x] 2.6 Gerar migration EF Core
   - Executar: `dotnet ef migrations add AddReceiptItemsAndEstablishments`
   - Verificar que a migration cria as tabelas corretas com todas as constraints
   - Verificar FK com cascade delete, índices UNIQUE
 
-- [ ] 2.7 Registrar repositórios no DI
+- [x] 2.7 Registrar repositórios no DI
   - Adicionar em `ServiceCollectionExtensions.AddInfrastructure()`:
     - `services.AddScoped<IReceiptItemRepository, ReceiptItemRepository>()`
     - `services.AddScoped<IEstablishmentRepository, EstablishmentRepository>()`
 
-- [ ] 2.8 Testes de integração (Testcontainers)
+- [x] 2.8 Testes de integração (Testcontainers)
   - Testar `ReceiptItemRepository`: AddRange, GetByTransactionId (com ordenação), RemoveRange
   - Testar `EstablishmentRepository`: Add, GetByTransactionId, ExistsByAccessKey (true/false), Remove
   - Testar cascade delete: deletar Transaction e verificar que ReceiptItems e Establishment são removidos

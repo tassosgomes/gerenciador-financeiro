@@ -18,7 +18,7 @@ Criação dos tipos TypeScript, funções de API, hooks React Query, e implement
 ## Tarefas
 
 - [x] 1.0 Entidades de Domínio, DTOs e Interfaces ✅ CONCLUÍDA
-- [ ] 2.0 Infraestrutura — EF Core, Repositórios e Migration
+- [x] 2.0 Infraestrutura — EF Core, Repositórios e Migration ✅ CONCLUÍDA
 - [ ] 3.0 Serviço SEFAZ PB — Scraping e Parsing
 - [ ] 4.0 Commands, Queries e Handlers (Application Layer)
 - [ ] 5.0 API — Controller, Requests e Exception Handling

@@ -19,6 +19,8 @@ public class FinanceiroDbContext : DbContext
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<ReceiptItem> ReceiptItems => Set<ReceiptItem>();
+    public DbSet<Establishment> Establishments => Set<Establishment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
