@@ -6,6 +6,7 @@ using GestorFinanceiro.Financeiro.Application.Commands.Transaction;
 using GestorFinanceiro.Financeiro.Application.Commands.Transfer;
 using GestorFinanceiro.Financeiro.Application.Common;
 using GestorFinanceiro.Financeiro.Application.Dtos;
+using GestorFinanceiro.Financeiro.Application.Queries.Receipt;
 using GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 using GestorFinanceiro.Financeiro.Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
@@ -196,6 +197,17 @@ public class TransactionsController : ControllerBase
     {
         var query = new GetTransactionHistoryQuery(id);
         var response = await _dispatcher.DispatchQueryAsync<GetTransactionHistoryQuery, TransactionHistoryResponse>(query, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpGet("{id:guid}/receipt")]
+    [ProducesResponseType<TransactionReceiptResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TransactionReceiptResponse>> GetReceiptAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetReceiptItemsByTransactionIdQuery(id);
+        var response = await _dispatcher.DispatchQueryAsync<GetReceiptItemsByTransactionIdQuery, TransactionReceiptResponse>(query, cancellationToken);
         return Ok(response);
     }
 

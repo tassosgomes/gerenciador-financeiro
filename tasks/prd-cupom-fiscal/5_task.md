@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["4.0"]
 ---
@@ -30,11 +30,11 @@ Criar o `ReceiptsController` com os endpoints REST para lookup e import de cupom
 
 ## Subtarefas
 
-- [ ] 5.1 Criar Request DTOs em `Controllers/Requests/`
+- [x] 5.1 Criar Request DTOs em `Controllers/Requests/`
   - `LookupReceiptRequest` — campo `Input` (string, chave ou URL)
   - `ImportReceiptRequest` — campos `AccessKey` (string), `AccountId` (Guid), `CategoryId` (Guid), `Description` (string), `CompetenceDate` (DateOnly), `OperationId` (string?)
 
-- [ ] 5.2 Criar `ReceiptsController` em `Controllers/ReceiptsController.cs`
+- [x] 5.2 Criar `ReceiptsController` em `Controllers/ReceiptsController.cs`
   - Rota base: `api/v1/receipts`
   - `[Authorize]` no controller
   - Injetar `IDispatcher`
@@ -47,21 +47,21 @@ Criar o `ReceiptsController` com os endpoints REST para lookup e import de cupom
     - Converte para `ImportReceiptCommand` (inclui userId dos claims)
     - Retorna `201 Created` com `ImportReceiptResponse`
 
-- [ ] 5.3 Adicionar endpoint de receipt no `TransactionsController` (ou `ReceiptsController`)
+- [x] 5.3 Adicionar endpoint de receipt no `TransactionsController` (ou `ReceiptsController`)
   - **`GET /api/v1/transactions/{id}/receipt`**:
     - Recebe `id` (Guid) da rota
     - Converte para `GetTransactionReceiptQuery`
     - Retorna `200 OK` com `TransactionReceiptResponse`
     - Retorna `404 Not Found` se transação não existe ou não tem cupom
 
-- [ ] 5.4 Estender `GlobalExceptionHandler` com novas exceptions
+- [x] 5.4 Estender `GlobalExceptionHandler` com novas exceptions
   - `InvalidAccessKeyException` → `400 Bad Request` com mensagem sobre formato correto (44 dígitos numéricos)
   - `NfceNotFoundException` → `404 Not Found` com mensagem que a NFC-e não está disponível na SEFAZ
   - `SefazUnavailableException` → `502 Bad Gateway` com mensagem sobre SEFAZ indisponível, orientando tentar novamente
   - `SefazParsingException` → `502 Bad Gateway` com mensagem sobre erro ao processar dados da SEFAZ
   - `DuplicateReceiptException` → `409 Conflict` com mensagem sobre cupom já importado
 
-- [ ] 5.5 Testes HTTP Integration (`WebApplicationFactory`)
+- [x] 5.5 Testes HTTP Integration (`WebApplicationFactory`)
   - **POST /api/v1/receipts/lookup:**
     - Teste lookup bem-sucedido (mock ISefazNfceService no DI retorna dados)
     - Teste com input inválido (vazio) → 400

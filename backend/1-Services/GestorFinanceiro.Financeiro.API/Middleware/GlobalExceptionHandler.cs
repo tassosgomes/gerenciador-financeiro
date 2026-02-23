@@ -81,6 +81,21 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             RecurrenceTemplateNotFoundException recurrenceTemplateNotFoundException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "Template de recorrência não encontrado", recurrenceTemplateNotFoundException.Message, "https://httpstatuses.com/404"), false),
 
+            InvalidAccessKeyException invalidAccessKeyException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Chave de acesso inválida", invalidAccessKeyException.Message, "https://httpstatuses.com/400"), false),
+
+            NfceNotFoundException nfceNotFoundException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "NFC-e não encontrada", nfceNotFoundException.Message, "https://httpstatuses.com/404"), false),
+
+            SefazUnavailableException sefazUnavailableException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status502BadGateway, "SEFAZ indisponível", sefazUnavailableException.Message, "https://httpstatuses.com/502"), false),
+
+            SefazParsingException sefazParsingException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status502BadGateway, "Erro ao processar dados da SEFAZ", sefazParsingException.Message, "https://httpstatuses.com/502"), false),
+
+            DuplicateReceiptException duplicateReceiptException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Cupom já importado", duplicateReceiptException.Message, "https://httpstatuses.com/409"), false),
+
             AccountNameAlreadyExistsException accountNameAlreadyExistsException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Nome de conta já existe", accountNameAlreadyExistsException.Message, "https://httpstatuses.com/400"), false),
 
