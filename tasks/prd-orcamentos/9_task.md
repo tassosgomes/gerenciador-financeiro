@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["5.0"]
 ---
@@ -33,7 +33,7 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
 
 ### Tipos TypeScript
 
-- [ ] 9.1 Criar `types/index.ts` em `frontend/src/features/budgets/types/index.ts`:
+- [x] 9.1 Criar `types/index.ts` em `frontend/src/features/budgets/types/index.ts`:
   ```typescript
   export interface BudgetCategoryDto {
     id: string;
@@ -96,7 +96,7 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
 
 ### API Client
 
-- [ ] 9.2 Criar `api/budgetsApi.ts` em `frontend/src/features/budgets/api/budgetsApi.ts`:
+- [x] 9.2 Criar `api/budgetsApi.ts` em `frontend/src/features/budgets/api/budgetsApi.ts`:
   - Importar `apiClient` de `shared/services/apiClient`
   - Funções:
     - `createBudget(data: CreateBudgetRequest): Promise<BudgetResponse>`
@@ -116,7 +116,7 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
 
 ### Hooks React Query
 
-- [ ] 9.3 Criar hooks de query em `frontend/src/features/budgets/hooks/`:
+- [x] 9.3 Criar hooks de query em `frontend/src/features/budgets/hooks/`:
   - `useBudgets.ts`:
     ```typescript
     export function useBudgets(month: number, year: number) {
@@ -147,7 +147,7 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
     }
     ```
 
-- [ ] 9.4 Criar hooks de mutation em `frontend/src/features/budgets/hooks/`:
+- [x] 9.4 Criar hooks de mutation em `frontend/src/features/budgets/hooks/`:
   - `useCreateBudget.ts`:
     - `useMutation` com `createBudget`
     - `onSuccess`: invalidar queries `['budgets']` e `['budgets', 'summary']`
@@ -163,7 +163,7 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
 
 ### Schema Zod
 
-- [ ] 9.5 Criar `schemas/budgetSchema.ts` em `frontend/src/features/budgets/schemas/budgetSchema.ts`:
+- [x] 9.5 Criar `schemas/budgetSchema.ts` em `frontend/src/features/budgets/schemas/budgetSchema.ts`:
   ```typescript
   import { z } from 'zod';
 
@@ -189,12 +189,12 @@ Criar a fundação do módulo frontend `features/budgets/`: tipos TypeScript que
 
 ### Barrel Export
 
-- [ ] 9.6 Criar `index.ts` em `frontend/src/features/budgets/index.ts`:
+- [x] 9.6 Criar `index.ts` em `frontend/src/features/budgets/index.ts`:
   - Re-exportar tipos, hooks e componentes (página será adicionada na tarefa 10.0)
 
 ### Validação
 
-- [ ] 9.7 Verificar que o frontend compila sem erros: `cd frontend && npm run build`
+- [x] 9.7 Verificar que o frontend compila sem erros: `cd frontend && npm run build`
 
 ## Sequenciamento
 

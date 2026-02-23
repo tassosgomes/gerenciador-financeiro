@@ -35,7 +35,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 - [x] 6.0 Impacto em Category — Desassociação de Categorias em Orçamentos
 - [x] 7.0 Background Service — BudgetRecurrenceWorker
 - [x] 8.0 Testes de Integração Backend (Repository + HTTP)
-- [ ] 9.0 Frontend — Tipos, API Client, Hooks e Schemas
+- [x] 9.0 Frontend — Tipos, API Client, Hooks e Schemas
 - [ ] 10.0 Frontend — Componentes, Páginas e Navegação
 - [ ] 11.0 Testes Frontend
 
