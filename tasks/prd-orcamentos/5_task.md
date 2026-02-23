@@ -34,7 +34,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
 
 ### Request DTOs
 
-- [ ] 5.1 Criar `CreateBudgetRequest` em `1-Services/.../Controllers/Requests/CreateBudgetRequest.cs`:
+- [x] 5.1 Criar `CreateBudgetRequest` em `1-Services/.../Controllers/Requests/CreateBudgetRequest.cs`:
   ```csharp
   public record CreateBudgetRequest(
       string Name,
@@ -46,7 +46,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
   );
   ```
 
-- [ ] 5.2 Criar `UpdateBudgetRequest` em `1-Services/.../Controllers/Requests/UpdateBudgetRequest.cs`:
+- [x] 5.2 Criar `UpdateBudgetRequest` em `1-Services/.../Controllers/Requests/UpdateBudgetRequest.cs`:
   ```csharp
   public record UpdateBudgetRequest(
       string Name,
@@ -58,7 +58,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
 
 ### BudgetsController
 
-- [ ] 5.3 Criar `BudgetsController` em `1-Services/.../Controllers/BudgetsController.cs`:
+- [x] 5.3 Criar `BudgetsController` em `1-Services/.../Controllers/BudgetsController.cs`:
   - Atributos: `[ApiController]`, `[Route("api/v1/budgets")]`, `[Authorize]`
   - Dependência: `IDispatcher`
   - Extrair `userId` via `User.GetUserId()` (ClaimsPrincipalExtensions)
@@ -102,7 +102,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
 
 ### GlobalExceptionHandler
 
-- [ ] 5.4 Adicionar mapeamento das 7 novas exceptions no `GlobalExceptionHandler`:
+- [x] 5.4 Adicionar mapeamento das 7 novas exceptions no `GlobalExceptionHandler`:
   - Em `1-Services/.../Middleware/GlobalExceptionHandler.cs`
   - Mapear cada exception para ProblemDetails com status HTTP apropriado:
 
@@ -118,7 +118,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
 
 ### Consolidação DI
 
-- [ ] 5.5 Verificar e consolidar todos os registros DI:
+- [x] 5.5 Verificar e consolidar todos os registros DI:
   - Em `ApplicationServiceExtensions`:
     - Handlers: `CreateBudgetCommandHandler`, `UpdateBudgetCommandHandler`, `DeleteBudgetCommandHandler`
     - Handlers: `ListBudgetsQueryHandler`, `GetBudgetByIdQueryHandler`, `GetBudgetSummaryQueryHandler`, `GetAvailablePercentageQueryHandler`
@@ -130,7 +130,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
 
 ### Validação
 
-- [ ] 5.6 Testar endpoints manualmente com curl/Postman ou HTTP files:
+- [x] 5.6 Testar endpoints manualmente com curl/Postman ou HTTP files:
   - Criar orçamento com dados válidos → 201
   - Criar com nome duplicado → 409
   - Criar com percentual > 100% restante → 422
@@ -140,7 +140,7 @@ Implementar a camada de API da feature de Orçamentos: `BudgetsController` com 7
   - Excluir orçamento → 204
   - Requisição sem token → 401
 
-- [ ] 5.7 Validar build com `dotnet build` a partir de `backend/`
+- [x] 5.7 Validar build com `dotnet build` a partir de `backend/`
 
 ## Sequenciamento
 

@@ -31,7 +31,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 - [x] 2.0 Infra Layer — Migration EF Core, BudgetConfiguration e BudgetRepository
 - [x] 3.0 Application Layer — Commands (Create, Update, Delete) e Validators
 - [x] 4.0 Application Layer — Queries e DTOs de Response
-- [ ] 5.0 API Layer — BudgetsController, Request DTOs e Registro DI
+- [x] 5.0 API Layer — BudgetsController, Request DTOs e Registro DI
 - [ ] 6.0 Impacto em Category — Desassociação de Categorias em Orçamentos
 - [ ] 7.0 Background Service — BudgetRecurrenceWorker
 - [ ] 8.0 Testes de Integração Backend (Repository + HTTP)

@@ -75,6 +75,9 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             UserNotFoundException userNotFoundException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "Usuário não encontrado", userNotFoundException.Message, "https://httpstatuses.com/404"), false),
 
+            BudgetNotFoundException budgetNotFoundException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "Orçamento não encontrado", budgetNotFoundException.Message, "https://httpstatuses.com/404"), false),
+
             RecurrenceTemplateNotFoundException recurrenceTemplateNotFoundException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "Template de recorrência não encontrado", recurrenceTemplateNotFoundException.Message, "https://httpstatuses.com/404"), false),
 
@@ -101,6 +104,24 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
             UserEmailAlreadyExistsException userEmailAlreadyExistsException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Email já cadastrado", userEmailAlreadyExistsException.Message, "https://httpstatuses.com/400"), false),
+
+            BudgetPercentageExceededException budgetPercentageExceededException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status422UnprocessableEntity, "Percentual excede 100%", budgetPercentageExceededException.Message, "https://httpstatuses.com/422"), false),
+
+            CategoryAlreadyBudgetedException categoryAlreadyBudgetedException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Categoria já vinculada a orçamento", categoryAlreadyBudgetedException.Message, "https://httpstatuses.com/409"), false),
+
+            BudgetPeriodLockedException budgetPeriodLockedException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status422UnprocessableEntity, "Período bloqueado", budgetPeriodLockedException.Message, "https://httpstatuses.com/422"), false),
+
+            BudgetMustHaveCategoriesException budgetMustHaveCategoriesException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status422UnprocessableEntity, "Orçamento sem categorias", budgetMustHaveCategoriesException.Message, "https://httpstatuses.com/422"), false),
+
+            BudgetNameAlreadyExistsException budgetNameAlreadyExistsException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Nome já existe", budgetNameAlreadyExistsException.Message, "https://httpstatuses.com/409"), false),
+
+            InvalidBudgetCategoryTypeException invalidBudgetCategoryTypeException =>
+                (CreateProblemDetails(httpContext, StatusCodes.Status422UnprocessableEntity, "Categoria inválida", invalidBudgetCategoryTypeException.Message, "https://httpstatuses.com/422"), false),
 
             DomainException domainException =>
                 (CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Erro de validação", domainException.Message, "https://httpstatuses.com/400"), false),
