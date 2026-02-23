@@ -3,6 +3,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useTransaction, useTransactionHistory } from '@/features/transactions/hooks/useTransactions';
 import { TransactionDetail } from '@/features/transactions/components/TransactionDetail';
 import { TransactionHistoryTimeline } from '@/features/transactions/components/TransactionHistoryTimeline';
+import { ReceiptItemsSection } from '@/features/transactions/components/ReceiptItemsSection';
 
 export function TransactionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +31,9 @@ export function TransactionDetailPage() {
   return (
     <div className="space-y-6">
       <TransactionDetail transaction={transaction} />
+      {transaction.hasReceipt && (
+        <ReceiptItemsSection transactionId={transaction.id} hasReceipt={transaction.hasReceipt} />
+      )}
       <TransactionHistoryTimeline history={history} />
     </div>
   );

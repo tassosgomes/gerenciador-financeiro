@@ -36,7 +36,7 @@ const mockTransactions: TransactionResponse[] = [
     cancelledBy: null,
     cancelledAt: null,
     isOverdue: false,
-    hasReceipt: false,
+    hasReceipt: true,
     createdAt: '2026-02-10T10:00:00Z',
     updatedAt: null,
   },
@@ -187,6 +187,56 @@ const mockHistory: TransactionHistoryEntry[] = [
     details: null,
   },
 ];
+
+const receiptByTransactionId: Record<string, {
+  establishment: {
+    id: string;
+    name: string;
+    cnpj: string;
+    accessKey: string;
+  };
+  items: Array<{
+    id: string;
+    description: string;
+    productCode: string | null;
+    quantity: number;
+    unitOfMeasure: string;
+    unitPrice: number;
+    totalPrice: number;
+    itemOrder: number;
+  }>;
+}> = {
+  '1': {
+    establishment: {
+      id: 'est-1',
+      name: 'SUPERMERCADO PÃO DE AÇÚCAR',
+      cnpj: '12345678000190',
+      accessKey: '12345678901234567890123456789012345678901234',
+    },
+    items: [
+      {
+        id: 'item-1',
+        description: 'ARROZ TIPO 1 5KG',
+        productCode: '7891234567890',
+        quantity: 2,
+        unitOfMeasure: 'UN',
+        unitPrice: 25.9,
+        totalPrice: 51.8,
+        itemOrder: 1,
+      },
+      {
+        id: 'item-2',
+        description: 'FEIJÃO CARIOCA 1KG',
+        productCode: '7890000000001',
+        quantity: 3,
+        unitOfMeasure: 'UN',
+        unitPrice: 8.4,
+        totalPrice: 25.2,
+        itemOrder: 2,
+      },
+    ],
+  },
+};
 
 const BASE_URL = '*';
 
@@ -478,5 +528,141 @@ export const transactionsHandlers = [
   // GET /api/v1/transactions/:id/history
   http.get(`${BASE_URL}/api/v1/transactions/:id/history`, () => {
     return HttpResponse.json(mockHistory);
+  }),
+
+  // POST /api/v1/receipts/lookup
+  http.post(`${BASE_URL}/api/v1/receipts/lookup`, async ({ request }) => {
+    const body = (await request.json()) as { input?: string };
+    const input = body.input?.replace(/\D/g, '') ?? '';
+
+    if (input.length !== 44) {
+      return HttpResponse.json(
+        {
+          title: 'Bad Request',
+          status: 400,
+          detail: 'Chave de acesso inválida.',
+        },
+        { status: 400 },
+      );
+    }
+
+    return HttpResponse.json({
+      accessKey: input,
+      establishmentName: 'SUPERMERCADO PÃO DE AÇÚCAR',
+      establishmentCnpj: '12345678000190',
+      issuedAt: '2026-02-10T14:30:00Z',
+      totalAmount: 350,
+      discountAmount: 10,
+      paidAmount: 340,
+      items: [
+        {
+          id: 'lookup-item-1',
+          description: 'ARROZ TIPO 1 5KG',
+          productCode: '7891234567890',
+          quantity: 2,
+          unitOfMeasure: 'UN',
+          unitPrice: 25.9,
+          totalPrice: 51.8,
+          itemOrder: 1,
+        },
+      ],
+      alreadyImported: false,
+    });
+  }),
+
+  // POST /api/v1/receipts/import
+  http.post(`${BASE_URL}/api/v1/receipts/import`, async ({ request }) => {
+    const body = (await request.json()) as {
+      accessKey: string;
+      accountId: string;
+      categoryId: string;
+      description: string;
+      competenceDate: string;
+    };
+
+    if (body.accessKey === '00000000000000000000000000000000000000000000') {
+      return HttpResponse.json(
+        {
+          title: 'Conflict',
+          status: 409,
+          detail: 'Cupom já importado.',
+        },
+        { status: 409 },
+      );
+    }
+
+    const newTransaction: TransactionResponse = {
+      id: String(mockTransactions.length + 1),
+      accountId: body.accountId,
+      categoryId: body.categoryId,
+      type: TransactionType.Debit,
+      amount: 340,
+      description: body.description,
+      competenceDate: body.competenceDate,
+      dueDate: null,
+      status: TransactionStatus.Paid,
+      isAdjustment: false,
+      originalTransactionId: null,
+      hasAdjustment: false,
+      installmentGroupId: null,
+      installmentNumber: null,
+      totalInstallments: null,
+      isRecurrent: false,
+      recurrenceTemplateId: null,
+      transferGroupId: null,
+      cancellationReason: null,
+      cancelledBy: null,
+      cancelledAt: null,
+      isOverdue: false,
+      hasReceipt: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+    };
+
+    mockTransactions.unshift(newTransaction);
+
+    const receiptPayload = {
+      establishment: {
+        id: `est-${newTransaction.id}`,
+        name: 'SUPERMERCADO PÃO DE AÇÚCAR',
+        cnpj: '12345678000190',
+        accessKey: body.accessKey,
+      },
+      items: [
+        {
+          id: `item-${newTransaction.id}-1`,
+          description: 'ARROZ TIPO 1 5KG',
+          productCode: '7891234567890',
+          quantity: 2,
+          unitOfMeasure: 'UN',
+          unitPrice: 25.9,
+          totalPrice: 51.8,
+          itemOrder: 1,
+        },
+      ],
+    };
+
+    receiptByTransactionId[newTransaction.id] = receiptPayload;
+
+    return HttpResponse.json(
+      {
+        transaction: newTransaction,
+        establishment: receiptPayload.establishment,
+        items: receiptPayload.items,
+      },
+      { status: 201 },
+    );
+  }),
+
+  // GET /api/v1/transactions/:id/receipt
+  http.get(`${BASE_URL}/api/v1/transactions/:id/receipt`, ({ params }) => {
+    const { id } = params;
+    const receipt = receiptByTransactionId[String(id)];
+
+    if (!receipt) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json(receipt);
   }),
 ];

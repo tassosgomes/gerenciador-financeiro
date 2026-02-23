@@ -166,6 +166,20 @@ export function TransactionTable({ transactions, searchTerm = '' }: TransactionT
       );
     }
 
+    if (transaction.hasReceipt) {
+      indicators.push(
+        <Badge
+          key="receipt"
+          variant="outline"
+          className="px-1.5 py-0 text-[10px] leading-4"
+          title="Importado via Cupom Fiscal"
+          aria-label="Importado via Cupom Fiscal"
+        >
+          NFC-e
+        </Badge>
+      );
+    }
+
     const isCancelled = transaction.status === TransactionStatus.Cancelled;
 
     return (

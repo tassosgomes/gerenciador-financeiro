@@ -31,7 +31,7 @@ const mockTransactions: TransactionResponse[] = [
     cancelledBy: null,
     cancelledAt: null,
     isOverdue: false,
-    hasReceipt: false,
+    hasReceipt: true,
     createdAt: '2026-02-10T10:00:00Z',
     updatedAt: null,
   },
@@ -194,6 +194,18 @@ describe('TransactionTable', () => {
     // Transfer icon should be present in the row with 'Transferência Poupança'
     const transferRow = screen.getByText('Transferência Poupança').closest('tr');
     expect(transferRow).toBeInTheDocument();
+  });
+
+  it('displays NFC-e badge when transaction has receipt', () => {
+    renderWithProviders(
+      <TransactionTable
+        transactions={mockTransactions}
+      />
+    );
+
+    const badge = screen.getByLabelText('Importado via Cupom Fiscal');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('NFC-e');
   });
 
   it('displays status badges with correct colors', () => {

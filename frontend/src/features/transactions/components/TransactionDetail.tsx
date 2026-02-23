@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Ban, TrendingUp, RepeatIcon, ArrowLeftRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Ban, TrendingUp, RepeatIcon, ArrowLeftRight, CheckCircle2, ReceiptText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -116,6 +116,12 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
                   <Badge variant="outline" className="flex items-center gap-1">
                     <ArrowLeftRight className="h-3 w-3" />
                     Transferência
+                  </Badge>
+                )}
+                {transaction.hasReceipt && (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <ReceiptText className="h-3 w-3" />
+                    Cupom Fiscal
                   </Badge>
                 )}
               </div>

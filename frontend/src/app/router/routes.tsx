@@ -11,6 +11,7 @@ import { ErrorBoundary, Skeleton } from '@/shared/components/ui';
 const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 const TransactionsPage = lazy(() => import('@/features/transactions/pages/TransactionsPage'));
+const ImportReceiptPage = lazy(() => import('@/features/transactions/pages/ImportReceiptPage'));
 const TransactionDetailPage = lazy(() => import('@/features/transactions').then(m => ({ default: m.TransactionDetailPage })));
 const BudgetsPage = lazy(() => import('@/features/budgets/pages/BudgetsPage'));
 const AccountsPage = lazy(() => import('@/features/accounts/pages/AccountsPage'));
@@ -49,6 +50,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: withSuspense(<DashboardPage />) },
       { path: 'transactions', element: withSuspense(<TransactionsPage />) },
+      { path: 'transactions/import-receipt', element: withSuspense(<ImportReceiptPage />) },
       { path: 'transactions/:id', element: withSuspense(<TransactionDetailPage />) },
       { path: 'budgets', element: withSuspense(<BudgetsPage />) },
       { path: 'accounts', element: withSuspense(<AccountsPage />) },

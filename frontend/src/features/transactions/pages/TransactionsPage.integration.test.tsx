@@ -83,6 +83,7 @@ describe('TransactionsPage Integration Tests', () => {
       });
 
       expect(screen.getByRole('button', { name: /nova transação/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /importar cupom/i })).toBeInTheDocument();
     });
 
     it('displays transactions from API', async () => {
@@ -467,6 +468,17 @@ describe('TransactionsPage Integration Tests', () => {
 
       // Transfer transaction should be displayed
       expect(screen.getByText('Transferência Interna')).toBeInTheDocument();
+    });
+
+    it('displays receipt badge for transactions imported from NFC-e', async () => {
+      renderWithProviders(<TransactionsPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Supermercado Pão de Açúcar')).toBeInTheDocument();
+      });
+
+      expect(screen.getByLabelText('Importado via Cupom Fiscal')).toBeInTheDocument();
+      expect(screen.getByText('NFC-e')).toBeInTheDocument();
     });
   });
 

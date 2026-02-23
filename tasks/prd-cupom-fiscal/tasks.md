@@ -23,7 +23,7 @@ Criação dos tipos TypeScript, funções de API, hooks React Query, e implement
 - [x] 4.0 Commands, Queries e Handlers (Application Layer)
 - [x] 5.0 API — Controller, Requests e Exception Handling
 - [x] 6.0 Frontend — Tipos, API Client e Hooks
-- [ ] 7.0 Frontend — Página de Importação e Integração UI
+- [x] 7.0 Frontend — Página de Importação e Integração UI
 
 ## Análise de Paralelização
 

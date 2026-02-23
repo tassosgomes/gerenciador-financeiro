@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ReceiptText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -46,6 +47,7 @@ function getMonthAndYearFromDate(date?: string): { month: number; year: number }
 }
 
 export default function TransactionsPage(): JSX.Element {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { filters, setFilters, setFilter, clearFilters } = useTransactionFilters();
@@ -120,10 +122,20 @@ export default function TransactionsPage(): JSX.Element {
             Gerencie suas receitas, despesas e transferências
           </p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="shrink-0">
-          <Plus className="mr-2 h-4 w-4" />
-          Nova Transação
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/transactions/import-receipt')}
+            className="shrink-0"
+          >
+            <ReceiptText className="mr-2 h-4 w-4" />
+            Importar Cupom
+          </Button>
+          <Button onClick={() => setShowForm(true)} className="shrink-0">
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Transação
+          </Button>
+        </div>
       </div>
 
       {/* Filtros */}
