@@ -26,5 +26,6 @@ public record TransactionResponse(
     DateTime? CancelledAt,
     bool IsOverdue,
     DateTime CreatedAt,
-    DateTime? UpdatedAt
+    DateTime? UpdatedAt,
+    bool HasReceipt = false
 );

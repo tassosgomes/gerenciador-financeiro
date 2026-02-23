@@ -15,6 +15,8 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IReceiptItemRepository _receiptItemRepository;
+    private readonly IEstablishmentRepository _establishmentRepository;
     private readonly IOperationLogRepository _operationLogRepository;
     private readonly IAuditService _auditService;
     private readonly IUnitOfWork _unitOfWork;
@@ -24,6 +26,8 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
     public CancelTransactionCommandHandler(
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
+        IReceiptItemRepository receiptItemRepository,
+        IEstablishmentRepository establishmentRepository,
         IOperationLogRepository operationLogRepository,
         IAuditService auditService,
         IUnitOfWork unitOfWork,
@@ -32,6 +36,8 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
     {
         _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
+        _receiptItemRepository = receiptItemRepository;
+        _establishmentRepository = establishmentRepository;
         _operationLogRepository = operationLogRepository;
         _auditService = auditService;
         _unitOfWork = unitOfWork;
@@ -72,9 +78,26 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
             // Cancel via domain service
             _transactionDomainService.CancelTransaction(account, transaction, command.UserId, command.Reason);
 
+            var receiptItems = await _receiptItemRepository.GetByTransactionIdAsync(transaction.Id, cancellationToken);
+            if (receiptItems.Count > 0)
+            {
+                _receiptItemRepository.RemoveRange(receiptItems);
+            }
+
+            var establishment = await _establishmentRepository.GetByTransactionIdAsync(transaction.Id, cancellationToken);
+            if (establishment != null)
+            {
+                _establishmentRepository.Remove(establishment);
+            }
+
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await _auditService.LogAsync("Transaction", transaction.Id, "Cancelled", command.UserId, previousData, cancellationToken);
+
+            if (receiptItems.Count > 0 || establishment != null)
+            {
+                await _auditService.LogAsync("Receipt", transaction.Id, "CascadeDeletedOnTransactionCancellation", command.UserId, null, cancellationToken);
+            }
 
             // Log operation
             if (!string.IsNullOrEmpty(command.OperationId))
@@ -94,7 +117,7 @@ public class CancelTransactionCommandHandler : ICommandHandler<CancelTransaction
 
             _logger.LogInformation("Transaction cancelled successfully with ID: {Id}", transaction.Id);
 
-            return transaction.Adapt<TransactionResponse>();
+            return transaction.Adapt<TransactionResponse>() with { HasReceipt = false };
         }
         catch
         {

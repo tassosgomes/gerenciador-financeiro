@@ -11,13 +11,16 @@ namespace GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 public class GetTransactionByIdQueryHandler : IQueryHandler<GetTransactionByIdQuery, TransactionResponse>
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IEstablishmentRepository _establishmentRepository;
     private readonly ILogger<GetTransactionByIdQueryHandler> _logger;
 
     public GetTransactionByIdQueryHandler(
         ITransactionRepository transactionRepository,
+        IEstablishmentRepository establishmentRepository,
         ILogger<GetTransactionByIdQueryHandler> logger)
     {
         _transactionRepository = transactionRepository;
+        _establishmentRepository = establishmentRepository;
         _logger = logger;
     }
 
@@ -29,6 +32,7 @@ public class GetTransactionByIdQueryHandler : IQueryHandler<GetTransactionByIdQu
         if (transaction == null)
             throw new TransactionNotFoundException(query.TransactionId);
 
-        return transaction.Adapt<TransactionResponse>();
+        var hasReceipt = await _establishmentRepository.GetByTransactionIdAsync(query.TransactionId, cancellationToken) != null;
+        return transaction.Adapt<TransactionResponse>() with { HasReceipt = hasReceipt };
     }
 }

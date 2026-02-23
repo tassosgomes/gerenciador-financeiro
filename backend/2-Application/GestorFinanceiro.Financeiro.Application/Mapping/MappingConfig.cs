@@ -1,5 +1,6 @@
 using GestorFinanceiro.Financeiro.Application.Dtos;
 using GestorFinanceiro.Financeiro.Application.Dtos.Backup;
+using GestorFinanceiro.Financeiro.Domain.Dto;
 using GestorFinanceiro.Financeiro.Domain.Entity;
 using Mapster;
 
@@ -26,6 +27,21 @@ public static class MappingConfig
                 : null);
 
         TypeAdapterConfig<Transaction, TransactionResponse>.NewConfig();
+        TypeAdapterConfig<ReceiptItem, ReceiptItemResponse>.NewConfig();
+        TypeAdapterConfig<Establishment, EstablishmentResponse>.NewConfig();
+        TypeAdapterConfig<NfceData, NfceLookupResponse>.NewConfig()
+            .Map(dest => dest.AlreadyImported, _ => false)
+            .Map(dest => dest.Items, src => src.Items
+                .Select((item, index) => new ReceiptItemResponse(
+                    Guid.Empty,
+                    item.Description,
+                    item.ProductCode,
+                    item.Quantity,
+                    item.UnitOfMeasure,
+                    item.UnitPrice,
+                    item.TotalPrice,
+                    index + 1))
+                .ToList());
         TypeAdapterConfig<Category, CategoryResponse>.NewConfig();
         TypeAdapterConfig<RecurrenceTemplate, RecurrenceTemplateResponse>.NewConfig();
         TypeAdapterConfig<AuditLog, AuditLogDto>.NewConfig();

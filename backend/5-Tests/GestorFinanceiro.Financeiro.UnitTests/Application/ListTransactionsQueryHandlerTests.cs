@@ -143,10 +143,11 @@ public class ListTransactionsQueryHandlerTests
     private static ListTransactionsQueryHandler CreateHandler(FinanceiroDbContext context)
     {
         var repository = new TransactionRepository(context);
+        var establishmentRepository = new EstablishmentRepository(context);
         var validator = new ListTransactionsQueryValidator();
         var logger = new Mock<ILogger<ListTransactionsQueryHandler>>();
 
-        return new ListTransactionsQueryHandler(repository, validator, logger.Object);
+        return new ListTransactionsQueryHandler(repository, establishmentRepository, validator, logger.Object);
     }
 
     private static FinanceiroDbContext CreateContext()

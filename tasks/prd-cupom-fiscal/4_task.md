@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["1.0", "2.0", "3.0"]
 ---
@@ -13,7 +13,7 @@ blocked_by: ["1.0", "2.0", "3.0"]
 <unblocks>"5.0"</unblocks>
 </task_context>
 
-# Tarefa 4.0: Commands, Queries e Handlers (Application Layer)
+# Tarefa 4.0: Commands, Queries e Handlers (Application Layer) ✅ CONCLUÍDA
 
 ## Visão Geral
 
@@ -33,19 +33,19 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
 
 ## Subtarefas
 
-- [ ] 4.1 Criar DTOs de resposta em `Application/Dtos/`
+- [x] 4.1 Criar DTOs de resposta em `Application/Dtos/`
   - `ReceiptItemResponse` — Id, Description, ProductCode, Quantity, UnitOfMeasure, UnitPrice, TotalPrice, ItemOrder
   - `EstablishmentResponse` — Id, Name, Cnpj, AccessKey
   - `ReceiptLookupResponse` — AccessKey, EstablishmentName, EstablishmentCnpj, IssuedAt, TotalAmount, DiscountAmount, PaidAmount, Items (list), AlreadyImported (bool)
   - `ImportReceiptResponse` — Transaction (TransactionResponse), Establishment (EstablishmentResponse), Items (list of ReceiptItemResponse)
   - `TransactionReceiptResponse` — Establishment (EstablishmentResponse), Items (list of ReceiptItemResponse)
 
-- [ ] 4.2 Adicionar `HasReceipt` ao `TransactionResponse` existente
+- [x] 4.2 Adicionar `HasReceipt` ao `TransactionResponse` existente
   - Tipo: `bool`
   - Valor computado: `true` se existe registro em `Establishment` para o `TransactionId`
   - Atualizar o `ListTransactionsQueryHandler` para popular o campo via left join ou subquery
 
-- [ ] 4.3 Criar `LookupReceiptCommand` + Handler + Validator
+- [x] 4.3 Criar `LookupReceiptCommand` + Handler + Validator
   - **Command**: `LookupReceiptCommand : ICommand<ReceiptLookupResponse>` com campo `Input` (string — chave ou URL)
   - **Validator** (`LookupReceiptValidator`):
     - `Input` não pode ser vazio
@@ -57,7 +57,7 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
     3. Verificar se a chave já foi importada via `IEstablishmentRepository.ExistsByAccessKeyAsync`
     4. Montar e retornar `ReceiptLookupResponse` com `AlreadyImported = true/false`
 
-- [ ] 4.4 Criar `ImportReceiptCommand` + Handler + Validator
+- [x] 4.4 Criar `ImportReceiptCommand` + Handler + Validator
   - **Command**: `ImportReceiptCommand : ICommand<ImportReceiptResponse>` com campos:
     - `AccessKey` (string), `AccountId` (Guid), `CategoryId` (Guid), `Description` (string), `CompetenceDate` (DateOnly), `OperationId` (string?)
   - **Validator** (`ImportReceiptValidator`):
@@ -79,7 +79,7 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
     10. Registrar auditoria via `AuditService`
     11. Retornar `ImportReceiptResponse`
 
-- [ ] 4.5 Criar `GetTransactionReceiptQuery` + Handler
+- [x] 4.5 Criar `GetTransactionReceiptQuery` + Handler
   - **Query**: `GetTransactionReceiptQuery : IQuery<TransactionReceiptResponse>` com campo `TransactionId` (Guid)
   - **Handler** (`GetTransactionReceiptQueryHandler`):
     1. Buscar `Establishment` por `TransactionId`
@@ -87,7 +87,7 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
     3. Buscar `ReceiptItem`s por `TransactionId`
     4. Montar e retornar `TransactionReceiptResponse`
 
-- [ ] 4.6 Estender `CancelTransactionCommandHandler`
+- [x] 4.6 Estender `CancelTransactionCommandHandler`
   - Injetar `IReceiptItemRepository` e `IEstablishmentRepository` no construtor
   - Após o cancelamento da transação (lógica existente), verificar se tem cupom:
     1. Buscar `ReceiptItem`s por `TransactionId`
@@ -95,17 +95,17 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
     3. Se existirem, remover via repositórios (`RemoveRange`, `Remove`)
     4. Registrar auditoria de cascade delete
 
-- [ ] 4.7 Adicionar mappings no `MappingConfig`
+- [x] 4.7 Adicionar mappings no `MappingConfig`
   - `ReceiptItem` → `ReceiptItemResponse`
   - `Establishment` → `EstablishmentResponse`
   - `NfceData` → `ReceiptLookupResponse` (incluindo mapeamento de `NfceItemData` para os items do response)
 
-- [ ] 4.8 Registrar handlers no DI (`ApplicationServiceExtensions`)
+- [x] 4.8 Registrar handlers no DI (`ApplicationServiceExtensions`)
   - `LookupReceiptCommandHandler`
   - `ImportReceiptCommandHandler`
   - `GetTransactionReceiptQueryHandler`
 
-- [ ] 4.9 Testes unitários dos handlers
+- [x] 4.9 Testes unitários dos handlers
   - **LookupReceiptCommandHandler:**
     - Teste lookup bem-sucedido (mock SEFAZ retorna NfceData)
     - Teste com cupom já importado (AlreadyImported = true)
@@ -128,7 +128,7 @@ Implementar toda a lógica de aplicação para o recurso de Importação de Cupo
     - Teste cancelamento de transação com cupom (remove itens e estabelecimento)
     - Teste cancelamento de transação sem cupom (comportamento existente mantido)
 
-- [ ] 4.10 Testes unitários dos validators
+- [x] 4.10 Testes unitários dos validators
   - **LookupReceiptValidator:**
     - Input vazio → erro
     - Chave válida (44 dígitos) → sem erro

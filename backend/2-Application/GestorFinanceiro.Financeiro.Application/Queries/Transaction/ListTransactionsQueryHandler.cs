@@ -11,15 +11,18 @@ namespace GestorFinanceiro.Financeiro.Application.Queries.Transaction;
 public class ListTransactionsQueryHandler : IQueryHandler<ListTransactionsQuery, PagedResult<TransactionResponse>>
 {
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IEstablishmentRepository _establishmentRepository;
     private readonly IValidator<ListTransactionsQuery> _validator;
     private readonly ILogger<ListTransactionsQueryHandler> _logger;
 
     public ListTransactionsQueryHandler(
         ITransactionRepository transactionRepository,
+        IEstablishmentRepository establishmentRepository,
         IValidator<ListTransactionsQuery> validator,
         ILogger<ListTransactionsQueryHandler> logger)
     {
         _transactionRepository = transactionRepository;
+        _establishmentRepository = establishmentRepository;
         _validator = validator;
         _logger = logger;
     }
@@ -82,7 +85,21 @@ public class ListTransactionsQueryHandler : IQueryHandler<ListTransactionsQuery,
             .Take(query.Size)
             .ToListAsync(cancellationToken);
 
-        var response = transactions.Adapt<IReadOnlyList<TransactionResponse>>();
+        var hasReceiptSet = new HashSet<Guid>();
+        foreach (var transaction in transactions)
+        {
+            var hasReceipt = await _establishmentRepository.GetByTransactionIdAsync(transaction.Id, cancellationToken) != null;
+            if (hasReceipt)
+            {
+                hasReceiptSet.Add(transaction.Id);
+            }
+        }
+
+        var response = transactions
+            .Adapt<IReadOnlyList<TransactionResponse>>()
+            .Select(transaction => transaction with { HasReceipt = hasReceiptSet.Contains(transaction.Id) })
+            .ToList();
+
         var pagination = new PaginationMetadata(query.Page, query.Size, total, totalPages);
 
         return new PagedResult<TransactionResponse>(response, pagination);
