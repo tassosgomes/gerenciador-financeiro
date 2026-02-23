@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["5.0", "6.0", "7.0"]
 ---
@@ -32,7 +32,7 @@ Implementar testes de integração para a feature de Orçamentos em duas frentes
 
 ### Testes de Repository (Testcontainers)
 
-- [ ] 8.1 Criar `BudgetRepositoryTests` em `5-Tests/.../IntegrationTests/Repository/BudgetRepositoryTests.cs`:
+- [x] 8.1 Criar `BudgetRepositoryTests` em `5-Tests/.../IntegrationTests/Repository/BudgetRepositoryTests.cs`:
   - Usar Testcontainers PostgreSQL (seguir padrão existente de `IntegrationTests`)
   - Setup: criar banco limpo, aplicar migrations, seed de dados de teste
 
@@ -64,18 +64,18 @@ Implementar testes de integração para a feature de Orçamentos em duas frentes
   - `ExistsByNameAsync_WithExcludeBudgetId_ShouldExclude`
   - `RemoveCategoryFromBudgetsAsync_ShouldRemoveFromAllBudgets`
 
-- [ ] 8.2 Testar constraints de unicidade:
+- [x] 8.2 Testar constraints de unicidade:
   - `Insert_DuplicateCategoryInSameMonth_ShouldThrowException` — violação de UNIQUE `(category_id, reference_year, reference_month)`
   - `Insert_SameCategoryDifferentMonth_ShouldSucceed`
   - `Insert_DuplicateName_ShouldThrowException` — violação de UNIQUE `(name)`
 
-- [ ] 8.3 Testar CASCADE deletes:
+- [x] 8.3 Testar CASCADE deletes:
   - `DeleteBudget_ShouldCascadeDeleteBudgetCategories`
   - `DeleteCategory_ShouldCascadeDeleteFromBudgetCategories`
 
 ### Testes HTTP Integration (WebApplicationFactory)
 
-- [ ] 8.4 Criar `BudgetsControllerTests` em `5-Tests/.../HttpIntegrationTests/Controllers/BudgetsControllerTests.cs`:
+- [x] 8.4 Criar `BudgetsControllerTests` em `5-Tests/.../HttpIntegrationTests/Controllers/BudgetsControllerTests.cs`:
   - Usar `WebApplicationFactory` com banco real (Testcontainers)
   - Setup: autenticar usuário de teste, obter JWT token
 
@@ -108,14 +108,14 @@ Implementar testes de integração para a feature de Orçamentos em duas frentes
 
 ### Dados de Teste
 
-- [ ] 8.5 Criar helpers de seed para testes:
+- [x] 8.5 Criar helpers de seed para testes:
   - Método para criar categorias de despesa de teste
   - Método para criar transações de teste (Credit/Debit com diferentes status)
   - Método para criar orçamentos de teste com categorias
 
 ### Validação
 
-- [ ] 8.6 Rodar todos os testes de integração:
+- [x] 8.6 Rodar todos os testes de integração:
   - `dotnet test --filter "IntegrationTests"` (requer Docker)
   - `dotnet test --filter "HttpIntegrationTests"` (requer Docker)
   - Verificar que todos passam sem falhas intermitentes

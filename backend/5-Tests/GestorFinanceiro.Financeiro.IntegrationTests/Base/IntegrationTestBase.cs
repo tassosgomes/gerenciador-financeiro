@@ -3,6 +3,7 @@ using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Infra.Context;
 using GestorFinanceiro.Financeiro.IntegrationTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace GestorFinanceiro.Financeiro.IntegrationTests.Base;
 
@@ -59,7 +60,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime, IAsyncDisposable
 
     protected async Task CleanDatabaseAsync(CancellationToken cancellationToken)
     {
-        const string truncateSql = """
+        const string truncateCoreSql = """
             TRUNCATE TABLE
                 transactions,
                 recurrence_templates,
@@ -69,7 +70,22 @@ public abstract class IntegrationTestBase : IAsyncLifetime, IAsyncDisposable
             RESTART IDENTITY CASCADE;
             """;
 
-        await DbContext.Database.ExecuteSqlRawAsync(truncateSql, cancellationToken);
+        await DbContext.Database.ExecuteSqlRawAsync(truncateCoreSql, cancellationToken);
+
+        const string truncateBudgetSql = """
+            TRUNCATE TABLE
+                budget_categories,
+                budgets
+            RESTART IDENTITY CASCADE;
+            """;
+
+        try
+        {
+            await DbContext.Database.ExecuteSqlRawAsync(truncateBudgetSql, cancellationToken);
+        }
+        catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UndefinedTable)
+        {
+        }
     }
 
     protected async Task<Account> CreateAccountAsync(

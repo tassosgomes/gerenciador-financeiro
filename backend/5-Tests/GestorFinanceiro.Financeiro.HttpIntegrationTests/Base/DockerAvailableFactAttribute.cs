@@ -26,9 +26,9 @@ internal static class DockerAvailabilityChecker
             using var process = Process.Start(new ProcessStartInfo
             {
                 FileName = "docker",
-                Arguments = "info",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
+                Arguments = "ps",
+                RedirectStandardOutput = false,
+                RedirectStandardError = false,
                 UseShellExecute = false,
                 CreateNoWindow = true,
             });
@@ -38,7 +38,12 @@ internal static class DockerAvailabilityChecker
                 return false;
             }
 
-            process.WaitForExit(5000);
+            if (!process.WaitForExit(5000))
+            {
+                process.Kill(entireProcessTree: true);
+                return false;
+            }
+
             return process.ExitCode == 0;
         }
         catch

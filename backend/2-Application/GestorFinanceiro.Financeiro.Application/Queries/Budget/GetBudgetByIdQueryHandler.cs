@@ -34,22 +34,20 @@ public class GetBudgetByIdQueryHandler : IQueryHandler<GetBudgetByIdQuery, Budge
             throw new BudgetNotFoundException(query.Id);
         }
 
-        var monthlyIncomeTask = _budgetRepository.GetMonthlyIncomeAsync(
+        var monthlyIncome = await _budgetRepository.GetMonthlyIncomeAsync(
             budget.ReferenceYear,
             budget.ReferenceMonth,
             cancellationToken);
 
-        var consumedAmountTask = _budgetRepository.GetConsumedAmountAsync(
+        var consumedAmount = await _budgetRepository.GetConsumedAmountAsync(
             budget.CategoryIds,
             budget.ReferenceYear,
             budget.ReferenceMonth,
             cancellationToken);
 
-        var allCategoriesTask = _categoryRepository.GetAllAsync(cancellationToken);
+        var allCategories = await _categoryRepository.GetAllAsync(cancellationToken);
 
-        await Task.WhenAll(monthlyIncomeTask, consumedAmountTask, allCategoriesTask);
-
-        var categoryNames = (await allCategoriesTask)
+        var categoryNames = allCategories
             .ToDictionary(category => category.Id, category => category.Name);
 
         var categories = budget.CategoryIds
@@ -60,8 +58,8 @@ public class GetBudgetByIdQueryHandler : IQueryHandler<GetBudgetByIdQuery, Budge
 
         return BudgetResponseFactory.Build(
             budget,
-            await monthlyIncomeTask,
-            await consumedAmountTask,
+            monthlyIncome,
+            consumedAmount,
             categories);
     }
 }

@@ -33,33 +33,30 @@ public class ListBudgetsQueryHandler : IQueryHandler<ListBudgetsQuery, IReadOnly
             return [];
         }
 
-        var monthlyIncomeTask = _budgetRepository.GetMonthlyIncomeAsync(query.Year, query.Month, cancellationToken);
-        var allCategoriesTask = _categoryRepository.GetAllAsync(cancellationToken);
+        var monthlyIncome = await _budgetRepository.GetMonthlyIncomeAsync(query.Year, query.Month, cancellationToken);
+        var allCategories = await _categoryRepository.GetAllAsync(cancellationToken);
 
-        await Task.WhenAll(monthlyIncomeTask, allCategoriesTask);
-
-        var monthlyIncome = await monthlyIncomeTask;
-        var categoryNames = (await allCategoriesTask)
+        var categoryNames = allCategories
             .ToDictionary(category => category.Id, category => category.Name);
 
-        var responseTasks = budgets.Select(
-            async budget =>
-            {
-                var consumedAmount = await _budgetRepository.GetConsumedAmountAsync(
-                    budget.CategoryIds,
-                    budget.ReferenceYear,
-                    budget.ReferenceMonth,
-                    cancellationToken);
+        var responses = new List<BudgetResponse>(budgets.Count);
+        foreach (var budget in budgets)
+        {
+            var consumedAmount = await _budgetRepository.GetConsumedAmountAsync(
+                budget.CategoryIds,
+                budget.ReferenceYear,
+                budget.ReferenceMonth,
+                cancellationToken);
 
-                var categories = budget.CategoryIds
-                    .Where(categoryNames.ContainsKey)
-                    .Select(categoryId => new BudgetCategoryDto(categoryId, categoryNames[categoryId]))
-                    .OrderBy(category => category.Name)
-                    .ToList();
+            var categories = budget.CategoryIds
+                .Where(categoryNames.ContainsKey)
+                .Select(categoryId => new BudgetCategoryDto(categoryId, categoryNames[categoryId]))
+                .OrderBy(category => category.Name)
+                .ToList();
 
-                return BudgetResponseFactory.Build(budget, monthlyIncome, consumedAmount, categories);
-            });
+            responses.Add(BudgetResponseFactory.Build(budget, monthlyIncome, consumedAmount, categories));
+        }
 
-        return await Task.WhenAll(responseTasks);
+        return responses;
     }
 }

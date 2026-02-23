@@ -27,37 +27,31 @@ public class GetBudgetSummaryQueryHandler : IQueryHandler<GetBudgetSummaryQuery,
     {
         _logger.LogInformation("Getting budget summary for {Month}/{Year}", query.Month, query.Year);
 
-        var budgetsTask = _budgetRepository.GetByMonthAsync(query.Year, query.Month, cancellationToken);
-        var monthlyIncomeTask = _budgetRepository.GetMonthlyIncomeAsync(query.Year, query.Month, cancellationToken);
-        var unbudgetedExpensesTask = _budgetRepository.GetUnbudgetedExpensesAsync(query.Year, query.Month, cancellationToken);
-        var allCategoriesTask = _categoryRepository.GetAllAsync(cancellationToken);
+        var budgets = await _budgetRepository.GetByMonthAsync(query.Year, query.Month, cancellationToken);
+        var monthlyIncome = await _budgetRepository.GetMonthlyIncomeAsync(query.Year, query.Month, cancellationToken);
+        var unbudgetedExpenses = await _budgetRepository.GetUnbudgetedExpensesAsync(query.Year, query.Month, cancellationToken);
+        var allCategories = await _categoryRepository.GetAllAsync(cancellationToken);
 
-        await Task.WhenAll(budgetsTask, monthlyIncomeTask, unbudgetedExpensesTask, allCategoriesTask);
-
-        var budgets = await budgetsTask;
-        var monthlyIncome = await monthlyIncomeTask;
-        var unbudgetedExpenses = await unbudgetedExpensesTask;
-        var categoryNames = (await allCategoriesTask)
+        var categoryNames = allCategories
             .ToDictionary(category => category.Id, category => category.Name);
 
-        var budgetResponses = await Task.WhenAll(
-            budgets.Select(
-                async budget =>
-                {
-                    var consumedAmount = await _budgetRepository.GetConsumedAmountAsync(
-                        budget.CategoryIds,
-                        budget.ReferenceYear,
-                        budget.ReferenceMonth,
-                        cancellationToken);
+        var budgetResponses = new List<BudgetResponse>(budgets.Count);
+        foreach (var budget in budgets)
+        {
+            var consumedAmount = await _budgetRepository.GetConsumedAmountAsync(
+                budget.CategoryIds,
+                budget.ReferenceYear,
+                budget.ReferenceMonth,
+                cancellationToken);
 
-                    var categories = budget.CategoryIds
-                        .Where(categoryNames.ContainsKey)
-                        .Select(categoryId => new BudgetCategoryDto(categoryId, categoryNames[categoryId]))
-                        .OrderBy(category => category.Name)
-                        .ToList();
+            var categories = budget.CategoryIds
+                .Where(categoryNames.ContainsKey)
+                .Select(categoryId => new BudgetCategoryDto(categoryId, categoryNames[categoryId]))
+                .OrderBy(category => category.Name)
+                .ToList();
 
-                    return BudgetResponseFactory.Build(budget, monthlyIncome, consumedAmount, categories);
-                }));
+            budgetResponses.Add(BudgetResponseFactory.Build(budget, monthlyIncome, consumedAmount, categories));
+        }
 
         var totalBudgetedPercentage = budgets.Sum(budget => budget.Percentage);
         var totalBudgetedAmount = budgetResponses.Sum(budget => budget.LimitAmount);

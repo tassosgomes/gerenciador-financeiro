@@ -88,6 +88,8 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
             command.CommandText = """
                 TRUNCATE TABLE
                     refresh_tokens,
+                    budget_categories,
+                    budgets,
                     transactions,
                     recurrence_templates,
                     operation_logs,

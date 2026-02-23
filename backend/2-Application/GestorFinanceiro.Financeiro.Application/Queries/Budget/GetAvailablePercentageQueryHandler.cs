@@ -28,26 +28,22 @@ public class GetAvailablePercentageQueryHandler : IQueryHandler<GetAvailablePerc
             query.Year,
             query.ExcludeBudgetId);
 
-        var usedPercentageTask = _budgetRepository.GetTotalPercentageForMonthAsync(
+        var usedPercentage = await _budgetRepository.GetTotalPercentageForMonthAsync(
             query.Year,
             query.Month,
             query.ExcludeBudgetId,
             cancellationToken);
 
-        var usedCategoryIdsTask = _budgetRepository.GetUsedCategoryIdsForMonthAsync(
+        var usedCategoryIds = await _budgetRepository.GetUsedCategoryIdsForMonthAsync(
             query.Year,
             query.Month,
             query.ExcludeBudgetId,
             cancellationToken);
-
-        await Task.WhenAll(usedPercentageTask, usedCategoryIdsTask);
-
-        var usedPercentage = await usedPercentageTask;
         var availablePercentage = 100m - usedPercentage;
 
         return new AvailablePercentageResponse(
             usedPercentage,
             availablePercentage,
-            await usedCategoryIdsTask);
+            usedCategoryIds);
     }
 }
