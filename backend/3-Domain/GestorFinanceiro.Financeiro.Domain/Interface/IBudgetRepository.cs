@@ -5,7 +5,9 @@ namespace GestorFinanceiro.Financeiro.Domain.Interface;
 public interface IBudgetRepository : IRepository<Budget>
 {
     Task<IReadOnlyList<Budget>> GetByMonthAsync(int year, int month, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Budget>> GetBudgetsByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken);
     Task<Budget?> GetByIdWithCategoriesAsync(Guid id, CancellationToken cancellationToken);
+    Task<int> GetCategoryCountAsync(Guid budgetId, CancellationToken cancellationToken);
     Task<decimal> GetTotalPercentageForMonthAsync(int year, int month, Guid? excludeBudgetId, CancellationToken cancellationToken);
     Task<bool> IsCategoryUsedInMonthAsync(Guid categoryId, int year, int month, Guid? excludeBudgetId, CancellationToken cancellationToken);
     Task<IReadOnlyList<Guid>> GetUsedCategoryIdsForMonthAsync(int year, int month, Guid? excludeBudgetId, CancellationToken cancellationToken);

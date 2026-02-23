@@ -46,6 +46,22 @@ public class BudgetRepository : Repository<Budget>, IBudgetRepository
         return await RestoreWithCategoriesAsync(budgets, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Budget>> GetBudgetsByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken)
+    {
+        var budgets = await _context.Budgets
+            .AsNoTracking()
+            .Join(
+                _context.Set<BudgetCategoryLink>().AsNoTracking().Where(link => link.CategoryId == categoryId),
+                budget => budget.Id,
+                link => link.BudgetId,
+                (budget, _) => budget)
+            .Distinct()
+            .OrderBy(budget => budget.Name)
+            .ToListAsync(cancellationToken);
+
+        return await RestoreWithCategoriesAsync(budgets, cancellationToken);
+    }
+
     public async Task<Budget?> GetByIdWithCategoriesAsync(Guid id, CancellationToken cancellationToken)
     {
         var budget = await _context.Budgets
@@ -99,6 +115,13 @@ public class BudgetRepository : Repository<Budget>, IBudgetRepository
                              && budget.ReferenceMonth == month
                              && (!excludeBudgetId.HasValue || budget.Id != excludeBudgetId.Value))
             .SumAsync(budget => (decimal?)budget.Percentage ?? 0m, cancellationToken);
+    }
+
+    public async Task<int> GetCategoryCountAsync(Guid budgetId, CancellationToken cancellationToken)
+    {
+        return await _context.Set<BudgetCategoryLink>()
+            .AsNoTracking()
+            .CountAsync(link => link.BudgetId == budgetId, cancellationToken);
     }
 
     public async Task<bool> IsCategoryUsedInMonthAsync(

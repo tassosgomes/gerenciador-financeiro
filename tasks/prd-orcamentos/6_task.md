@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: true
 blocked_by: ["2.0"]
 ---
@@ -33,7 +33,7 @@ Alterar os componentes existentes de Category para integrarem com a nova feature
 
 ### Alteração em CategoryRepository
 
-- [ ] 6.1 Modificar `CategoryRepository.HasLinkedDataAsync()`:
+- [x] 6.1 Modificar `CategoryRepository.HasLinkedDataAsync()`:
   - Em `4-Infra/GestorFinanceiro.Financeiro.Infra/Repository/CategoryRepository.cs`
   - Adicionar check em `budget_categories`:
     ```sql
@@ -41,14 +41,14 @@ Alterar os componentes existentes de Category para integrarem com a nova feature
     ```
   - O método deve retornar `true` se a categoria estiver vinculada a transações OU a orçamentos
 
-- [ ] 6.2 Modificar `CategoryRepository.MigrateLinkedDataAsync()`:
+- [x] 6.2 Modificar `CategoryRepository.MigrateLinkedDataAsync()`:
   - Adicionar `DELETE FROM budget_categories WHERE category_id = @sourceCategoryId` ao SQL de migração
   - A desassociação é uma remoção simples (não migra para outra categoria — orçamentos ficam sem a categoria)
   - Nota: A desnormalização de `reference_year/month` em `budget_categories` é tratada pelo `ON DELETE CASCADE`; mas como a migração usa SQL direto, deve incluir o DELETE explícito
 
 ### Alteração em DeleteCategoryCommandHandler
 
-- [ ] 6.3 Modificar `DeleteCategoryCommandHandler`:
+- [x] 6.3 Modificar `DeleteCategoryCommandHandler`:
   - Em `2-Application/.../Commands/Category/DeleteCategoryCommandHandler.cs`
   - Após a migração/remoção, chamar `IBudgetRepository.RemoveCategoryFromBudgetsAsync(categoryId)` se necessário
   - Ou confiar no SQL de migração que já remove de `budget_categories`
@@ -59,31 +59,31 @@ Alterar os componentes existentes de Category para integrarem com a nova feature
 
 ### Adição de Dependência
 
-- [ ] 6.4 Se necessário, adicionar `IBudgetRepository` como dependência do `DeleteCategoryCommandHandler`:
+- [x] 6.4 Se necessário, adicionar `IBudgetRepository` como dependência do `DeleteCategoryCommandHandler`:
   - Registrar no construtor
   - Usar para consultar orçamentos afetados após a desassociação
 
 ### Testes Unitários
 
-- [ ] 6.5 Atualizar testes de `DeleteCategoryCommandHandler`:
+- [x] 6.5 Atualizar testes de `DeleteCategoryCommandHandler`:
   - Em `5-Tests/.../UnitTests/Application/Commands/Category/DeleteCategoryCommandHandlerTests.cs`
   - Adicionar cenários:
     - `Handle_WhenCategoryLinkedToBudget_ShouldDesassociate`
     - `Handle_WhenCategoryLinkedToBudget_AndBudgetBecomesEmpty_ShouldLogWarning`
     - `Handle_WhenCategoryNotLinkedToBudget_ShouldNotCallRemove`
 
-- [ ] 6.6 Atualizar testes de `CategoryRepository` (se existirem):
+- [x] 6.6 Atualizar testes de `CategoryRepository` (se existirem):
   - Verificar que `HasLinkedDataAsync` retorna `true` quando categoria está em `budget_categories`
   - Verificar que `MigrateLinkedDataAsync` remove de `budget_categories`
 
 ### Validação
 
-- [ ] 6.7 Testar cenário end-to-end:
+- [x] 6.7 Testar cenário end-to-end:
   - Criar orçamento com 2 categorias
   - Excluir uma das categorias → orçamento deve ficar com 1 categoria
   - Excluir a última categoria → orçamento deve ficar com 0 categorias + warning no log
 
-- [ ] 6.8 Validar build e rodar testes unitários
+- [x] 6.8 Validar build e rodar testes unitários
 
 ## Sequenciamento
 

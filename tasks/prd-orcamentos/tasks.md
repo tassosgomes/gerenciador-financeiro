@@ -32,7 +32,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 - [x] 3.0 Application Layer — Commands (Create, Update, Delete) e Validators
 - [x] 4.0 Application Layer — Queries e DTOs de Response
 - [x] 5.0 API Layer — BudgetsController, Request DTOs e Registro DI
-- [ ] 6.0 Impacto em Category — Desassociação de Categorias em Orçamentos
+- [x] 6.0 Impacto em Category — Desassociação de Categorias em Orçamentos
 - [ ] 7.0 Background Service — BudgetRecurrenceWorker
 - [ ] 8.0 Testes de Integração Backend (Repository + HTTP)
 - [ ] 9.0 Frontend — Tipos, API Client, Hooks e Schemas

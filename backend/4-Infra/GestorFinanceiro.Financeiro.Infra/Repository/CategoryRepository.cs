@@ -2,6 +2,7 @@ using GestorFinanceiro.Financeiro.Domain.Entity;
 using GestorFinanceiro.Financeiro.Domain.Enum;
 using GestorFinanceiro.Financeiro.Domain.Interface;
 using GestorFinanceiro.Financeiro.Infra.Context;
+using GestorFinanceiro.Financeiro.Infra.Model;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -41,9 +42,18 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
             return true;
         }
 
-        return await _context.RecurrenceTemplates
+        var hasRecurrenceTemplates = await _context.RecurrenceTemplates
             .AsNoTracking()
             .AnyAsync(template => template.CategoryId == categoryId, cancellationToken);
+
+        if (hasRecurrenceTemplates)
+        {
+            return true;
+        }
+
+        return await _context.Set<BudgetCategoryLink>()
+            .AsNoTracking()
+            .AnyAsync(link => link.CategoryId == categoryId, cancellationToken);
     }
 
     public async Task MigrateLinkedDataAsync(
@@ -67,6 +77,9 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
             SET category_id = @targetCategoryId,
                 updated_by = @userId,
                 updated_at = NOW()
+            WHERE category_id = @sourceCategoryId;
+
+            DELETE FROM budget_categories
             WHERE category_id = @sourceCategoryId;
             """;
 
