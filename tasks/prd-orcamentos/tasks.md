@@ -36,7 +36,7 @@ Testes de integração backend (Repository com Testcontainers, HTTP com WebAppli
 - [x] 7.0 Background Service — BudgetRecurrenceWorker
 - [x] 8.0 Testes de Integração Backend (Repository + HTTP)
 - [x] 9.0 Frontend — Tipos, API Client, Hooks e Schemas
-- [ ] 10.0 Frontend — Componentes, Páginas e Navegação
+- [x] 10.0 Frontend — Componentes, Páginas e Navegação
 - [ ] 11.0 Testes Frontend
 
 ## Análise de Paralelização

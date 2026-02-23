@@ -1,6 +1,6 @@
 ```markdown
 ---
-status: pending
+status: done
 parallelizable: false
 blocked_by: ["9.0"]
 ---
@@ -39,7 +39,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### MonthYearFilter (Reutilizável)
 
-- [ ] 10.1 Criar `MonthYearFilter.tsx` em `frontend/src/features/budgets/components/MonthYearFilter.tsx`:
+- [x] 10.1 Criar `MonthYearFilter.tsx` em `frontend/src/features/budgets/components/MonthYearFilter.tsx`:
   - Props: `month: number`, `year: number`, `onChange: (month: number, year: number) => void`
   - Interface: dois selects (mês e ano) ou botões de navegação ← mês anterior | mês atual | mês seguinte →
   - Meses em português: Janeiro, Fevereiro, ..., Dezembro
@@ -48,7 +48,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetCard
 
-- [ ] 10.2 Criar `BudgetCard.tsx` em `frontend/src/features/budgets/components/BudgetCard.tsx`:
+- [x] 10.2 Criar `BudgetCard.tsx` em `frontend/src/features/budgets/components/BudgetCard.tsx`:
   - Props: `budget: BudgetResponse`, `isReadOnly: boolean`, `onEdit?: () => void`, `onDelete?: () => void`
   - Layout (Card do shadcn/ui):
     - Header: Nome do orçamento + percentual (ex: "Moradia — 30%")
@@ -71,7 +71,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetSummaryHeader
 
-- [ ] 10.3 Criar `BudgetSummaryHeader.tsx` em `frontend/src/features/budgets/components/BudgetSummaryHeader.tsx`:
+- [x] 10.3 Criar `BudgetSummaryHeader.tsx` em `frontend/src/features/budgets/components/BudgetSummaryHeader.tsx`:
   - Props: `summary: BudgetSummaryResponse`
   - Layout: grid de cards resumo no topo (similar ao dashboard principal)
     - **Renda Mensal**: `monthlyIncome` formatado como R$
@@ -84,7 +84,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetDashboard
 
-- [ ] 10.4 Criar `BudgetDashboard.tsx` em `frontend/src/features/budgets/components/BudgetDashboard.tsx`:
+- [x] 10.4 Criar `BudgetDashboard.tsx` em `frontend/src/features/budgets/components/BudgetDashboard.tsx`:
   - Estado local: `month` e `year` (inicializa com mês/ano correntes)
   - Usa hook `useBudgetSummary(month, year)` para buscar dados
   - Determina `isReadOnly` comparando mês/ano selecionado com mês/ano corrente
@@ -102,7 +102,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetForm
 
-- [ ] 10.5 Criar `BudgetForm.tsx` em `frontend/src/features/budgets/components/BudgetForm.tsx`:
+- [x] 10.5 Criar `BudgetForm.tsx` em `frontend/src/features/budgets/components/BudgetForm.tsx`:
   - Props: `budget?: BudgetResponse` (para edição), `month: number`, `year: number`, `onSuccess: () => void`, `onCancel: () => void`
   - Usa React Hook Form + Zod (`budgetSchema`)
   - Usa `useAvailablePercentage(month, year, budget?.id)` para obter percentual disponível e categorias em uso
@@ -124,7 +124,7 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetFormDialog
 
-- [ ] 10.6 Criar `BudgetFormDialog.tsx` em `frontend/src/features/budgets/components/BudgetFormDialog.tsx`:
+- [x] 10.6 Criar `BudgetFormDialog.tsx` em `frontend/src/features/budgets/components/BudgetFormDialog.tsx`:
   - Props: `open: boolean`, `onOpenChange: (open: boolean) => void`, `budget?: BudgetResponse`, `month: number`, `year: number`
   - Usa Sheet (lateral) do shadcn/ui (padrão do projeto para formulários)
   - Título: "Novo Orçamento" ou "Editar Orçamento"
@@ -133,21 +133,21 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### BudgetsPage
 
-- [ ] 10.7 Criar `BudgetsPage.tsx` em `frontend/src/features/budgets/pages/BudgetsPage.tsx`:
+- [x] 10.7 Criar `BudgetsPage.tsx` em `frontend/src/features/budgets/pages/BudgetsPage.tsx`:
   - Componente lazy-loaded (React.lazy)
   - Renderiza `BudgetDashboard` como conteúdo principal
   - Título da página: "Orçamentos"
 
 ### Rota
 
-- [ ] 10.8 Adicionar rota `/budgets` em `frontend/src/app/router/routes.tsx`:
+- [x] 10.8 Adicionar rota `/budgets` em `frontend/src/app/router/routes.tsx`:
   - Rota protegida (dentro de `ProtectedRoute`)
   - Lazy import de `BudgetsPage`
   - Seguir padrão das rotas existentes
 
 ### Sidebar
 
-- [ ] 10.9 Adicionar item "Orçamentos" no sidebar:
+- [x] 10.9 Adicionar item "Orçamentos" no sidebar:
   - Em `frontend/src/shared/components/layout/Sidebar.tsx` ou `constants.ts`
   - Ícone: `PiggyBank` ou `Wallet` (Lucide icons)
   - Posição: após "Transações" e antes de "Categorias" (ou conforme hierarquia lógica)
@@ -155,12 +155,12 @@ Implementar todos os componentes React da feature de Orçamentos: `BudgetCard` (
 
 ### Barrel Exports
 
-- [ ] 10.10 Atualizar `index.ts` para exportar página e componentes
+- [x] 10.10 Atualizar `index.ts` para exportar página e componentes
 
 ### Validação
 
-- [ ] 10.11 Verificar que o frontend compila: `cd frontend && npm run build`
-- [ ] 10.12 Testar visualmente no browser:
+- [x] 10.11 Verificar que o frontend compila: `cd frontend && npm run build`
+- [x] 10.12 Testar visualmente no browser:
   - Navegar para `/budgets`
   - Verificar empty state quando não há orçamentos
   - Criar orçamento via formulário

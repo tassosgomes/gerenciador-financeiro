@@ -12,6 +12,7 @@ const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPage'));
 const TransactionsPage = lazy(() => import('@/features/transactions/pages/TransactionsPage'));
 const TransactionDetailPage = lazy(() => import('@/features/transactions').then(m => ({ default: m.TransactionDetailPage })));
+const BudgetsPage = lazy(() => import('@/features/budgets/pages/BudgetsPage'));
 const AccountsPage = lazy(() => import('@/features/accounts/pages/AccountsPage'));
 const CategoriesPage = lazy(() => import('@/features/categories/pages/CategoriesPage'));
 const AdminPage = lazy(() => import('@/features/admin/pages/AdminPage'));
@@ -49,6 +50,7 @@ export const routes: RouteObject[] = [
       { path: 'dashboard', element: withSuspense(<DashboardPage />) },
       { path: 'transactions', element: withSuspense(<TransactionsPage />) },
       { path: 'transactions/:id', element: withSuspense(<TransactionDetailPage />) },
+      { path: 'budgets', element: withSuspense(<BudgetsPage />) },
       { path: 'accounts', element: withSuspense(<AccountsPage />) },
       { path: 'categories', element: withSuspense(<CategoriesPage />) },
       {
